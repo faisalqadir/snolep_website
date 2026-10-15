@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Snolep Technologies</title>
+<meta name="description" content="Snolep Technologies builds software the way a snow leopard moves: elegant, patient, precise and resilient.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,800;100,900;125,800;125,900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
+
+<style>
+  /* Snolep palette: deep navy for type and the dark sections, mint snow for the page, teal saved for
+     "work with us". */
+  :root {
+    --navy: #002735;          /* type on light; the hourglass panel and the call to action */
+    --teal: #00a6a2;          /* the accent */
+    --aqua: #addcda;          /* lines, soft accents, copy on navy */
+    --mint: #e7f5f4;          /* the page */
+    --white: #fffeff;
+    --snow: var(--mint);
+    --ink: var(--navy);
+    --muted: #4b6a74;         /* navy softened towards the mint, for secondary copy */
+    --line: var(--aqua);
+    --granite: var(--navy);
+    --night: var(--navy);
+    --night-line: rgba(173, 220, 218, 0.09);
+    --frost: var(--mint);     /* dots and type on navy */
+    --amber: var(--teal);
+    --display: "Archivo", "Arial Black", Impact, system-ui, sans-serif;
+    --body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --dots: var(--ink);
+    --panel-dots: var(--frost);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { overflow-x: clip; }
+  body { background: var(--snow); color: var(--ink); font: 400 16px/1.55 var(--body); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--teal); outline-offset: 4px; }
+
+  /* the one canvas that draws every dot */
+  .dot-story { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 5; pointer-events: none; color: var(--dots); }
+
+  .wrap { width: min(1320px, 100% - 48px); margin-inline: auto; }
+  .label { font: 500 12px/1.2 var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+
+  /* header: navy on the mint, mint wherever a dark section sits under it (set per item by the script) */
+  .site-head { position: fixed; top: 0; left: 0; right: 0; z-index: 10; color: var(--navy); }
+  .site-head a { transition: color .25s ease; }
+  .site-head .on-dark { color: var(--mint); }
+  .site-head .wrap { display: flex; align-items: center; justify-content: space-between; height: 76px; }
+  .brand { font: 900 16px/1 var(--display); font-stretch: 125%; letter-spacing: .02em; text-decoration: none; }
+  .site-head nav { display: flex; gap: 28px; }
+  .site-head nav a { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; text-decoration: none; }
+
+  /* landing: the Snolep logo, large; its snow leopard dissolves into the dots as the page moves */
+  .hero { min-height: 100vh; min-height: 100svh; display: grid; place-items: center; padding: 84px 24px 40px; position: relative; }
+  .logo-hero { margin: 0; line-height: 0; }
+  .logo-art { position: relative; display: block; width: min(68vh, 84vw); aspect-ratio: 1150 / 1194; }
+  .logo-art img { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .logo-leopard { opacity: calc(1 - var(--dots-reveal, 0)); }
+  #perch-0 { position: absolute; left: 61.4%; top: 62.4%; width: 1px; height: 1px; }
+  .scroll-cue { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); color: var(--muted); }
+
+  /* principles: one big word each, alternating sides, close enough that the snow leopard bounds
+     from one to the next */
+  .principle { height: 60vh; display: grid; align-content: center; }
+  .principle .wrap { display: grid; gap: 14px; }
+  .principle .label { color: var(--muted); }
+  .word { font: 900 clamp(40px, 11vw, 200px)/.86 var(--display); font-stretch: 100%; text-transform: uppercase; letter-spacing: -.02em; }
+  .word-in { position: relative; display: inline-block; }
+  .perch { position: absolute; top: var(--cap-top, .07em); width: 1px; height: 1px; }   /* where it lands: the top of the capitals */
+  .principle .note { max-width: 34ch; font-size: 18px; color: var(--muted); }
+  .principle.left .perch { left: 35%; }
+  .principle.right .wrap { justify-items: end; text-align: right; }
+  .principle.right .perch { left: 65%; }
+
+  /* work: the hourglass in a sticky dark panel, projects scrolling past it */
+  .work { display: grid; grid-template-columns: minmax(0, 46%) minmax(0, 1fr); }
+  .hg-panel { position: sticky; top: 0; height: 100vh; background: var(--granite); display: grid; place-items: center; overflow: hidden; }
+  .hourglass { position: relative; width: min(56%, 29vh); aspect-ratio: 2 / 3; }
+  .hourglass svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .hourglass .glass { fill: none; stroke: rgba(173, 220, 218, .4); stroke-width: .8; vector-effect: non-scaling-stroke; }
+  .hourglass .frame { fill: #1f4c5b; }
+  .hg-mark { position: absolute; left: 50%; width: 1px; height: 1px; }
+  .hg-mark.top { top: 0; }
+  .hg-mark.bottom { top: 100%; }
+  .panel-label { position: absolute; left: 32px; bottom: 30px; color: var(--aqua); opacity: .75; }
+  .projects { padding: 0 6vw; }
+  .project { min-height: 100vh; display: grid; align-content: center; gap: 22px; max-width: 560px; }
+  .project-img { aspect-ratio: 4 / 3; border-radius: 4px; position: relative; overflow: hidden; display: grid; place-items: end start; padding: 16px;
+                 background:
+                   radial-gradient(circle, rgba(255, 255, 255, .28) 1.1px, transparent 1.6px) 0 0 / 14px 14px,
+                   radial-gradient(120% 90% at var(--fx, 70%) var(--fy, 30%), var(--c1), transparent 60%),
+                   linear-gradient(135deg, var(--c2), var(--c3)); }
+  .project-img span { font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: rgba(255, 254, 255, .8); }
+  .project-link { justify-self: start; display: inline-flex; align-items: baseline; gap: 12px; text-decoration: none;
+                  font: 900 clamp(24px, 2.4vw, 38px)/1 var(--display); font-stretch: 125%; text-transform: uppercase;
+                  background: linear-gradient(var(--ink), var(--ink)) 0 100% / 0 2px no-repeat; padding-bottom: 6px; transition: background-size .35s ease; }
+  .project-link:hover, .project-link:focus-visible { background-size: 100% 2px; }
+  .project-link .arrow { font: 500 .7em/1 var(--mono); transition: transform .35s ease; }
+  .project-link:hover .arrow, .project-link:focus-visible .arrow { transform: translate(4px, -4px); }
+  .project .meta { color: var(--muted); }
+  .project p { font-size: 18px; color: var(--muted); max-width: 40ch; }
+
+  /* the finale: the call to action and the footer share exactly one screen; the dotted
+     SNOLEP TECHNOLOGIES sits just above the footer */
+  .finale { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; background: var(--night); }
+  .cta { position: relative; flex: 1; color: var(--frost); display: flex; flex-direction: column; justify-content: center; gap: clamp(24px, 5vh, 56px); padding: 76px 0 4vh; overflow: hidden; text-align: center; }
+  .rings { position: absolute; inset: -30% -10%; pointer-events: none;
+           background: repeating-radial-gradient(circle at 50% 42%, transparent 0 78px, var(--night-line) 79px 80px); }
+  .cta-inner { position: relative; display: grid; justify-items: center; gap: 16px; padding: 0 24px; }
+  .cta h2 { font: 900 clamp(36px, 5vw, 84px)/.92 var(--display); font-stretch: 100%; text-transform: uppercase; max-width: 14ch; text-wrap: balance; }
+  .cta p { max-width: 40ch; font-size: 17px; color: var(--aqua); }
+  .logo-wrap { position: relative; width: min(1120px, 100% - 48px); margin: 0 auto; }
+  .logo-slot { width: 100%; height: 9vw; }
+  #perch-5 { left: 72%; }
+  .cta-button { display: none; }
+
+  footer { color: var(--aqua); border-top: 1px solid rgba(173, 220, 218, .14); }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 28px; padding: 18px 0 20px; font: 500 11px/1.5 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+  footer nav { display: flex; gap: 22px; flex-wrap: wrap; }
+  footer a { text-decoration: none; }
+
+  /* the cursor (fine pointers): a ring that fills with the page's scroll progress; over the call to
+     action it becomes a small "work with us" disc that smears behind itself when it moves */
+  .cursor, .cursor-ghost { position: fixed; left: 0; top: 0; z-index: 20; pointer-events: none; }
+  .cursor { width: 46px; height: 46px; margin: -23px 0 0 -23px; color: var(--navy); display: none;
+            transform: translate3d(var(--x, -100px), var(--y, -100px), 0); transition: color .25s ease; }
+  .cursor.on-dark { color: var(--aqua); }
+  .cursor svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; transition: opacity .25s ease, transform .35s ease; }
+  .cursor circle { fill: none; stroke: currentColor; }
+  .cursor .track { stroke-width: 1; opacity: .25; }
+  .cursor .progress { stroke-width: 1.6; stroke-dasharray: 1 1; stroke-dashoffset: var(--left, 1); }
+  .cursor .pip { position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; border-radius: 50%; background: currentColor; transition: opacity .2s ease; }
+  .cursor .disc, .cursor-ghost { width: 84px; height: 84px; border-radius: 50%; background: var(--teal); }
+  .cursor .disc { position: absolute; left: 50%; top: 50%; margin: -42px 0 0 -42px; display: grid; place-items: center; color: var(--navy);
+                  font: 900 11px/1.05 var(--display); font-stretch: 125%; text-transform: uppercase; letter-spacing: .03em; text-align: center;
+                  transform: rotate(var(--angle, 0deg)) scale(calc(var(--s, 0) * var(--stretch, 1)), calc(var(--s, 0) / var(--stretch, 1))); }
+  .cursor .disc span { transform: rotate(calc(-1 * var(--angle, 0deg))); display: block; }
+  .cursor.is-link svg { opacity: 0; transform: rotate(-90deg) scale(.6); }
+  .cursor.is-link .pip { opacity: 0; }
+  .cursor-ghost { margin: -42px 0 0 -42px; opacity: 0; will-change: transform, opacity; }
+  @media (pointer: fine) {
+    .cursor { display: block; }
+    .cta, .cta a { cursor: none; }
+  }
+  @media (pointer: coarse) {
+    .cta-button { display: grid; place-items: center; width: 96px; height: 96px; border-radius: 50%; background: var(--teal); color: var(--navy);
+                  text-decoration: none; font: 900 12px/1.05 var(--display); font-stretch: 125%; text-transform: uppercase; }
+  }
+  .cta-button:focus-visible { display: grid; place-items: center; width: 96px; height: 96px; border-radius: 50%; background: var(--teal); color: var(--navy); text-decoration: none; }
+
+  @media (max-width: 767px) {
+    .site-head nav a:not(:last-child) { display: none; }
+    .logo-art { width: min(84vw, 62vh); }
+    .principle { height: 52vh; }
+    .word { font-size: 12.5vw; }
+    .principle .note { font-size: 15px; max-width: 26ch; }
+    .work { grid-template-columns: 1fr; }
+    .hg-panel { height: 62vh; z-index: 1; }
+    .hourglass { width: min(46%, 26vh); }
+    .panel-label { left: 20px; bottom: 16px; }
+    .projects { padding: 0 24px; }
+    .project { min-height: 70vh; padding: 8vh 0; align-content: start; gap: 16px; }
+    .project p { font-size: 16px; }
+    .cta-inner { gap: 14px; }
+    .cta p { font-size: 15px; max-width: 30ch; }
+    .logo-slot { height: 22vw; }
+    footer .wrap { padding: 14px 0 16px; }
+  }
+</style>
+</head>
+<body>
+<canvas id="dots" class="dot-story" aria-hidden="true"></canvas>
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="brand" href="#top">SNOLEP</a>
+    <nav aria-label="Main"><a href="#p1">Principles</a><a href="#work">Work</a><a href="#cta">Work with us</a></nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" id="hero">
+    <h1 class="logo-hero">
+      <span class="logo-art">
+        <img class="logo-word" src="./img/snolep-wordmark.webp" alt="Snolep Technologies" width="1150" height="1194">
+        <img class="logo-leopard" id="leopard" src="./img/snolep-leopard.webp" alt="" width="1150" height="1194">
+        <span id="perch-0"></span>
+      </span>
+    </h1>
+    <span class="label scroll-cue">How we move ↓</span>
+  </section>
+
+  <section class="principle left" id="p1">
+    <div class="wrap">
+      <span class="label">01</span>
+      <h2 class="word"><span class="word-in">Elegance<span class="perch" id="perch-1"></span></span></h2>
+      <p class="note">Nothing wasted. Every screen, every line of code earns its place.</p>
+    </div>
+  </section>
+
+  <section class="principle right" id="p2">
+    <div class="wrap">
+      <span class="label">02</span>
+      <h2 class="word"><span class="word-in">Patience<span class="perch" id="perch-2"></span></span></h2>
+      <p class="note">We read the ground before we move, so we only have to move once.</p>
+    </div>
+  </section>
+
+  <section class="principle left" id="p3">
+    <div class="wrap">
+      <span class="label">03</span>
+      <h2 class="word"><span class="word-in">Precision<span class="perch" id="perch-3"></span></span></h2>
+      <p class="note">One leap, landed. Measured twice, shipped once.</p>
+    </div>
+  </section>
+
+  <section class="principle right" id="p4">
+    <div class="wrap">
+      <span class="label">04</span>
+      <h2 class="word"><span class="word-in">Resilience<span class="perch" id="perch-4"></span></span></h2>
+      <p class="note">Built for thin air and hard ground. Systems that keep running at altitude.</p>
+    </div>
+  </section>
+
+  <section class="work" id="work">
+    <div class="hg-panel" id="panel">
+      <div class="hourglass" id="hourglass">
+        <svg viewBox="0 0 100 150" aria-hidden="true">
+          <rect class="frame" x="4" y="0" width="27" height="4"></rect>
+          <rect class="frame" x="69" y="0" width="27" height="4"></rect>
+          <rect class="frame" x="4" y="146" width="27" height="4"></rect>
+          <rect class="frame" x="69" y="146" width="27" height="4"></rect>
+          <rect class="frame" x="6" y="4" width="1.2" height="142"></rect>
+          <rect class="frame" x="92.8" y="4" width="1.2" height="142"></rect>
+          <path class="glass" data-hourglass-glass d=""></path>
+        </svg>
+        <span class="hg-mark top" id="hg-top"></span>
+        <span class="hg-mark bottom" id="hg-bottom"></span>
+      </div>
+      <span class="label panel-label">Selected work</span>
+    </div>
+    <div class="projects">
+      <!-- Placeholder projects: swap in real names, images, links and lines. -->
+      <article class="project">
+        <div class="project-img" style="--c1:#00a6a2; --c2:#002735; --c3:#0b4a55; --fx:72%; --fy:28%"><span>Project image</span></div>
+        <a class="project-link" href="#">Project one <span class="arrow">↗</span></a>
+        <span class="label meta">Logistics · Placeholder</span>
+        <p>A short line on what we built, for whom, and what changed because of it.</p>
+      </article>
+      <article class="project">
+        <div class="project-img" style="--c1:#addcda; --c2:#0b3a47; --c3:#00a6a2; --fx:30%; --fy:35%"><span>Project image</span></div>
+        <a class="project-link" href="#">Project two <span class="arrow">↗</span></a>
+        <span class="label meta">Booking platform · Placeholder</span>
+        <p>A short line on what we built, for whom, and what changed because of it.</p>
+      </article>
+      <article class="project">
+        <div class="project-img" style="--c1:#e7f5f4; --c2:#002735; --c3:#2c6d78; --fx:60%; --fy:70%"><span>Project image</span></div>
+        <a class="project-link" href="#">Project three <span class="arrow">↗</span></a>
+        <span class="label meta">Operations dashboard · Placeholder</span>
+        <p>A short line on what we built, for whom, and what changed because of it.</p>
+      </article>
+    </div>
+  </section>
+</main>
+
+<div class="finale">
+  <section class="cta" id="cta" data-cursor="link">
+    <div class="rings" aria-hidden="true"></div>
+    <div class="cta-inner">
+      <h2><span class="word-in">Ready to make<span class="perch" id="perch-5"></span></span> the leap?</h2>
+      <p>Tell us where you're headed. We'll read the ground, plan the jump and land it with you.</p>
+      <a class="cta-button" id="cta-link" href="mailto:hello@example.com">Work<br>with us</a>
+    </div>
+    <div class="logo-wrap">
+      <div class="logo-slot" id="logo" role="img" aria-label="Snolep Technologies"></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <span>© 2026 Snolep Technologies</span>
+      <nav aria-label="Legal"><a href="#">Privacy</a><a href="#">Terms</a></nav>
+    </div>
+  </footer>
+</div>
+
+<div class="cursor" aria-hidden="true">
+  <svg viewBox="0 0 46 46"><circle class="track" cx="23" cy="23" r="22"></circle><circle class="progress" cx="23" cy="23" r="22" pathLength="1"></circle></svg>
+  <span class="pip"></span>
+  <span class="disc"><span>Work<br>with us</span></span>
+</div>
+
+<script>
+  // header items turn mint over the dark sections
+  const darkAreas = () => [document.getElementById('panel'), document.querySelector('.finale')];
+  (() => {
+    const items = [...document.querySelectorAll('.site-head .brand, .site-head nav a')];
+    let queued = false;
+    const check = () => {
+      queued = false;
+      const rects = darkAreas().map((el) => el.getBoundingClientRect());
+      for (const el of items) {
+        const r = el.getBoundingClientRect();
+        const x = r.left + r.width / 2, y = r.top + r.height / 2;
+        el.classList.toggle('on-dark', rects.some((d) => x >= d.left && x <= d.right && y >= d.top && y <= d.bottom));
+      }
+    };
+    const queue = () => { if (!queued) { queued = true; requestAnimationFrame(check); } };
+    addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', queue);
+    check();
+  })();
+
+  // the snow leopard lands on the tops of the capitals: find where they are in each word's line box
+  (() => {
+    const place = () => {
+      for (const word of document.querySelectorAll('.word-in')) {
+        const cs = getComputedStyle(word);
+        const size = parseFloat(cs.fontSize);
+        const probe = document.createElement('span');
+        probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+        word.appendChild(probe);
+        const baseline = probe.getBoundingClientRect().top - word.getBoundingClientRect().top;
+        probe.remove();
+        const c = document.createElement('canvas').getContext('2d');
+        c.font = `${cs.fontWeight} ${size}px ${cs.fontFamily}`;
+        const cap = c.measureText('H').actualBoundingBoxAscent;
+        word.style.setProperty('--cap-top', `${((baseline - cap) / size).toFixed(4)}em`);
+      }
+    };
+    place();
+    document.fonts?.ready.then(place);
+  })();
+
+  // The cursor: a ring that fills with the scroll progress, eased behind the pointer. Over the call
+  // to action it turns into a "work with us" disc, stretched along its motion and trailing fading
+  // copies of itself, and a click anywhere there goes to the link.
+  (() => {
+    const fine = matchMedia('(pointer: fine)');
+    const still = matchMedia('(prefers-reduced-motion: reduce)');
+    const el = document.querySelector('.cursor');
+    const cta = document.getElementById('cta');
+    const link = document.getElementById('cta-link');
+    const ghosts = Array.from({ length: 12 }, () => {
+      const g = document.createElement('span');
+      g.className = 'cursor-ghost';
+      document.body.appendChild(g);
+      return { el: g, x: 0, y: 0, t: -1, s: 1 };
+    });
+    let gi = 0;
+    let mx = -100, my = -100, x = mx, y = my, s = 0, seen = false, raf = 0, last = 0, lx = 0, ly = 0;
+    let stretch = 1, angle = 0, inLink = false;
+    const progress = () => {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      el.style.setProperty('--left', (1 - Math.min(1, Math.max(0, scrollY / Math.max(1, max)))).toFixed(4));
+    };
+    const tick = (now) => {
+      raf = 0;
+      const dt = Math.min(0.05, last ? (now - last) / 1000 : 1 / 60);
+      last = now;
+      const k = still.matches ? 1 : 1 - Math.exp(-dt * 14);
+      const px = x, py = y;
+      x += (mx - x) * k;
+      y += (my - y) * k;
+      const r = cta.getBoundingClientRect();
+      inLink = mx >= r.left && mx <= r.right && my >= r.top && my <= r.bottom;
+      el.classList.toggle('is-link', inLink);
+      s += ((inLink ? 1 : 0) - s) * (still.matches ? 1 : 1 - Math.exp(-dt * 12));
+      // motion blur: squash and stretch along the direction of travel, and leave copies behind
+      const vx = (x - px) / dt, vy = (y - py) / dt;
+      const speed = Math.hypot(vx, vy);
+      const want = still.matches ? 1 : 1 + Math.min(0.35, speed / 4000);
+      stretch += (want - stretch) * (1 - Math.exp(-dt * 18));
+      if (speed > 30) angle = Math.atan2(vy, vx) * 180 / Math.PI;
+      if (inLink && s > 0.5 && !still.matches && Math.hypot(x - lx, y - ly) > 9) {
+        const g = ghosts[gi++ % ghosts.length];
+        g.x = lx; g.y = ly; g.t = now; g.s = s;
+        lx = x; ly = y;
+      } else if (!inLink) { lx = x; ly = y; }
+      let busy = false;
+      for (const g of ghosts) {
+        if (g.t < 0) continue;
+        const age = (now - g.t) / 320;
+        if (age >= 1) { g.t = -1; g.el.style.opacity = 0; continue; }
+        busy = true;
+        g.el.style.opacity = (0.55 * (1 - age) * (1 - age)).toFixed(3);
+        g.el.style.transform = `translate3d(${g.x.toFixed(1)}px, ${g.y.toFixed(1)}px, 0) scale(${(g.s * (1 - 0.35 * age)).toFixed(3)})`;
+      }
+      el.style.setProperty('--x', `${x.toFixed(1)}px`);
+      el.style.setProperty('--y', `${y.toFixed(1)}px`);
+      el.style.setProperty('--s', s.toFixed(3));
+      el.style.setProperty('--stretch', stretch.toFixed(3));
+      el.style.setProperty('--angle', `${angle.toFixed(1)}deg`);
+      const areas = darkAreas().map((a) => a.getBoundingClientRect());
+      el.classList.toggle('on-dark', areas.some((d) => x >= d.left && x <= d.right && y >= d.top && y <= d.bottom));
+      if (busy || Math.abs(mx - x) + Math.abs(my - y) > 0.2 || Math.abs((inLink ? 1 : 0) - s) > 0.002 || Math.abs(stretch - 1) > 0.002) raf = requestAnimationFrame(tick);
+      else last = 0;
+    };
+    const go = () => { if (!raf) raf = requestAnimationFrame(tick); };
+    addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse' || !fine.matches) return;
+      mx = e.clientX; my = e.clientY;
+      if (!seen) { seen = true; x = lx = mx; y = ly = my; }
+      go();
+    }, { passive: true });
+    document.documentElement.addEventListener('pointerleave', () => { mx = my = -100; seen = false; go(); });
+    addEventListener('scroll', () => { progress(); go(); }, { passive: true });
+    addEventListener('resize', progress);
+    progress();
+    cta.addEventListener('click', (e) => { if (fine.matches && !e.target.closest('a')) link.click(); });
+  })();
+</script>
+
+<script type="module">
+  import { createDotStory } from './js/dot-story.js';
+
+  // Our own snow leopard (site/tools/snow-leopard.py builds it): clips "Stand" and "Leap".
+  const MODEL = './models/snow-leopard.glb';
+
+  // One story, tuned per screen size: the logo's snow leopard dissolves into dots, which gather into
+  // the animal; it bounds from word to word, dives into the hourglass, comes out of the bottom and
+  // lands on the name at the foot of the page, where it dissolves into it.
+  const DIVE = -45; // the slant it dives into the hourglass at, and comes out of it at (degrees, nose down)
+  // one bound per leap, scrubbed with the scroll: gathered, push off, full stretch (0.5), reach, land
+  const LEAP = { clip: 'Leap', from: 0.02, stretch: 0.5, to: 0.98 };
+  const leap = (at, from, to, apex, size, pitchDown = -16) => [
+    { at, after: from, clip: LEAP.clip, clipTime: LEAP.from },
+    { at, after: from + (to - from) * 0.3, pitch: 16, ease: 'spline' },
+    { at, after: from + (to - from) * 0.5, x: apex[0], y: apex[1], ...(size ? { size } : {}), ease: 'spline' },
+    { at, after: from + (to - from) * 0.75, pitch: pitchDown, ease: 'spline' },
+    { at, after: to, clip: LEAP.clip, clipTime: LEAP.to, ease: 'linear' },
+    { at, after: to, clipTime: 0 }, // landed: no clip, so it stands still on the word until the next leap
+  ];
+  const story = ({ big, s, inside, apex, off0, dive, out, hop, land }) => {
+    const perch = (i) => `#perch-${i}`;
+    const k = [
+      // the picture turns to dots where it stands...
+      { at: 0, form: 'image', reveal: 0, anchor: perch(0), align: 'bottom', size: big, pitch: 0 },
+      { at: '#hero', after: 0.015, reveal: 0, ease: 'linear' },
+      { at: '#hero', after: 0.09, reveal: 1, ease: 'easeOut' },
+      // ...and the leap off the logo, to the left, is what gathers them into the animal: it takes
+      // shape in the air on the way down to the first word
+      { at: '#hero', after: 0.1, anchor: perch(0), align: 'bottom', size: big, pitch: 0 },
+      { at: '#hero', after: 0.1, clip: LEAP.clip, clipTime: LEAP.from },
+      { at: '#hero', after: 0.12, form: 'image' },
+      { at: '#hero', after: 0.42, form: 'character', ease: 'easeInOut' },
+      { at: '#hero', after: 0.2, pitch: 10, ease: 'spline' },
+      { at: '#hero', after: 0.3, anchor: perch(0), align: 'bottom', x: off0[0], y: off0[1], size: (big + s) / 2, ease: 'spline' },
+      { at: '#hero', after: 0.47, pitch: -18, ease: 'spline' },
+      { at: '#p1', after: -0.4, anchor: perch(1), align: 'bottom', size: s, pitch: 0, ease: 'spline' },
+      { at: '#p1', after: -0.4, clip: LEAP.clip, clipTime: LEAP.to, ease: 'linear' },
+      { at: '#p1', after: -0.4, clipTime: 0 },
+    ];
+    // rides each word, then bounds to the next as it comes up
+    for (let i = 1; i < 4; i++) {
+      const next = `#p${i + 1}`;
+      k.push(
+        { at: next, after: hop[0], anchor: perch(i), align: 'bottom', pitch: 0 },
+        ...leap(next, hop[0], hop[1], [i % 2 ? apex[0] : -apex[0], apex[1]], null),
+        { at: next, after: hop[1], anchor: perch(i + 1), align: 'bottom', pitch: 0, ease: 'spline' },
+      );
+    }
+    k.push(
+      // from the last word, one bound head first into the hourglass as the glass settles
+      { at: '#work', after: -0.7, anchor: perch(4), align: 'bottom', pitch: 0 },
+      { at: '#work', after: -0.7, clip: LEAP.clip, clipTime: LEAP.from },
+      { at: '#work', after: -0.55, pitch: 14, ease: 'spline' },
+      { at: '#work', after: -0.38, x: dive[0], y: dive[1], size: s * 0.9, ease: 'spline' },
+      { at: '#work', after: -0.18, pitch: -20, ease: 'spline' },
+      { at: '#work', after: 0, anchor: '#hg-top', align: 'pour', pour: -0.2, size: inside, pitch: DIVE, ease: 'spline' },
+      { at: '#work', after: 0, clip: LEAP.clip, clipTime: LEAP.stretch, ease: 'linear' },
+      { at: '#work', after: 0.75, anchor: '#hg-top', align: 'pour', pour: 1.35, ease: 'linear' },
+      // the sand runs through the neck as the projects go by
+      { at: '#work', after: 0.2, drain: 0 },
+      { at: '#work', after: out[0] - 0.05, drain: 1, ease: 'linear' },
+      // out of the bottom, nose first, stretched in one long dive...
+      { at: '#work', after: out[0], anchor: '#hg-bottom', align: 'emerge', emerge: -0.35, size: inside, pitch: DIVE, clip: LEAP.clip, clipTime: LEAP.stretch, face: 1 },
+      { at: '#work', after: out[1], anchor: '#hg-bottom', align: 'emerge', emerge: 1, size: inside, pitch: DIVE, ease: 'linear' },
+      { at: '#work', after: out[1], clip: LEAP.clip, clipTime: LEAP.stretch },
+      // ...and one bound down onto the headline of the call to action; then it dissolves into the
+      // name at the foot of the page
+      { at: '#cta', after: land - 0.2, pitch: -20, size: s, ease: 'spline' },
+      { at: '#cta', after: land, anchor: perch(5), align: 'bottom', pitch: 0, size: s, ease: 'spline' },
+      { at: '#cta', after: land, clip: LEAP.clip, clipTime: LEAP.to, ease: 'linear' },
+      { at: '#cta', after: land, clipTime: 0, face: 0 },
+      { at: '#cta', after: -0.22, form: 'character' },
+      { at: '#cta', after: 0, form: 'logo', ease: 'easeOut' },
+    );
+    return k;
+  };
+
+  createDotStory({
+    canvas: '#dots',
+    image: { anchor: '#leopard' },
+    character: {
+      url: MODEL,
+      // gait: false — it never walks or runs on its own, so on a word it stands still; only leaps move it
+      animation: { idle: 'Stand', still: 'pose', gait: false, face: { moving: 90, idle: 75, start: -1 } },
+    },
+    hourglass: { anchor: '#hourglass', panel: '#panel', dive: DIVE },
+    inverse: '.finale',
+    logo: { anchor: '#logo', text: 'SNOLEP TECHNOLOGIES', dotsPerCap: 13 }, // its dot count is the pool size
+    keyframes: story({ big: 0.56, s: 0.4, inside: 0.3, apex: [0, 0.72], off0: [-0.6, 0.12], dive: [-0.15, 0.7], out: [1.5, 2.0], hop: [-0.75, -0.4], land: -0.55 }),
+    responsive: {
+      '(max-width: 767px)': {
+        gap: 3,
+        keyframes: story({ big: 0.68, s: 0.48, inside: 0.29, apex: [0, 0.7], off0: [-0.45, 0.06], dive: [0.1, 0.6], out: [1.55, 2.05], hop: [-0.67, -0.35], land: -0.4 }),
+      },
+    },
+  });
+</script>
+</body>
+</html>
