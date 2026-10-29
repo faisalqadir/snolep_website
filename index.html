@@ -62,6 +62,64 @@
   .brand { font: 900 16px/1 var(--display); font-stretch: 125%; letter-spacing: .02em; text-decoration: none; }
   .site-head nav { display: flex; gap: 28px; }
   .site-head nav a { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; text-decoration: none; }
+  .menu-btn { display: inline-flex; align-items: center; gap: 10px; padding: 9px 16px; border: 1px solid currentColor; border-radius: 999px;
+              background: none; color: inherit; font: 500 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; transition: color .25s ease; }
+  .menu-btn b { font: 400 18px/10px var(--body); }
+
+  /* the rail: a panel that stays put on the right on wide screens (the index, with where you are;
+     the work; contact; the local time; let's talk). Under 1100px it slides in off the Menu button. */
+  :root { --rail: 248px; }
+  .rail { position: fixed; top: 0; right: 0; bottom: 0; width: var(--rail); z-index: 30; display: flex; flex-direction: column;
+          padding: 26px 24px 20px; overflow-y: auto; overscroll-behavior: contain; background: var(--white); color: var(--navy);
+          border-left: 1px solid var(--aqua); }
+  .rail-brand { display: block; text-decoration: none; font: 900 21px/1 var(--display); font-stretch: 125%; letter-spacing: .02em; }
+  .rail-brand small { display: block; margin-top: 6px; font: 500 9px/1 var(--mono); letter-spacing: .32em; color: var(--muted); }
+  .rail-block { border-top: 1px solid var(--aqua); padding: 16px 0 18px; }
+  .rail-brand + .rail-block, .rail-close + .rail-block { margin-top: 24px; }
+  .rail-label { display: block; margin-bottom: 12px; font: 500 10px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .rail-index a { display: grid; grid-template-columns: 28px 1fr auto; align-items: baseline; padding: 8px 0; text-decoration: none;
+                  font: 500 15px/1.2 var(--body); transition: color .25s ease; }
+  .rail-index a span { font: 500 10px/1 var(--mono); color: var(--muted); transition: color .25s ease; }
+  .rail-index a::after { content: ''; align-self: center; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); opacity: 0; transform: scale(.3); transition: opacity .25s ease, transform .25s ease; }
+  .rail-index a:hover, .rail-index a[aria-current="true"], .rail-index a[aria-current="true"] span { color: var(--teal); }
+  .rail-index a[aria-current="true"]::after { opacity: 1; transform: none; }
+  .rail-links a { display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0; font-size: 13px; text-decoration: none; transition: color .2s ease; }
+  .rail-links a i { font: 500 11px/1 var(--mono); font-style: normal; color: var(--muted); transition: transform .25s ease, color .2s ease; }
+  .rail-links a:hover, .rail-links a:hover i { color: var(--teal); }
+  .rail-links a:hover i { transform: translate(2px, -2px); }
+  .rail-mail { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+  .rail-mail a { text-decoration: none; }
+  .rail-mail a:hover { color: var(--teal); }
+  .copy { padding: 3px 6px; border: 1px solid var(--aqua); border-radius: 4px; background: none; color: var(--muted); font: 500 10px/1 var(--mono); cursor: pointer; }
+  .copy:hover { color: var(--navy); border-color: var(--navy); }
+  .rail-time { display: flex; justify-content: space-between; margin-top: 22px; font-size: 13px; color: var(--muted); }
+  .rail-time time { font: 500 12px/1.4 var(--mono); color: var(--navy); }
+  .rail-foot { margin-top: auto; padding-top: 24px; display: grid; justify-items: center; gap: 12px; }
+  .rail-cta { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 6px 6px 6px 22px; border-radius: 999px;
+              background: var(--teal); color: var(--white); text-decoration: none; font: 600 15px/1 var(--body); transition: background .25s ease; }
+  .rail-cta i { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: var(--white); color: var(--teal);
+                font: 600 16px/1 var(--body); font-style: normal; transition: transform .35s ease; }
+  .rail-cta:hover { background: var(--navy); }
+  .rail-cta:hover i { transform: rotate(45deg); }
+  .rail-top { padding: 4px; border: 0; background: none; color: var(--muted); font: 400 12px/1 var(--body); cursor: pointer; }
+  .rail-top:hover { color: var(--navy); }
+  .rail-close { display: none; }
+  .rail-scrim { display: none; }
+  @media (min-width: 1100px) {
+    body { padding-right: var(--rail); }
+    .site-head { display: none; }
+  }
+  @media (max-width: 1099px) {
+    .rail { width: min(320px, 86vw); transform: translateX(100%); visibility: hidden; transition: transform .45s cubic-bezier(.2, .8, .2, 1), visibility 0s .45s; }
+    .rail.open { transform: none; visibility: visible; box-shadow: -24px 0 60px rgba(0, 39, 53, .18); transition: transform .45s cubic-bezier(.2, .8, .2, 1); }
+    .rail-close { display: grid; place-items: center; position: absolute; top: 18px; right: 18px; width: 36px; height: 36px; border: 1px solid var(--aqua);
+                  border-radius: 50%; background: none; color: var(--navy); font: 400 20px/1 var(--body); cursor: pointer; }
+    .rail-scrim { display: block; position: fixed; inset: 0; z-index: 29; background: rgba(0, 39, 53, .35); opacity: 0; pointer-events: none; transition: opacity .3s ease; }
+    .rail-scrim.open { opacity: 1; pointer-events: auto; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
 
   /* landing: the Snolep logo, large; its snow leopard dissolves into the dots as the page moves */
   .hero { min-height: 100vh; min-height: 100svh; display: grid; place-items: center; padding: 84px 24px 40px; position: relative; }
@@ -134,7 +192,7 @@
 
   /* the cursor (fine pointers): a ring that fills with the page's scroll progress; over the call to
      action it becomes a small "work with us" disc that smears behind itself when it moves */
-  .cursor, .cursor-ghost { position: fixed; left: 0; top: 0; z-index: 20; pointer-events: none; }
+  .cursor, .cursor-ghost { position: fixed; left: 0; top: 0; z-index: 40; pointer-events: none; }
   .cursor { width: 46px; height: 46px; margin: -23px 0 0 -23px; color: var(--navy); display: none;
             transform: translate3d(var(--x, -100px), var(--y, -100px), 0); transition: color .25s ease; }
   .cursor.on-dark { color: var(--aqua); }
@@ -162,7 +220,6 @@
   .cta-button:focus-visible { display: grid; place-items: center; width: 96px; height: 96px; border-radius: 50%; background: var(--teal); color: var(--navy); text-decoration: none; }
 
   @media (max-width: 767px) {
-    .site-head nav a:not(:last-child) { display: none; }
     .logo-art { width: min(84vw, 62vh); }
     .principle { height: 52vh; }
     .word { font-size: 12.5vw; }
@@ -187,7 +244,7 @@
 <header class="site-head">
   <div class="wrap">
     <a class="brand" href="#top">SNOLEP</a>
-    <nav aria-label="Main"><a href="#p1">Principles</a><a href="#work">Work</a><a href="#cta">Work with us</a></nav>
+    <button class="menu-btn" type="button" aria-controls="rail" aria-expanded="false">Menu <b aria-hidden="true">+</b></button>
   </div>
 </header>
 
@@ -297,6 +354,36 @@
   </footer>
 </div>
 
+<div class="rail-scrim" aria-hidden="true"></div>
+<aside class="rail" id="rail" aria-label="Site">
+  <a class="rail-brand" href="#top">SNOLEP<small>Technologies</small></a>
+  <button class="rail-close" type="button" aria-label="Close menu">×</button>
+  <nav class="rail-block rail-index" aria-label="Index">
+    <span class="rail-label">Index</span>
+    <a href="#top" data-section="hero"><span>01</span>Home</a>
+    <a href="#p1" data-section="p1"><span>02</span>Principles</a>
+    <a href="#work" data-section="work"><span>03</span>Work</a>
+    <a href="#cta" data-section="cta"><span>04</span>Contact</a>
+  </nav>
+  <div class="rail-block rail-links">
+    <span class="rail-label">Selected work</span>
+    <!-- Placeholder projects: link each to the live product or its case study. -->
+    <a href="#work">Project one <i aria-hidden="true">↗</i></a>
+    <a href="#work">Project two <i aria-hidden="true">↗</i></a>
+    <a href="#work">Project three <i aria-hidden="true">↗</i></a>
+  </div>
+  <div class="rail-block">
+    <span class="rail-label">Contact</span>
+    <div class="rail-mail"><a href="mailto:hello@example.com">hello@example.com</a><button class="copy" type="button" data-copy="hello@example.com">Copy</button></div>
+    <!-- the studio's city and time zone -->
+    <div class="rail-time"><span>India</span><time class="rail-clock" data-zone="Asia/Kolkata" data-suffix="IST">--:-- IST</time></div>
+  </div>
+  <div class="rail-foot">
+    <a class="rail-cta" href="#cta">Let's talk <i aria-hidden="true">↗</i></a>
+    <button class="rail-top" type="button">Back to top ↑</button>
+  </div>
+</aside>
+
 <div class="cursor" aria-hidden="true">
   <svg viewBox="0 0 46 46"><circle class="track" cx="23" cy="23" r="22"></circle><circle class="progress" cx="23" cy="23" r="22" pathLength="1"></circle></svg>
   <span class="pip"></span>
@@ -307,7 +394,7 @@
   // header items turn mint over the dark sections
   const darkAreas = () => [document.getElementById('panel'), document.querySelector('.finale')];
   (() => {
-    const items = [...document.querySelectorAll('.site-head .brand, .site-head nav a')];
+    const items = [...document.querySelectorAll('.site-head .brand, .site-head .menu-btn')];
     let queued = false;
     const check = () => {
       queued = false;
@@ -322,6 +409,63 @@
     addEventListener('scroll', queue, { passive: true });
     addEventListener('resize', queue);
     check();
+  })();
+
+  // The rail: the index marks the section you're in; the clock shows the studio's time; Copy copies
+  // the address; Back to top; and under 1100px it's a drawer off the Menu button.
+  (() => {
+    const rail = document.getElementById('rail');
+    const scrim = document.querySelector('.rail-scrim');
+    const menu = document.querySelector('.menu-btn');
+    const wide = matchMedia('(min-width: 1100px)');
+    const still = matchMedia('(prefers-reduced-motion: reduce)');
+    const links = [...rail.querySelectorAll('.rail-index a')];
+    const sections = links.map((a) => document.getElementById(a.dataset.section));
+
+    let queued = false;
+    const mark = () => {
+      queued = false;
+      const line = innerHeight * 0.4;
+      let current = 0;
+      sections.forEach((el, i) => { if (el.getBoundingClientRect().top <= line) current = i; });
+      if (innerHeight + scrollY >= document.documentElement.scrollHeight - 2) current = sections.length - 1;
+      links.forEach((a, i) => a.setAttribute('aria-current', String(i === current)));
+    };
+    const queue = () => { if (!queued) { queued = true; requestAnimationFrame(mark); } };
+    addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', queue);
+    mark();
+
+    const clock = rail.querySelector('.rail-clock');
+    const fmt = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: clock.dataset.zone });
+    const tick = () => { clock.textContent = `${fmt.format(new Date())} ${clock.dataset.suffix}`; };
+    tick();
+    setInterval(tick, 15000);
+
+    rail.querySelectorAll('.copy').forEach((btn) => btn.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(btn.dataset.copy); btn.textContent = 'Copied'; }
+      catch { btn.textContent = 'Press ⌘C'; getSelection().selectAllChildren(btn.previousElementSibling); }
+      setTimeout(() => { btn.textContent = 'Copy'; }, 1600);
+    }));
+    rail.querySelector('.rail-top').addEventListener('click', () => scrollTo({ top: 0, behavior: still.matches ? 'auto' : 'smooth' }));
+
+    // the drawer
+    const setOpen = (open) => {
+      rail.classList.toggle('open', open);
+      scrim.classList.toggle('open', open);
+      menu.setAttribute('aria-expanded', String(open));
+      if (!wide.matches) rail.inert = !open;
+      if (open) rail.querySelector('.rail-close').focus();
+      else if (rail.contains(document.activeElement)) menu.focus();
+    };
+    const fit = () => { rail.inert = !wide.matches && !rail.classList.contains('open'); if (wide.matches) setOpen(false); };
+    menu.addEventListener('click', () => setOpen(true));
+    rail.querySelector('.rail-close').addEventListener('click', () => setOpen(false));
+    scrim.addEventListener('click', () => setOpen(false));
+    addEventListener('keydown', (e) => { if (e.key === 'Escape' && rail.classList.contains('open')) setOpen(false); });
+    rail.addEventListener('click', (e) => { if (!wide.matches && e.target.closest('a')) setOpen(false); });
+    wide.addEventListener('change', fit);
+    fit();
   })();
 
   // the snow leopard lands on the tops of the capitals: find where they are in each word's line box
