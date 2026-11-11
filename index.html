@@ -3,67 +3,69 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Snolep Technologies</title>
-<meta name="description" content="Snolep Technologies builds software the way a snow leopard moves: elegant, patient, precise and resilient.">
+<title>Snolep Technologies | Websites and web platforms from Ladakh</title>
+<meta name="description" content="Snolep Technologies designs and builds websites, member platforms and web applications from Ladakh, in the Indian Himalaya.">
+<meta property="og:title" content="Snolep Technologies">
+<meta property="og:description" content="Websites, member platforms and web applications, built in Ladakh.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#e9f7f4">
+<link rel="icon" href="./img/icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,800;100,900;125,800;125,900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
-  }
-}
-</script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="./img/snolep-leopard.webp">
 
 <style>
-  /* Snolep palette: deep navy for type and the dark sections, mint snow for the page, teal saved for
-     "work with us". */
+  /* Snolep palette: navy type, mint page (the sky of the mountain drawing), teal for the one action. */
   :root {
-    --navy: #002735;          /* type on light; the hourglass panel and the call to action */
-    --teal: #00a6a2;          /* the accent */
-    --aqua: #addcda;          /* lines, soft accents, copy on navy */
-    --mint: #e7f5f4;          /* the page */
+    --navy: #002735;
+    --teal: #00a6a2;
+    --teal-ink: #007a78;      /* teal dark enough for small text on the mint */
+    --aqua: #addcda;
+    --mint: #e9f7f4;
     --white: #fffeff;
-    --snow: var(--mint);
-    --ink: var(--navy);
-    --muted: #4b6a74;         /* navy softened towards the mint, for secondary copy */
-    --line: var(--aqua);
-    --granite: var(--navy);
-    --night: var(--navy);
-    --night-line: rgba(173, 220, 218, 0.09);
-    --frost: var(--mint);     /* dots and type on navy */
-    --amber: var(--teal);
-    --display: "Archivo", "Arial Black", Impact, system-ui, sans-serif;
-    --body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --muted: #46656f;
+    --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+    --body: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    --dots: var(--ink);
-    --panel-dots: var(--frost);
+    --rail: 248px;
+    --pad: clamp(20px, 4vw, 56px);
+    --ease: cubic-bezier(.2, .8, .2, 1);
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { overflow-x: clip; }
-  body { background: var(--snow); color: var(--ink); font: 400 16px/1.55 var(--body); -webkit-font-smoothing: antialiased; }
+  html { overflow-x: clip; scroll-padding-top: 20px; }
+  body { background: var(--mint); color: var(--navy); font: 400 17px/1.55 var(--body); -webkit-font-smoothing: antialiased; }
   a { color: inherit; }
-  :focus-visible { outline: 2px solid var(--teal); outline-offset: 4px; }
+  img { display: block; max-width: 100%; }
+  :focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; border-radius: 4px; }
+  .skip { position: fixed; left: 12px; top: -60px; z-index: 50; padding: 10px 16px; border-radius: 8px; background: var(--navy); color: var(--mint); }
+  .skip:focus { top: 12px; }
 
-  /* the one canvas that draws every dot */
-  .dot-story { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 5; pointer-events: none; color: var(--dots); }
+  /* the one canvas that draws every dot; text and cards sit above it, section grounds below */
+  .dots { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 2; pointer-events: none; }
+  .wrap { position: relative; z-index: 3; width: min(1240px, 100% - 2 * var(--pad)); margin-inline: auto; }
+  .label { font: 500 12px/1.2 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  h1, h2, h3 { font-family: var(--display); font-stretch: 112%; letter-spacing: -.02em; text-wrap: balance; }
+  h2 { font-size: clamp(32px, 3.6vw, 52px); line-height: 1.04; font-weight: 700; }
 
-  .wrap { width: min(1320px, 100% - 48px); margin-inline: auto; }
-  .label { font: 500 12px/1.2 var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 26px; border: 1.5px solid var(--navy); border-radius: 999px;
+         font: 600 16px/1 var(--body); text-decoration: none; cursor: pointer; transition: transform .25s var(--ease), background .2s ease, color .2s ease, border-color .2s ease; }
+  .btn.primary { background: var(--navy); color: var(--mint); }
+  .btn.primary:hover { background: var(--teal-ink); border-color: var(--teal-ink); }
+  .btn.ghost { background: transparent; color: var(--navy); }
+  .btn.ghost:hover { background: var(--navy); color: var(--mint); }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0) scale(.98); }
+  .btn i { font-style: normal; transition: transform .25s var(--ease); }
+  .btn:hover i { transform: translateX(3px); }
 
-  /* header: navy on the mint, mint wherever a dark section sits under it (set per item by the script) */
-  .site-head { position: fixed; top: 0; left: 0; right: 0; z-index: 10; color: var(--navy); }
-  .site-head a { transition: color .25s ease; }
-  .site-head .on-dark { color: var(--mint); }
-  .site-head .wrap { display: flex; align-items: center; justify-content: space-between; height: 76px; }
-  .brand { font: 900 16px/1 var(--display); font-stretch: 125%; letter-spacing: .02em; text-decoration: none; }
-  .site-head nav { display: flex; gap: 28px; }
-  .site-head nav a { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; text-decoration: none; }
-  .menu-btn { display: inline-flex; align-items: center; gap: 10px; padding: 9px 16px; border: 1px solid currentColor; border-radius: 999px;
-              background: none; color: inherit; font: 500 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; transition: color .25s ease; }
+  /* header (narrow screens; wide screens have the rail) */
+  .site-head { position: fixed; top: 0; left: 0; right: 0; z-index: 10; background: rgba(233, 247, 244, .86); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(173, 220, 218, .6); }
+  .site-head .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { font: 800 17px/1 var(--display); font-stretch: 125%; letter-spacing: .02em; text-decoration: none; }
+  .menu-btn { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 18px; border: 1px solid currentColor; border-radius: 999px;
+              background: none; color: inherit; font: 500 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+  .site-head.on-dark { background: rgba(0, 39, 53, .86); border-color: rgba(173, 220, 218, .2); color: var(--mint); }
   .menu-btn b { font: 400 18px/10px var(--body); }
 
   /* the rail: a panel that stays put on the right on wide screens (the index, with where you are;
@@ -105,141 +107,139 @@
   .rail-top:hover { color: var(--navy); }
   .rail-close { display: none; }
   .rail-scrim { display: none; }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+  .rail-links span.off { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; }
+  .rail-brand { font-weight: 800; }
+  .rail-cta { min-height: 52px; }
   @media (min-width: 1100px) {
     body { padding-right: var(--rail); }
     .site-head { display: none; }
   }
   @media (max-width: 1099px) {
-    .rail { width: min(320px, 86vw); transform: translateX(100%); visibility: hidden; transition: transform .45s cubic-bezier(.2, .8, .2, 1), visibility 0s .45s; }
-    .rail.open { transform: none; visibility: visible; box-shadow: -24px 0 60px rgba(0, 39, 53, .18); transition: transform .45s cubic-bezier(.2, .8, .2, 1); }
-    .rail-close { display: grid; place-items: center; position: absolute; top: 18px; right: 18px; width: 36px; height: 36px; border: 1px solid var(--aqua);
+    .rail { width: min(320px, 86vw); transform: translateX(100%); visibility: hidden; transition: transform .45s var(--ease), visibility 0s .45s; }
+    .rail.open { transform: none; visibility: visible; box-shadow: -24px 0 60px rgba(0, 39, 53, .18); transition: transform .45s var(--ease); }
+    .rail-close { display: grid; place-items: center; position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border: 1px solid var(--aqua);
                   border-radius: 50%; background: none; color: var(--navy); font: 400 20px/1 var(--body); cursor: pointer; }
     .rail-scrim { display: block; position: fixed; inset: 0; z-index: 29; background: rgba(0, 39, 53, .35); opacity: 0; pointer-events: none; transition: opacity .3s ease; }
     .rail-scrim.open { opacity: 1; pointer-events: auto; }
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    html { scroll-behavior: smooth; }
+    .rail-index a, .rail-links a { padding-block: 12px; }
   }
 
-  /* landing: the Snolep logo, large; its snow leopard dissolves into the dots as the page moves */
-  .hero { min-height: 100vh; min-height: 100svh; display: grid; place-items: center; padding: 84px 24px 40px; position: relative; }
-  .logo-hero { margin: 0; line-height: 0; }
-  .logo-art { position: relative; display: block; width: min(68vh, 84vw); aspect-ratio: 1150 / 1194; }
+  /* hero: what we do on the left, the logo on the right; its snow leopard is drawn by the dots */
+  .hero { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; }
+  .hero .wrap { flex: 1; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); align-items: center; gap: clamp(24px, 4vw, 72px); padding: 96px 0 24px; }
+  .hero h1 { font-size: clamp(38px, 4.3vw, 68px); line-height: 1; font-weight: 700; }
+  .hero h1 em { font-style: normal; color: var(--teal-ink); }
+  .hero p.lede { margin-top: 24px; max-width: 30em; font-size: clamp(17px, 1.35vw, 20px); color: var(--muted); }
+  .hero .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+  .logo-art { position: relative; justify-self: center; width: min(58vh, 100%); aspect-ratio: 1150 / 1194; }
   .logo-art img { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .logo-leopard { opacity: calc(1 - var(--dots-reveal, 0)); }
-  #perch-0 { position: absolute; left: 61.4%; top: 62.4%; width: 1px; height: 1px; }
-  .scroll-cue { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); color: var(--muted); }
+  .built-for { position: relative; z-index: 3; width: min(1240px, 100% - 2 * var(--pad)); margin: 0 auto; padding: 20px 0 28px; border-top: 1px solid var(--aqua);
+               display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 36px; }
+  .built-for ul { display: contents; list-style: none; }
+  .built-for li { font: 600 15px/1.2 var(--display); font-stretch: 112%; }
+  @media (prefers-reduced-motion: no-preference) {
+    .enter > * { opacity: 0; transform: translateY(18px); animation: rise .9s var(--ease) forwards; }
+    .enter > :nth-child(2) { animation-delay: .1s; } .enter > :nth-child(3) { animation-delay: .2s; }
+    .logo-art .logo-word { opacity: 0; animation: rise .9s var(--ease) .25s forwards; }
+    @keyframes rise { to { opacity: 1; transform: none; } }
+  }
 
-  /* principles: one big word each, alternating sides, close enough that the snow leopard bounds
-     from one to the next */
-  .principle { height: 60vh; display: grid; align-content: center; }
-  .principle .wrap { display: grid; gap: 14px; }
-  .principle .label { color: var(--muted); }
-  .word { font: 900 clamp(40px, 11vw, 200px)/.86 var(--display); font-stretch: 100%; text-transform: uppercase; letter-spacing: -.02em; }
-  .word-in { position: relative; display: inline-block; }
-  .perch { position: absolute; top: var(--cap-top, .07em); width: 1px; height: 1px; }   /* where it lands: the top of the capitals */
-  .principle .note { max-width: 34ch; font-size: 18px; color: var(--muted); }
-  .principle.left .perch { left: 35%; }
-  .principle.right .wrap { justify-items: end; text-align: right; }
-  .principle.right .perch { left: 65%; }
+  section { padding: clamp(72px, 11vh, 128px) 0; }
+  .head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 48px; margin-bottom: clamp(28px, 5vh, 52px); }
+  .head p { max-width: 30em; color: var(--muted); }
 
-  /* work: the hourglass in a sticky dark panel, projects scrolling past it */
-  .work { display: grid; grid-template-columns: minmax(0, 46%) minmax(0, 1fr); }
-  .hg-panel { position: sticky; top: 0; height: 100vh; background: var(--granite); display: grid; place-items: center; overflow: hidden; }
-  .hourglass { position: relative; width: min(56%, 29vh); aspect-ratio: 2 / 3; }
-  .hourglass svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-  .hourglass .glass { fill: none; stroke: rgba(173, 220, 218, .4); stroke-width: .8; vector-effect: non-scaling-stroke; }
-  .hourglass .frame { fill: #1f4c5b; }
-  .hg-mark { position: absolute; left: 50%; width: 1px; height: 1px; }
-  .hg-mark.top { top: 0; }
-  .hg-mark.bottom { top: 100%; }
-  .panel-label { position: absolute; left: 32px; bottom: 30px; color: var(--aqua); opacity: .75; }
-  .projects { padding: 0 6vw; }
-  .project { min-height: 100vh; display: grid; align-content: center; gap: 22px; max-width: 560px; }
-  .project-img { aspect-ratio: 4 / 3; border-radius: 4px; position: relative; overflow: hidden; display: grid; place-items: end start; padding: 16px;
-                 background:
-                   radial-gradient(circle, rgba(255, 255, 255, .28) 1.1px, transparent 1.6px) 0 0 / 14px 14px,
-                   radial-gradient(120% 90% at var(--fx, 70%) var(--fy, 30%), var(--c1), transparent 60%),
-                   linear-gradient(135deg, var(--c2), var(--c3)); }
-  .project-img span { font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: rgba(255, 254, 255, .8); }
-  .project-link { justify-self: start; display: inline-flex; align-items: baseline; gap: 12px; text-decoration: none;
-                  font: 900 clamp(24px, 2.4vw, 38px)/1 var(--display); font-stretch: 125%; text-transform: uppercase;
-                  background: linear-gradient(var(--ink), var(--ink)) 0 100% / 0 2px no-repeat; padding-bottom: 6px; transition: background-size .35s ease; }
-  .project-link:hover, .project-link:focus-visible { background-size: 100% 2px; }
-  .project-link .arrow { font: 500 .7em/1 var(--mono); transition: transform .35s ease; }
-  .project-link:hover .arrow, .project-link:focus-visible .arrow { transform: translate(4px, -4px); }
-  .project .meta { color: var(--muted); }
-  .project p { font-size: 18px; color: var(--muted); max-width: 40ch; }
+  /* work: the four sites, as they look today */
+  .work-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 2vw, 28px); }
+  .card { display: block; text-decoration: none; background: var(--white); border: 1px solid var(--aqua); border-radius: 16px; overflow: hidden;
+          transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .2s ease; }
+  .card .shot { aspect-ratio: 1152 / 600; overflow: hidden; background: var(--navy); }
+  .card .shot img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
+  a.card:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -18px rgba(0, 39, 53, .35); border-color: var(--navy); }
+  a.card:hover .shot img { transform: scale(1.03); }
+  .card .meta { display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; align-items: baseline; padding: 16px 20px 18px; }
+  .card h3 { font-size: 20px; font-weight: 700; line-height: 1.2; }
+  .card .kind { grid-column: 1; font-size: 15px; color: var(--muted); }
+  .card .go { grid-row: 1; grid-column: 2; font: 500 12px/1 var(--mono); color: var(--muted); white-space: nowrap; transition: color .2s ease; }
+  a.card:hover .go { color: var(--teal-ink); }
+  .card .plate { display: grid; place-items: center; text-align: center; padding: 8%; color: var(--mint);
+                 background: radial-gradient(circle, rgba(173, 220, 218, .28) 1.2px, transparent 1.6px) 0 0 / 14px 14px, var(--navy); }
+  .card .plate b { font: 700 clamp(22px, 3vw, 42px)/1.02 var(--display); font-stretch: 118%; letter-spacing: -.01em; text-transform: uppercase; }
 
-  /* the finale: the call to action and the footer share exactly one screen; the dotted
-     SNOLEP TECHNOLOGIES sits just above the footer */
-  .finale { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; background: var(--night); }
-  .cta { position: relative; flex: 1; color: var(--frost); display: flex; flex-direction: column; justify-content: center; gap: clamp(24px, 5vh, 56px); padding: 76px 0 4vh; overflow: hidden; text-align: center; }
-  .rings { position: absolute; inset: -30% -10%; pointer-events: none;
-           background: repeating-radial-gradient(circle at 50% 42%, transparent 0 78px, var(--night-line) 79px 80px); }
-  .cta-inner { position: relative; display: grid; justify-items: center; gap: 16px; padding: 0 24px; }
-  .cta h2 { font: 900 clamp(36px, 5vw, 84px)/.92 var(--display); font-stretch: 100%; text-transform: uppercase; max-width: 14ch; text-wrap: balance; }
-  .cta p { max-width: 40ch; font-size: 17px; color: var(--aqua); }
-  .logo-wrap { position: relative; width: min(1120px, 100% - 48px); margin: 0 auto; }
-  .logo-slot { width: 100%; height: 9vw; }
-  #perch-5 { left: 72%; }
-  .cta-button { display: none; }
+  /* services */
+  .services .wrap { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(28px, 5vw, 88px); align-items: start; }
+  .services .intro p { margin-top: 20px; max-width: 24em; color: var(--muted); }
+  .services .intro .btn { margin-top: 28px; }
+  .list { list-style: none; border-top: 1px solid var(--navy); }
+  .list li { display: grid; grid-template-columns: 32px 1fr; gap: 6px 12px; padding: 24px 0 26px; border-bottom: 1px solid var(--aqua); }
+  .list .n { width: 9px; height: 9px; margin-top: 11px; border-radius: 50%; background: var(--teal); }
+  .list h3 { font-size: clamp(21px, 1.9vw, 26px); font-weight: 700; line-height: 1.15; }
+  .list p { grid-column: 2; max-width: 34em; color: var(--muted); }
 
-  footer { color: var(--aqua); border-top: 1px solid rgba(173, 220, 218, .14); }
-  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 28px; padding: 18px 0 20px; font: 500 11px/1.5 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
-  footer nav { display: flex; gap: 22px; flex-wrap: wrap; }
-  footer a { text-decoration: none; }
+  /* roots: the range, with the snow leopard back on its summit */
+  .roots { padding-bottom: 0; }
+  .roots .text { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px clamp(28px, 5vw, 88px); max-width: 78%; }
+  .roots .text p { color: var(--muted); }
+  .roots .text h2 { grid-column: 1 / -1; }
+  .range { position: relative; z-index: 1; margin-top: clamp(40px, 9vh, 96px); max-height: 66vh; clip-path: inset(-400px 0 0 0); }
+  .range-in { position: relative; aspect-ratio: 1672 / 941; }
+  .range-in > img { width: 100%; height: 100%; }
+  #perch { position: absolute; left: 71.4%; top: 13.4%; width: 17%; aspect-ratio: 873 / 738; transform: translateY(-100%); }
 
-  /* the cursor (fine pointers): a ring that fills with the page's scroll progress; over the call to
-     action it becomes a small "work with us" disc that smears behind itself when it moves */
-  .cursor, .cursor-ghost { position: fixed; left: 0; top: 0; z-index: 40; pointer-events: none; }
-  .cursor { width: 46px; height: 46px; margin: -23px 0 0 -23px; color: var(--navy); display: none;
-            transform: translate3d(var(--x, -100px), var(--y, -100px), 0); transition: color .25s ease; }
+  /* the close: a short brief, then the name in dots */
+  .finale { background: var(--navy); color: var(--mint); padding: clamp(64px, 10vh, 112px) 0 0; min-height: 100vh; display: flex; flex-direction: column; }
+  .contact { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(28px, 5vw, 88px); align-items: start; }
+  .contact .say p { margin-top: 20px; max-width: 24em; color: var(--aqua); }
+  .contact .say a.ig { display: inline-flex; align-items: center; min-height: 44px; margin-top: 14px; font-weight: 600; text-decoration-color: var(--teal); text-underline-offset: 5px; }
+  .contact .say a.ig:hover { color: var(--aqua); }
+  form.brief { display: grid; gap: 18px; padding: clamp(20px, 2.4vw, 32px); border: 1px solid rgba(173, 220, 218, .28); border-radius: 16px; background: #04303f; }
+  .brief legend, .brief label { display: block; margin-bottom: 10px; font: 500 12px/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--aqua); }
+  .brief fieldset { border: 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chips label { margin: 0; font: 500 15px/1 var(--body); letter-spacing: 0; text-transform: none; color: var(--mint); cursor: pointer; }
+  .chips input { position: absolute; opacity: 0; }
+  .chips span { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid rgba(173, 220, 218, .4); border-radius: 999px; transition: background .2s ease, color .2s ease, border-color .2s ease; }
+  .chips label:hover span { border-color: var(--mint); }
+  .chips input:checked + span { background: var(--mint); border-color: var(--mint); color: var(--navy); }
+  .chips input:focus-visible + span { outline: 2px solid var(--teal); outline-offset: 3px; }
+  .brief input[type=text], .brief textarea { width: 100%; padding: 13px 14px; border: 1px solid rgba(173, 220, 218, .4); border-radius: 10px; background: transparent; color: var(--mint); font: 400 16px/1.45 var(--body); }
+  .brief textarea { min-height: 96px; resize: vertical; }
+  .brief ::placeholder { color: rgba(173, 220, 218, .6); }
+  .brief .send { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
+  .brief .btn { background: var(--teal); border-color: var(--teal); color: var(--navy); }
+  .brief .btn:hover { background: var(--mint); border-color: var(--mint); }
+  .brief .status { flex: 1 1 14em; font-size: 14px; line-height: 1.4; color: var(--aqua); }
+  .name { position: relative; z-index: 3; width: min(1240px, 100% - 2 * var(--pad)); margin: auto auto 0; padding-top: clamp(40px, 8vh, 88px); }
+  #wordmark { width: 100%; height: 90px; }
+  .foot { position: relative; z-index: 3; width: min(1240px, 100% - 2 * var(--pad)); margin: 0 auto; padding: 22px 0 26px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 24px; font-size: 14px; color: var(--aqua); }
+  .foot a { display: inline-flex; align-items: center; min-height: 44px; margin-block: -12px; }
+
+  /* the cursor (fine pointers): a ring that fills with how far down the page you are */
+  .cursor { position: fixed; left: 0; top: 0; z-index: 40; pointer-events: none; width: 44px; height: 44px; margin: -22px 0 0 -22px; color: var(--navy); display: none;
+            transform: translate3d(var(--x, -100px), var(--y, -100px), 0); }
   .cursor.on-dark { color: var(--aqua); }
-  .cursor svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; transition: opacity .25s ease, transform .35s ease; }
+  .cursor svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
   .cursor circle { fill: none; stroke: currentColor; }
   .cursor .track { stroke-width: 1; opacity: .25; }
-  .cursor .progress { stroke-width: 1.6; stroke-dasharray: 1 1; stroke-dashoffset: var(--left, 1); }
-  .cursor .pip { position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; border-radius: 50%; background: currentColor; transition: opacity .2s ease; }
-  .cursor .disc, .cursor-ghost { width: 84px; height: 84px; border-radius: 50%; background: var(--teal); }
-  .cursor .disc { position: absolute; left: 50%; top: 50%; margin: -42px 0 0 -42px; display: grid; place-items: center; color: var(--navy);
-                  font: 900 11px/1.05 var(--display); font-stretch: 125%; text-transform: uppercase; letter-spacing: .03em; text-align: center;
-                  transform: rotate(var(--angle, 0deg)) scale(calc(var(--s, 0) * var(--stretch, 1)), calc(var(--s, 0) / var(--stretch, 1))); }
-  .cursor .disc span { transform: rotate(calc(-1 * var(--angle, 0deg))); display: block; }
-  .cursor.is-link svg { opacity: 0; transform: rotate(-90deg) scale(.6); }
-  .cursor.is-link .pip { opacity: 0; }
-  .cursor-ghost { margin: -42px 0 0 -42px; opacity: 0; will-change: transform, opacity; }
-  @media (pointer: fine) {
-    .cursor { display: block; }
-    .cta, .cta a { cursor: none; }
-  }
-  @media (pointer: coarse) {
-    .cta-button { display: grid; place-items: center; width: 96px; height: 96px; border-radius: 50%; background: var(--teal); color: var(--navy);
-                  text-decoration: none; font: 900 12px/1.05 var(--display); font-stretch: 125%; text-transform: uppercase; }
-  }
-  .cta-button:focus-visible { display: grid; place-items: center; width: 96px; height: 96px; border-radius: 50%; background: var(--teal); color: var(--navy); text-decoration: none; }
+  .cursor .progress { stroke-width: 1.8; stroke-dasharray: 1 1; stroke-dashoffset: var(--left, 1); stroke: var(--teal); }
+  @media (pointer: fine) { .cursor { display: block; } }
 
-  @media (max-width: 767px) {
-    .logo-art { width: min(84vw, 62vh); }
-    .principle { height: 52vh; }
-    .word { font-size: 12.5vw; }
-    .principle .note { font-size: 15px; max-width: 26ch; }
-    .work { grid-template-columns: 1fr; }
-    .hg-panel { height: 62vh; z-index: 1; }
-    .hourglass { width: min(46%, 26vh); }
-    .panel-label { left: 20px; bottom: 16px; }
-    .projects { padding: 0 24px; }
-    .project { min-height: 70vh; padding: 8vh 0; align-content: start; gap: 16px; }
-    .project p { font-size: 16px; }
-    .cta-inner { gap: 14px; }
-    .cta p { font-size: 15px; max-width: 30ch; }
-    .logo-slot { height: 22vw; }
-    footer .wrap { padding: 14px 0 16px; }
+  @media (max-width: 900px) {
+    .hero .wrap { grid-template-columns: 1fr; padding-top: 96px; gap: 8px; }
+    .logo-art { order: -1; width: min(34vh, 62%); justify-self: start; margin-left: -4%; }
+    .hero .actions .btn, .brief .btn { width: 100%; }
+    .services .wrap, .contact { grid-template-columns: 1fr; }
+    .roots .text { grid-template-columns: 1fr; max-width: none; }
+    .work-grid { grid-template-columns: 1fr; }
+    .range { max-height: none; overflow: hidden; clip-path: none; padding-top: 110px; margin-top: 0; }
+    .range-in { width: 200%; margin-left: -100%; }
   }
 </style>
 </head>
+
 <body>
-<canvas id="dots" class="dot-story" aria-hidden="true"></canvas>
+<a class="skip" href="#work">Skip to our work</a>
+<canvas class="dots" aria-hidden="true"></canvas>
 
 <header class="site-head">
   <div class="wrap">
@@ -249,108 +249,118 @@
 </header>
 
 <main id="top">
-  <section class="hero" id="hero">
-    <h1 class="logo-hero">
-      <span class="logo-art">
-        <img class="logo-word" src="./img/snolep-wordmark.webp" alt="Snolep Technologies" width="1150" height="1194">
-        <img class="logo-leopard" id="leopard" src="./img/snolep-leopard.webp" alt="" width="1150" height="1194">
-        <span id="perch-0"></span>
-      </span>
-    </h1>
-    <span class="label scroll-cue">How we move ↓</span>
-  </section>
-
-  <section class="principle left" id="p1">
+  <section class="hero" id="hero" style="padding:0">
     <div class="wrap">
-      <span class="label">01</span>
-      <h2 class="word"><span class="word-in">Elegance<span class="perch" id="perch-1"></span></span></h2>
-      <p class="note">Nothing wasted. Every screen, every line of code earns its place.</p>
+      <div class="enter">
+        <h1>Websites and web platforms, <em>built in Ladakh.</em></h1>
+        <p class="lede">Snolep Technologies designs and builds the sites that associations, museums and businesses in the Himalaya run on, from member directories to accounting tools.</p>
+        <div class="actions">
+          <a class="btn primary" href="#contact">Start a project <i aria-hidden="true">→</i></a>
+          <a class="btn ghost" href="#work">See our work</a>
+        </div>
+      </div>
+      <div class="logo-art">
+        <img class="logo-word" src="./img/snolep-wordmark.webp" width="1150" height="1194" alt="Snolep Technologies">
+        <img id="leopard" src="./img/snolep-leopard.webp" width="1150" height="1194" alt="" style="opacity:0">
+      </div>
     </div>
-  </section>
-
-  <section class="principle right" id="p2">
-    <div class="wrap">
-      <span class="label">02</span>
-      <h2 class="word"><span class="word-in">Patience<span class="perch" id="perch-2"></span></span></h2>
-      <p class="note">We read the ground before we move, so we only have to move once.</p>
-    </div>
-  </section>
-
-  <section class="principle left" id="p3">
-    <div class="wrap">
-      <span class="label">03</span>
-      <h2 class="word"><span class="word-in">Precision<span class="perch" id="perch-3"></span></span></h2>
-      <p class="note">One leap, landed. Measured twice, shipped once.</p>
-    </div>
-  </section>
-
-  <section class="principle right" id="p4">
-    <div class="wrap">
-      <span class="label">04</span>
-      <h2 class="word"><span class="word-in">Resilience<span class="perch" id="perch-4"></span></span></h2>
-      <p class="note">Built for thin air and hard ground. Systems that keep running at altitude.</p>
+    <div class="built-for">
+      <span class="label">Built for</span>
+      <ul><li>ALHGHA</li><li>ALATOA</li><li>Fynivo</li><li>Central Asian Museum</li></ul>
     </div>
   </section>
 
   <section class="work" id="work">
-    <div class="hg-panel" id="panel">
-      <div class="hourglass" id="hourglass">
-        <svg viewBox="0 0 100 150" aria-hidden="true">
-          <rect class="frame" x="4" y="0" width="27" height="4"></rect>
-          <rect class="frame" x="69" y="0" width="27" height="4"></rect>
-          <rect class="frame" x="4" y="146" width="27" height="4"></rect>
-          <rect class="frame" x="69" y="146" width="27" height="4"></rect>
-          <rect class="frame" x="6" y="4" width="1.2" height="142"></rect>
-          <rect class="frame" x="92.8" y="4" width="1.2" height="142"></rect>
-          <path class="glass" data-hourglass-glass d=""></path>
-        </svg>
-        <span class="hg-mark top" id="hg-top"></span>
-        <span class="hg-mark bottom" id="hg-bottom"></span>
+    <div class="wrap">
+      <div class="head">
+        <h2>Work that is live</h2>
+        <p>Four projects so far. Two of them carry the member registers of Ladakh's hotel and tour operator associations.</p>
       </div>
-      <span class="label panel-label">Selected work</span>
+      <div class="work-grid">
+        <a class="card" href="https://alhgha.com/" target="_blank" rel="noopener">
+          <div class="shot"><img src="./img/work-alhgha.webp" width="1152" height="600" loading="lazy" alt="ALHGHA home page: Discover trusted stays in Ladakh"></div>
+          <div class="meta"><h3>ALHGHA</h3><span class="go">alhgha.com ↗</span><p class="kind">Stay directory and member platform for the All Ladakh Hotels &amp; Guest Houses Association</p></div>
+        </a>
+        <a class="card" href="https://alatoa.in/" target="_blank" rel="noopener">
+          <div class="shot"><img src="./img/work-alatoa.webp" width="1152" height="600" loading="lazy" alt="ALATOA home page: Discover the land of high passes"></div>
+          <div class="meta"><h3>ALATOA</h3><span class="go">alatoa.in ↗</span><p class="kind">Experiences, operators and membership for the All Ladakh Adventure &amp; Tour Operators Association</p></div>
+        </a>
+        <a class="card" href="https://fynivo.in/" target="_blank" rel="noopener">
+          <div class="shot"><img src="./img/work-fynivo.webp" width="1152" height="600" loading="lazy" alt="Fynivo home page: Simplify your accounts"></div>
+          <div class="meta"><h3>Fynivo</h3><span class="go">fynivo.in ↗</span><p class="kind">Cloud accounting that connects businesses with their chartered accountants</p></div>
+        </a>
+        <div class="card">
+          <div class="shot plate"><b>Central Asian Museum</b></div>
+          <div class="meta"><h3>Central Asian Museum</h3><span class="go">centralasianmuseum.org</span><p class="kind">Website for the museum</p></div>
+        </div>
+      </div>
     </div>
-    <div class="projects">
-      <!-- Placeholder projects: swap in real names, images, links and lines. -->
-      <article class="project">
-        <div class="project-img" style="--c1:#00a6a2; --c2:#002735; --c3:#0b4a55; --fx:72%; --fy:28%"><span>Project image</span></div>
-        <a class="project-link" href="#">Project one <span class="arrow">↗</span></a>
-        <span class="label meta">Logistics · Placeholder</span>
-        <p>A short line on what we built, for whom, and what changed because of it.</p>
-      </article>
-      <article class="project">
-        <div class="project-img" style="--c1:#addcda; --c2:#0b3a47; --c3:#00a6a2; --fx:30%; --fy:35%"><span>Project image</span></div>
-        <a class="project-link" href="#">Project two <span class="arrow">↗</span></a>
-        <span class="label meta">Booking platform · Placeholder</span>
-        <p>A short line on what we built, for whom, and what changed because of it.</p>
-      </article>
-      <article class="project">
-        <div class="project-img" style="--c1:#e7f5f4; --c2:#002735; --c3:#2c6d78; --fx:60%; --fy:70%"><span>Project image</span></div>
-        <a class="project-link" href="#">Project three <span class="arrow">↗</span></a>
-        <span class="label meta">Operations dashboard · Placeholder</span>
-        <p>A short line on what we built, for whom, and what changed because of it.</p>
-      </article>
+  </section>
+
+  <section class="services" id="services">
+    <div class="wrap">
+      <div class="intro">
+        <h2>What we build</h2>
+        <p>One small team takes a project from the first sketch to launch day, and stays with it afterwards.</p>
+        <a class="btn ghost" href="#contact">Tell us about yours <i aria-hidden="true">→</i></a>
+      </div>
+      <ul class="list">
+        <li><span class="n" aria-hidden="true"></span><h3>Websites</h3><p>Clear, quick sites for organisations, hotels and institutions, designed for the phone first because that is where most visitors arrive.</p></li>
+        <li><span class="n" aria-hidden="true"></span><h3>Member and directory platforms</h3><p>Sign-up, member profiles, listings and news in one place, the way ALHGHA and ALATOA run theirs.</p></li>
+        <li><span class="n" aria-hidden="true"></span><h3>Web applications</h3><p>Dashboards and working tools for the daily job, like the accounting workspace inside Fynivo.</p></li>
+        <li><span class="n" aria-hidden="true"></span><h3>Care after launch</h3><p>Hosting, updates and changes handled by the people who wrote the code.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="roots" id="roots">
+    <div class="wrap">
+      <div class="text">
+        <h2>Rooted in Ladakh</h2>
+        <p>Snolep is named after the snow leopard, the quiet cat of the high Himalaya. It is rarely seen, wastes no movement and is at home where little else manages.</p>
+        <p>We work from the same mountains. Signal drops here and winters are long, so we build sites that load on a weak connection and keep running when nobody is watching them.</p>
+      </div>
+    </div>
+    <div class="range">
+      <div class="range-in">
+        <img src="./img/range.webp" width="1672" height="941" loading="lazy" alt="Snow-covered Himalayan peaks drawn in the Snolep colours">
+        <div id="perch" aria-hidden="true"></div>
+      </div>
     </div>
   </section>
 </main>
 
-<div class="finale">
-  <section class="cta" id="cta" data-cursor="link">
-    <div class="rings" aria-hidden="true"></div>
-    <div class="cta-inner">
-      <h2><span class="word-in">Ready to make<span class="perch" id="perch-5"></span></span> the leap?</h2>
-      <p>Tell us where you're headed. We'll read the ground, plan the jump and land it with you.</p>
-      <a class="cta-button" id="cta-link" href="mailto:hello@example.com">Work<br>with us</a>
-    </div>
-    <div class="logo-wrap">
-      <div class="logo-slot" id="logo" role="img" aria-label="Snolep Technologies"></div>
+<div class="finale" id="contact">
+  <section style="padding:0">
+    <div class="wrap contact">
+      <div class="say">
+        <h2>Tell us what you are building</h2>
+        <p>Write a few lines here and send them to us on Instagram. We read every message ourselves.</p>
+        <a class="ig" href="https://www.instagram.com/snolep.in/" target="_blank" rel="noopener">@snolep.in on Instagram ↗</a>
+      </div>
+      <form class="brief" id="brief" novalidate>
+        <fieldset>
+          <legend>What do you need?</legend>
+          <div class="chips">
+            <label><input type="radio" name="need" value="A website" checked><span>A website</span></label>
+            <label><input type="radio" name="need" value="A member or directory platform"><span>A member platform</span></label>
+            <label><input type="radio" name="need" value="A web application"><span>A web application</span></label>
+            <label><input type="radio" name="need" value="Not sure yet"><span>Not sure yet</span></label>
+          </div>
+        </fieldset>
+        <div><label for="b-name">Your name</label><input id="b-name" type="text" name="name" autocomplete="name" placeholder="Name or organisation"></div>
+        <div><label for="b-about">About the project</label><textarea id="b-about" name="about" placeholder="What it is for, and when you need it"></textarea></div>
+        <div class="send">
+          <a class="btn" id="send" href="https://ig.me/m/snolep.in" target="_blank" rel="noopener">Copy brief and open Instagram <i aria-hidden="true">↗</i></a>
+          <p class="status" id="status" role="status"></p>
+        </div>
+      </form>
     </div>
   </section>
-
-  <footer>
-    <div class="wrap">
-      <span>© 2026 Snolep Technologies</span>
-      <nav aria-label="Legal"><a href="#">Privacy</a><a href="#">Terms</a></nav>
-    </div>
+  <div class="name"><div id="wordmark" role="img" aria-label="Snolep Technologies"></div></div>
+  <footer class="foot">
+    <span>© 2026 Snolep Technologies. Ladakh, India.</span>
+    <a href="https://www.instagram.com/snolep.in/" target="_blank" rel="noopener">Instagram</a>
   </footer>
 </div>
 
@@ -361,56 +371,34 @@
   <nav class="rail-block rail-index" aria-label="Index">
     <span class="rail-label">Index</span>
     <a href="#top" data-section="hero"><span>01</span>Home</a>
-    <a href="#p1" data-section="p1"><span>02</span>Principles</a>
-    <a href="#work" data-section="work"><span>03</span>Work</a>
-    <a href="#cta" data-section="cta"><span>04</span>Contact</a>
+    <a href="#work" data-section="work"><span>02</span>Work</a>
+    <a href="#services" data-section="services"><span>03</span>Services</a>
+    <a href="#roots" data-section="roots"><span>04</span>Roots</a>
+    <a href="#contact" data-section="contact"><span>05</span>Contact</a>
   </nav>
   <div class="rail-block rail-links">
     <span class="rail-label">Selected work</span>
-    <!-- Placeholder projects: link each to the live product or its case study. -->
-    <a href="#work">Project one <i aria-hidden="true">↗</i></a>
-    <a href="#work">Project two <i aria-hidden="true">↗</i></a>
-    <a href="#work">Project three <i aria-hidden="true">↗</i></a>
+    <a href="https://alhgha.com/" target="_blank" rel="noopener">ALHGHA <i aria-hidden="true">↗</i></a>
+    <a href="https://alatoa.in/" target="_blank" rel="noopener">ALATOA <i aria-hidden="true">↗</i></a>
+    <a href="https://fynivo.in/" target="_blank" rel="noopener">Fynivo <i aria-hidden="true">↗</i></a>
+    <span class="off">Central Asian Museum</span>
   </div>
-  <div class="rail-block">
+  <div class="rail-block rail-links">
     <span class="rail-label">Contact</span>
-    <div class="rail-mail"><a href="mailto:hello@example.com">hello@example.com</a><button class="copy" type="button" data-copy="hello@example.com">Copy</button></div>
-    <!-- the studio's city and time zone -->
-    <div class="rail-time"><span>India</span><time class="rail-clock" data-zone="Asia/Kolkata" data-suffix="IST">--:-- IST</time></div>
+    <a href="https://www.instagram.com/snolep.in/" target="_blank" rel="noopener">@snolep.in <i aria-hidden="true">↗</i></a>
+    <div class="rail-time"><span>Ladakh</span><time class="rail-clock" data-zone="Asia/Kolkata" data-suffix="IST">--:-- IST</time></div>
   </div>
   <div class="rail-foot">
-    <a class="rail-cta" href="#cta">Let's talk <i aria-hidden="true">↗</i></a>
+    <a class="rail-cta" href="#contact">Start a project <i aria-hidden="true">↗</i></a>
     <button class="rail-top" type="button">Back to top ↑</button>
   </div>
 </aside>
 
 <div class="cursor" aria-hidden="true">
-  <svg viewBox="0 0 46 46"><circle class="track" cx="23" cy="23" r="22"></circle><circle class="progress" cx="23" cy="23" r="22" pathLength="1"></circle></svg>
-  <span class="pip"></span>
-  <span class="disc"><span>Work<br>with us</span></span>
+  <svg viewBox="0 0 44 44"><circle class="track" cx="22" cy="22" r="20"/><circle class="progress" cx="22" cy="22" r="20" pathLength="1"/></svg>
 </div>
 
 <script>
-  // header items turn mint over the dark sections
-  const darkAreas = () => [document.getElementById('panel'), document.querySelector('.finale')];
-  (() => {
-    const items = [...document.querySelectorAll('.site-head .brand, .site-head .menu-btn')];
-    let queued = false;
-    const check = () => {
-      queued = false;
-      const rects = darkAreas().map((el) => el.getBoundingClientRect());
-      for (const el of items) {
-        const r = el.getBoundingClientRect();
-        const x = r.left + r.width / 2, y = r.top + r.height / 2;
-        el.classList.toggle('on-dark', rects.some((d) => x >= d.left && x <= d.right && y >= d.top && y <= d.bottom));
-      }
-    };
-    const queue = () => { if (!queued) { queued = true; requestAnimationFrame(check); } };
-    addEventListener('scroll', queue, { passive: true });
-    addEventListener('resize', queue);
-    check();
-  })();
-
   // The rail: the index marks the section you're in; the clock shows the studio's time; Copy copies
   // the address; Back to top; and under 1100px it's a drawer off the Menu button.
   (() => {
@@ -468,203 +456,92 @@
     fit();
   })();
 
-  // the snow leopard lands on the tops of the capitals: find where they are in each word's line box
+  // The brief: the button is a plain link to the Instagram chat; on the way it copies what was written.
   (() => {
-    const place = () => {
-      for (const word of document.querySelectorAll('.word-in')) {
-        const cs = getComputedStyle(word);
-        const size = parseFloat(cs.fontSize);
-        const probe = document.createElement('span');
-        probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
-        word.appendChild(probe);
-        const baseline = probe.getBoundingClientRect().top - word.getBoundingClientRect().top;
-        probe.remove();
-        const c = document.createElement('canvas').getContext('2d');
-        c.font = `${cs.fontWeight} ${size}px ${cs.fontFamily}`;
-        const cap = c.measureText('H').actualBoundingBoxAscent;
-        word.style.setProperty('--cap-top', `${((baseline - cap) / size).toFixed(4)}em`);
-      }
-    };
-    place();
-    document.fonts?.ready.then(place);
+    const form = document.getElementById('brief'), send = document.getElementById('send'), status = document.getElementById('status');
+    send.addEventListener('click', () => {
+      const d = new FormData(form);
+      const name = (d.get('name') || '').trim(), about = (d.get('about') || '').trim();
+      const text = ['Hi Snolep,', name && `this is ${name}.`, `I need: ${d.get('need')}.`, about].filter(Boolean).join(' ');
+      const done = () => { status.textContent = 'Brief copied. Paste it into the Instagram chat that just opened.'; };
+      const fail = () => { status.textContent = 'Could not copy on this browser. Please type your message in the Instagram chat.'; };
+      try { navigator.clipboard.writeText(text).then(done, fail); } catch { fail(); }
+    });
   })();
 
-  // The cursor: a ring that fills with the scroll progress, eased behind the pointer. Over the call
-  // to action it turns into a "work with us" disc, stretched along its motion and trailing fading
-  // copies of itself, and a click anywhere there goes to the link.
+  // The cursor ring: eased behind the pointer, filled with the scroll progress.
   (() => {
     const fine = matchMedia('(pointer: fine)');
-    const still = matchMedia('(prefers-reduced-motion: reduce)');
-    const el = document.querySelector('.cursor');
-    const cta = document.getElementById('cta');
-    const link = document.getElementById('cta-link');
-    const ghosts = Array.from({ length: 12 }, () => {
-      const g = document.createElement('span');
-      g.className = 'cursor-ghost';
-      document.body.appendChild(g);
-      return { el: g, x: 0, y: 0, t: -1, s: 1 };
-    });
-    let gi = 0;
-    let mx = -100, my = -100, x = mx, y = my, s = 0, seen = false, raf = 0, last = 0, lx = 0, ly = 0;
-    let stretch = 1, angle = 0, inLink = false;
+    const el = document.querySelector('.cursor'), dark = document.querySelector('.finale');
+    let mx = -100, my = -100, x = mx, y = my, raf = 0, seen = false;
     const progress = () => {
       const max = document.documentElement.scrollHeight - innerHeight;
       el.style.setProperty('--left', (1 - Math.min(1, Math.max(0, scrollY / Math.max(1, max)))).toFixed(4));
     };
-    const tick = (now) => {
+    const head = document.querySelector('.site-head');
+    const shade = () => head.classList.toggle('on-dark', dark.getBoundingClientRect().top < 32);
+    addEventListener('scroll', shade, { passive: true }); shade();
+    const tick = () => {
       raf = 0;
-      const dt = Math.min(0.05, last ? (now - last) / 1000 : 1 / 60);
-      last = now;
-      const k = still.matches ? 1 : 1 - Math.exp(-dt * 14);
-      const px = x, py = y;
-      x += (mx - x) * k;
-      y += (my - y) * k;
-      const r = cta.getBoundingClientRect();
-      inLink = mx >= r.left && mx <= r.right && my >= r.top && my <= r.bottom;
-      el.classList.toggle('is-link', inLink);
-      s += ((inLink ? 1 : 0) - s) * (still.matches ? 1 : 1 - Math.exp(-dt * 12));
-      // motion blur: squash and stretch along the direction of travel, and leave copies behind
-      const vx = (x - px) / dt, vy = (y - py) / dt;
-      const speed = Math.hypot(vx, vy);
-      const want = still.matches ? 1 : 1 + Math.min(0.35, speed / 4000);
-      stretch += (want - stretch) * (1 - Math.exp(-dt * 18));
-      if (speed > 30) angle = Math.atan2(vy, vx) * 180 / Math.PI;
-      if (inLink && s > 0.5 && !still.matches && Math.hypot(x - lx, y - ly) > 9) {
-        const g = ghosts[gi++ % ghosts.length];
-        g.x = lx; g.y = ly; g.t = now; g.s = s;
-        lx = x; ly = y;
-      } else if (!inLink) { lx = x; ly = y; }
-      let busy = false;
-      for (const g of ghosts) {
-        if (g.t < 0) continue;
-        const age = (now - g.t) / 320;
-        if (age >= 1) { g.t = -1; g.el.style.opacity = 0; continue; }
-        busy = true;
-        g.el.style.opacity = (0.55 * (1 - age) * (1 - age)).toFixed(3);
-        g.el.style.transform = `translate3d(${g.x.toFixed(1)}px, ${g.y.toFixed(1)}px, 0) scale(${(g.s * (1 - 0.35 * age)).toFixed(3)})`;
-      }
+      x += (mx - x) * 0.22; y += (my - y) * 0.22;
       el.style.setProperty('--x', `${x.toFixed(1)}px`);
       el.style.setProperty('--y', `${y.toFixed(1)}px`);
-      el.style.setProperty('--s', s.toFixed(3));
-      el.style.setProperty('--stretch', stretch.toFixed(3));
-      el.style.setProperty('--angle', `${angle.toFixed(1)}deg`);
-      const areas = darkAreas().map((a) => a.getBoundingClientRect());
-      el.classList.toggle('on-dark', areas.some((d) => x >= d.left && x <= d.right && y >= d.top && y <= d.bottom));
-      if (busy || Math.abs(mx - x) + Math.abs(my - y) > 0.2 || Math.abs((inLink ? 1 : 0) - s) > 0.002 || Math.abs(stretch - 1) > 0.002) raf = requestAnimationFrame(tick);
-      else last = 0;
+      const d = dark.getBoundingClientRect();
+      el.classList.toggle('on-dark', y >= d.top && y <= d.bottom && x <= d.right);
+      if (Math.abs(mx - x) + Math.abs(my - y) > 0.2) raf = requestAnimationFrame(tick);
     };
     const go = () => { if (!raf) raf = requestAnimationFrame(tick); };
     addEventListener('pointermove', (e) => {
       if (e.pointerType !== 'mouse' || !fine.matches) return;
       mx = e.clientX; my = e.clientY;
-      if (!seen) { seen = true; x = lx = mx; y = ly = my; }
+      if (!seen) { seen = true; x = mx; y = my; }
       go();
     }, { passive: true });
     document.documentElement.addEventListener('pointerleave', () => { mx = my = -100; seen = false; go(); });
     addEventListener('scroll', () => { progress(); go(); }, { passive: true });
     addEventListener('resize', progress);
     progress();
-    cta.addEventListener('click', (e) => { if (fine.matches && !e.target.closest('a')) link.click(); });
   })();
 </script>
 
 <script type="module">
-  import { createDotStory } from './js/dot-story.js';
+  // The dots. The snow leopard gathers on the logo, blows away as snow when the page moves, settles
+  // again on a summit of the range, and ends as the company's name.
+  import { createDots } from './js/dots.js';
 
-  // Our own snow leopard (site/tools/snow-leopard.py builds it): clips "Stand" and "Leap".
-  const MODEL = './models/snow-leopard.glb';
+  const leopard = document.getElementById('leopard');
+  const clamp = (v) => Math.min(1, Math.max(0, v));
+  const smooth = (v) => { v = clamp(v); return v * v * (3 - 2 * v); };
+  const show = (v) => { leopard.style.opacity = v.toFixed(3); };
 
-  // One story, tuned per screen size: the logo's snow leopard dissolves into dots, which gather into
-  // the animal; it bounds from word to word, dives into the hourglass, comes out of the bottom and
-  // lands on the name at the foot of the page, where it dissolves into it.
-  const DIVE = -45; // the slant it dives into the hourglass at, and comes out of it at (degrees, nose down)
-  // one bound per leap, scrubbed with the scroll: gathered, push off, full stretch (0.5), reach, land
-  const LEAP = { clip: 'Leap', from: 0.02, stretch: 0.5, to: 0.98 };
-  const leap = (at, from, to, apex, size, pitchDown = -16) => [
-    { at, after: from, clip: LEAP.clip, clipTime: LEAP.from },
-    { at, after: from + (to - from) * 0.3, pitch: 16, ease: 'spline' },
-    { at, after: from + (to - from) * 0.5, x: apex[0], y: apex[1], ...(size ? { size } : {}), ease: 'spline' },
-    { at, after: from + (to - from) * 0.75, pitch: pitchDown, ease: 'spline' },
-    { at, after: to, clip: LEAP.clip, clipTime: LEAP.to, ease: 'linear' },
-    { at, after: to, clipTime: 0 }, // landed: no clip, so it stands still on the word until the next leap
-  ];
-  const story = ({ big, s, inside, apex, off0, dive, out, hop, land }) => {
-    const perch = (i) => `#perch-${i}`;
-    const k = [
-      // the picture turns to dots where it stands...
-      { at: 0, form: 'image', reveal: 0, anchor: perch(0), align: 'bottom', size: big, pitch: 0 },
-      { at: '#hero', after: 0.015, reveal: 0, ease: 'linear' },
-      { at: '#hero', after: 0.09, reveal: 1, ease: 'easeOut' },
-      // ...and the leap off the logo, to the left, is what gathers them into the animal: it takes
-      // shape in the air on the way down to the first word
-      { at: '#hero', after: 0.1, anchor: perch(0), align: 'bottom', size: big, pitch: 0 },
-      { at: '#hero', after: 0.1, clip: LEAP.clip, clipTime: LEAP.from },
-      { at: '#hero', after: 0.12, form: 'image' },
-      { at: '#hero', after: 0.42, form: 'character', ease: 'easeInOut' },
-      { at: '#hero', after: 0.2, pitch: 10, ease: 'spline' },
-      { at: '#hero', after: 0.3, anchor: perch(0), align: 'bottom', x: off0[0], y: off0[1], size: (big + s) / 2, ease: 'spline' },
-      { at: '#hero', after: 0.47, pitch: -18, ease: 'spline' },
-      { at: '#p1', after: -0.4, anchor: perch(1), align: 'bottom', size: s, pitch: 0, ease: 'spline' },
-      { at: '#p1', after: -0.4, clip: LEAP.clip, clipTime: LEAP.to, ease: 'linear' },
-      { at: '#p1', after: -0.4, clipTime: 0 },
-    ];
-    // rides each word, then bounds to the next as it comes up
-    for (let i = 1; i < 4; i++) {
-      const next = `#p${i + 1}`;
-      k.push(
-        { at: next, after: hop[0], anchor: perch(i), align: 'bottom', pitch: 0 },
-        ...leap(next, hop[0], hop[1], [i % 2 ? apex[0] : -apex[0], apex[1]], null),
-        { at: next, after: hop[1], anchor: perch(i + 1), align: 'bottom', pitch: 0, ease: 'spline' },
-      );
-    }
-    k.push(
-      // from the last word, one bound head first into the hourglass as the glass settles
-      { at: '#work', after: -0.7, anchor: perch(4), align: 'bottom', pitch: 0 },
-      { at: '#work', after: -0.7, clip: LEAP.clip, clipTime: LEAP.from },
-      { at: '#work', after: -0.55, pitch: 14, ease: 'spline' },
-      { at: '#work', after: -0.38, x: dive[0], y: dive[1], size: s * 0.9, ease: 'spline' },
-      { at: '#work', after: -0.18, pitch: -20, ease: 'spline' },
-      { at: '#work', after: 0, anchor: '#hg-top', align: 'pour', pour: -0.2, size: inside, pitch: DIVE, ease: 'spline' },
-      { at: '#work', after: 0, clip: LEAP.clip, clipTime: LEAP.stretch, ease: 'linear' },
-      { at: '#work', after: 0.75, anchor: '#hg-top', align: 'pour', pour: 1.35, ease: 'linear' },
-      // the sand runs through the neck as the projects go by
-      { at: '#work', after: 0.2, drain: 0 },
-      { at: '#work', after: out[0] - 0.05, drain: 1, ease: 'linear' },
-      // out of the bottom, nose first, stretched in one long dive...
-      { at: '#work', after: out[0], anchor: '#hg-bottom', align: 'emerge', emerge: -0.35, size: inside, pitch: DIVE, clip: LEAP.clip, clipTime: LEAP.stretch, face: 1 },
-      { at: '#work', after: out[1], anchor: '#hg-bottom', align: 'emerge', emerge: 1, size: inside, pitch: DIVE, ease: 'linear' },
-      { at: '#work', after: out[1], clip: LEAP.clip, clipTime: LEAP.stretch },
-      // ...and one bound down onto the headline of the call to action; then it dissolves into the
-      // name at the foot of the page
-      { at: '#cta', after: land - 0.2, pitch: -20, size: s, ease: 'spline' },
-      { at: '#cta', after: land, anchor: perch(5), align: 'bottom', pitch: 0, size: s, ease: 'spline' },
-      { at: '#cta', after: land, clip: LEAP.clip, clipTime: LEAP.to, ease: 'linear' },
-      { at: '#cta', after: land, clipTime: 0, face: 0 },
-      { at: '#cta', after: -0.22, form: 'character' },
-      { at: '#cta', after: 0, form: 'logo', ease: 'easeOut' },
-    );
-    return k;
+  const start = async () => {
+    try { await leopard.decode(); await document.fonts.load('800 100px Archivo'); } catch { /* draw with what there is */ }
+    if (!leopard.naturalWidth) { show(1); return; }
+    window.dots = createDots({
+      canvas: document.querySelector('.dots'),
+      dark: ['.finale'],
+      forms: [
+        { // the logo's leopard: dots gather on load, the drawing takes over, and scrolling blows it away
+          el: leopard, image: leopard,
+          presence: ({ vh, t, scrollY, calm }) => {
+            if (calm) { show(1); return [0, 0]; }
+            const drawn = Math.min(smooth((t - 1.5) / 0.7), 1 - smooth(scrollY / (vh * 0.07)));
+            show(drawn);
+            return [Math.min(smooth(t / 1.5), 1 - clamp((scrollY - vh * 0.07) / (vh * 0.6))), 1 - drawn];
+          },
+        },
+        { // the same leopard, small, on the summit
+          el: document.getElementById('perch'), image: leopard, crop: [162 / 1150, 4 / 1194, 1035 / 1150, 742 / 1194],
+          presence: ({ rect, vh }) => [Math.min(clamp((vh * 1.02 - rect.top) / (vh * 0.45)), clamp((rect.bottom + vh * 0.06) / (vh * 0.3)))],
+        },
+        { // the name
+          el: document.getElementById('wordmark'), text: (w) => (w < 620 ? ['SNOLEP', 'TECHNOLOGIES'] : ['SNOLEP TECHNOLOGIES']), font: '800 100px Archivo',
+          presence: ({ vh, scrollY }) => [clamp(1 - (document.documentElement.scrollHeight - innerHeight - scrollY) / (vh * 0.5))],
+        },
+      ],
+    });
   };
-
-  createDotStory({
-    canvas: '#dots',
-    image: { anchor: '#leopard' },
-    character: {
-      url: MODEL,
-      // gait: false — it never walks or runs on its own, so on a word it stands still; only leaps move it
-      animation: { idle: 'Stand', still: 'pose', gait: false, face: { moving: 90, idle: 75, start: -1 } },
-    },
-    hourglass: { anchor: '#hourglass', panel: '#panel', dive: DIVE },
-    inverse: '.finale',
-    logo: { anchor: '#logo', text: 'SNOLEP TECHNOLOGIES', dotsPerCap: 13 }, // its dot count is the pool size
-    keyframes: story({ big: 0.56, s: 0.4, inside: 0.3, apex: [0, 0.72], off0: [-0.6, 0.12], dive: [-0.15, 0.7], out: [1.5, 2.0], hop: [-0.75, -0.4], land: -0.55 }),
-    responsive: {
-      '(max-width: 767px)': {
-        gap: 3,
-        keyframes: story({ big: 0.68, s: 0.48, inside: 0.29, apex: [0, 0.7], off0: [-0.45, 0.06], dive: [0.1, 0.6], out: [1.55, 2.05], hop: [-0.67, -0.35], land: -0.4 }),
-      },
-    },
-  });
+  start();
 </script>
 </body>
 </html>
