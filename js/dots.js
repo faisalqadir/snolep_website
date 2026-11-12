@@ -22,7 +22,7 @@ export function createDots(opts) {
   const colors = Object.assign({ ink: '#002735', accent: '#00a6a2', light: '#e9f7f4' }, opts.colors);
   const darkEls = (opts.dark || []).map((s) => document.querySelector(s)).filter(Boolean);
   const forms = opts.forms;
-  const N = opts.count || (innerWidth < 700 ? 2400 : 4200);
+  const N = opts.count || (innerWidth < 700 ? 4500 : 5600);
   const R = opts.radius || 1.75;
 
   // what each dot is when it's snow
