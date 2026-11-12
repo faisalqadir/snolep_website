@@ -150,6 +150,8 @@ export function createDots(opts) {
     if (vw !== builtFor) { builtFor = vw; build(); }
   }
   let mx = -999, my = -999, px = -999, py = -999;
+  // scatter: what the pointer has knocked each dot off its place by, and how fast it's still going
+  const OX = new Float32Array(N), OY = new Float32Array(N), VX = new Float32Array(N), VY = new Float32Array(N);
   addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') { mx = e.clientX; my = e.clientY; } }, { passive: true });
   document.documentElement.addEventListener('pointerleave', () => { mx = my = -999; });
 
@@ -162,8 +164,9 @@ export function createDots(opts) {
     raf = requestAnimationFrame(frame);
     const calm = still.matches;
     const t = (now - t0) / 1000, tt = calm ? 0 : t, sy = scrollY;
-    px += (mx - px) * 0.18; py += (my - py) * 0.18;
-    if (mx < -900) { px = mx; py = my; }
+    const lx = px, ly = py;
+    px = mx; py = my;
+    const sweep = lx < -900 || px < -900 ? 0 : Math.min(60, Math.hypot(px - lx, py - ly));
 
     // every form that is present, in page order: each pulls the dots on from wherever the one
     // before left them, so a form can hand over to the next without passing through snow
@@ -208,9 +211,20 @@ export function createDots(opts) {
         top = Math.max(top, ww);
       }
       if (top > 0) {
-        const dx = x - px, dy = y - py, d2 = dx * dx + dy * dy;
-        if (d2 < 12100 && d2 > 0.01) { const d = Math.sqrt(d2), push = (1 - d / 110) ** 2 * 42 * top; x += dx / d * push; y += dy / d * push; }
-      }
+        // a passing pointer knocks dots flying in loose directions; they drift back on a soft spring
+        const dx = x + OX[j] - px, dy = y + OY[j] - py, d2 = dx * dx + dy * dy;
+        if (sweep > 0.5 && d2 < 4900) {
+          const d = Math.sqrt(d2) || 1, turn = (((j * 0.7548) % 1) - 0.5) * 2.4, c = Math.cos(turn), sn = Math.sin(turn);
+          const kick = (1 - d / 70) * (0.5 + ((j * 0.5698) % 1) * 1.6) * (1.2 + sweep * 0.22);
+          VX[j] += (dx / d * c - dy / d * sn) * kick; VY[j] += (dx / d * sn + dy / d * c) * kick;
+        }
+        if (OX[j] || OY[j] || VX[j] || VY[j]) {
+          VX[j] = (VX[j] - OX[j] * 0.012) * 0.93; VY[j] = (VY[j] - OY[j] * 0.012) * 0.93;
+          OX[j] += VX[j]; OY[j] += VY[j];
+          if (Math.abs(OX[j]) + Math.abs(OY[j]) + Math.abs(VX[j]) + Math.abs(VY[j]) < 0.05) OX[j] = OY[j] = VX[j] = VY[j] = 0;
+          x += OX[j] * top; y += OY[j] * top;
+        }
+      } else if (OX[j] || OY[j]) OX[j] = OY[j] = VX[j] = VY[j] = 0;
       if (r < 0.2 || x < -6 || y < -6 || x > vw + 6 || y > vh + 6) continue;
       let bucket = teal;
       if (coat >= 0) bucket = coat ? 0 : 5; else

@@ -154,9 +154,13 @@
   .card { display: block; text-decoration: none; background: var(--white); border: 1px solid var(--aqua); border-radius: 16px; overflow: hidden;
           transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .2s ease; }
   .card .shot { aspect-ratio: 1152 / 600; overflow: hidden; background: var(--navy); }
-  .card .shot img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
+  /* each picture is the whole page; on hover it scrolls through its frame, and slips back after */
+  .card .shot { position: relative; }
+  .card .shot img { position: absolute; left: 0; top: 0; width: 100%; height: auto; transition: top .7s var(--ease), transform .7s var(--ease); }
   a.card:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -18px rgba(0, 39, 53, .35); border-color: var(--navy); }
-  a.card:hover .shot img { transform: scale(1.03); }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    a.card:hover .shot img, a.card:focus-visible .shot img { top: 100%; transform: translateY(-100%); transition-duration: 7s; transition-timing-function: cubic-bezier(.4, 0, .6, 1); }
+  }
   .card .meta { display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; align-items: baseline; padding: 16px 20px 18px; }
   .card h3 { font-size: 20px; font-weight: 700; line-height: 1.2; }
   .card .kind { grid-column: 1; font-size: 15px; color: var(--muted); }
@@ -281,19 +285,19 @@
       </div>
       <div class="work-grid">
         <a class="card" href="https://alhgha.com/" target="_blank" rel="noopener">
-          <div class="shot"><img src="./img/work-alhgha.webp" width="1152" height="600" loading="lazy" alt="ALHGHA home page: Discover trusted stays in Ladakh"></div>
+          <div class="shot"><img src="./img/work-alhgha.webp" width="1152" height="3120" loading="lazy" alt="ALHGHA home page: Discover trusted stays in Ladakh"></div>
           <div class="meta"><h3>ALHGHA</h3><span class="go">alhgha.com ↗</span><p class="kind">Stay directory and member platform for the All Ladakh Hotels &amp; Guest Houses Association</p></div>
         </a>
         <a class="card" href="https://alatoa.in/" target="_blank" rel="noopener">
-          <div class="shot"><img src="./img/work-alatoa.webp" width="1152" height="600" loading="lazy" alt="ALATOA home page: Discover the land of high passes"></div>
+          <div class="shot"><img src="./img/work-alatoa.webp" width="1152" height="3120" loading="lazy" alt="ALATOA home page: Discover the land of high passes"></div>
           <div class="meta"><h3>ALATOA</h3><span class="go">alatoa.in ↗</span><p class="kind">Experiences, operators and membership for the All Ladakh Adventure &amp; Tour Operators Association</p></div>
         </a>
         <a class="card" href="https://fynivo.in/" target="_blank" rel="noopener">
-          <div class="shot"><img src="./img/work-fynivo.webp" width="1152" height="600" loading="lazy" alt="Fynivo home page: Simplify your accounts"></div>
+          <div class="shot"><img src="./img/work-fynivo.webp" width="1152" height="3120" loading="lazy" alt="Fynivo home page: Simplify your accounts"></div>
           <div class="meta"><h3>Fynivo</h3><span class="go">fynivo.in ↗</span><p class="kind">Cloud accounting that connects businesses with their chartered accountants</p></div>
         </a>
         <a class="card" href="https://centralasianmuseum.org/" target="_blank" rel="noopener">
-          <div class="shot"><img src="./img/work-museum.webp" width="1152" height="600" loading="lazy" alt="Central Asian Museum home page: A museum at the crossroads of Central Asia and Ladakh"></div>
+          <div class="shot"><img src="./img/work-museum.webp" width="1152" height="3120" loading="lazy" alt="Central Asian Museum home page: A museum at the crossroads of Central Asia and Ladakh"></div>
           <div class="meta"><h3>Central Asian Museum</h3><span class="go">centralasianmuseum.org ↗</span><p class="kind">Website for the museum in Leh, on the ties between Ladakh and Central Asia</p></div>
         </a>
       </div>
