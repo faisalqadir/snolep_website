@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Snolep Technologies | Websites and web platforms from Ladakh</title>
-<meta name="description" content="Snolep Technologies designs and builds websites, member platforms and web applications from Ladakh, in the Indian Himalaya.">
+<meta name="description" content="Snolep Technologies builds software products, association platforms and websites from Ladakh, in the Indian Himalaya, and offers sustainability consulting.">
 <meta property="og:title" content="Snolep Technologies">
 <meta property="og:description" content="Websites, member platforms and web applications, built in Ladakh.">
 <meta property="og:type" content="website">
@@ -149,36 +149,32 @@
   .head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 48px; margin-bottom: clamp(28px, 5vh, 52px); }
   .head p { max-width: 30em; color: var(--muted); }
 
-  /* work: the four sites, as they look today */
+  /* what we build: each kind of work with the one we made; the screenshots are whole pages that
+     scroll through their frame on hover */
   .work-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 2vw, 28px); }
-  .card { display: block; text-decoration: none; background: var(--white); border: 1px solid var(--aqua); border-radius: 16px; overflow: hidden;
-          transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .2s ease; }
-  .card .shot { aspect-ratio: 1152 / 600; overflow: hidden; background: var(--navy); }
-  /* each picture is the whole page; on hover it scrolls through its frame, and slips back after */
-  .card .shot { position: relative; }
+  .card { display: flex; flex-direction: column; background: var(--white); border: 1px solid var(--aqua); border-radius: 16px; overflow: hidden;
+          transition: box-shadow .35s var(--ease), border-color .2s ease; }
+  .card:hover { box-shadow: 0 18px 40px -18px rgba(0, 39, 53, .35); border-color: var(--navy); }
+  .card .shot { position: relative; aspect-ratio: 1152 / 600; overflow: hidden; background: var(--navy); }
   .card .shot img { position: absolute; left: 0; top: 0; width: 100%; height: auto; transition: top .7s var(--ease), transform .7s var(--ease); }
-  a.card:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -18px rgba(0, 39, 53, .35); border-color: var(--navy); }
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    a.card:hover .shot img, a.card:focus-visible .shot img { top: 100%; transform: translateY(-100%); transition-duration: 7s; transition-timing-function: cubic-bezier(.4, 0, .6, 1); }
+    .card:hover .shot img, .card:focus-within .shot img { top: 100%; transform: translateY(-100%); transition-duration: 7s; transition-timing-function: cubic-bezier(.4, 0, .6, 1); }
   }
-  .card .meta { display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; align-items: baseline; padding: 16px 20px 18px; }
-  .card h3 { font-size: 20px; font-weight: 700; line-height: 1.2; }
-  .card .kind { grid-column: 1; font-size: 15px; color: var(--muted); }
-  .card .go { grid-row: 1; grid-column: 2; font: 500 12px/1 var(--mono); color: var(--muted); white-space: nowrap; transition: color .2s ease; }
-  a.card:hover .go { color: var(--teal-ink); }
+  .card .meta { flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 18px 22px 20px; }
+  .card h3 { font-size: 21px; font-weight: 700; line-height: 1.2; }
+  .card .meta p { font-size: 15px; color: var(--muted); }
+  .card .meta p.eg { margin-top: auto; padding-top: 6px; color: var(--navy); font-weight: 600; }
+  .card .eg a { display: inline-flex; align-items: center; gap: 4px; min-height: 32px; text-decoration-color: var(--teal); text-underline-offset: 4px; }
+  .card .eg a i { font-style: normal; color: var(--teal-ink); transition: transform .25s var(--ease); }
+  .card .eg a:hover { color: var(--teal-ink); }
+  .card .eg a:hover i { transform: translate(2px, -2px); }
   .card .plate { display: grid; place-items: center; text-align: center; padding: 8%; color: var(--mint);
                  background: radial-gradient(circle, rgba(173, 220, 218, .28) 1.2px, transparent 1.6px) 0 0 / 14px 14px, var(--navy); }
   .card .plate b { font: 700 clamp(22px, 3vw, 42px)/1.02 var(--display); font-stretch: 118%; letter-spacing: -.01em; text-transform: uppercase; }
-
-  /* services */
-  .services .wrap { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(28px, 5vw, 88px); align-items: start; }
-  .services .intro p { margin-top: 20px; max-width: 24em; color: var(--muted); }
-  .services .intro .btn { margin-top: 28px; }
-  .list { list-style: none; border-top: 1px solid var(--navy); }
-  .list li { display: grid; grid-template-columns: 32px 1fr; gap: 6px 12px; padding: 24px 0 26px; border-bottom: 1px solid var(--aqua); }
-  .list .n { width: 9px; height: 9px; margin-top: 11px; border-radius: 50%; background: var(--teal); }
-  .list h3 { font-size: clamp(21px, 1.9vw, 26px); font-weight: 700; line-height: 1.15; }
-  .list p { grid-column: 2; max-width: 34em; color: var(--muted); }
+  .card.wide { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .card.wide .shot { aspect-ratio: auto; min-height: 260px; }
+  .card.wide .meta { justify-content: center; padding: clamp(22px, 3vw, 40px); }
+  .card.wide .meta p.eg { margin-top: 8px; }
 
   /* roots: the range, with the snow leopard back on its summit */
   .roots { padding-bottom: 0; }
@@ -235,9 +231,10 @@
     .hero .wrap { grid-template-columns: 1fr; padding-top: 96px; gap: 8px; }
     .logo-art { order: -1; width: min(34vh, 62%); justify-self: start; margin-left: -4%; }
     .hero .actions .btn, .brief .btn { width: 100%; }
-    .services .wrap, .contact { grid-template-columns: 1fr; }
+    .contact { grid-template-columns: 1fr; }
     .roots .text { grid-template-columns: 1fr; max-width: none; }
-    .work-grid, .brief .pair { grid-template-columns: 1fr; }
+    .work-grid, .brief .pair, .card.wide { grid-template-columns: 1fr; }
+    .card.wide .shot { aspect-ratio: 1152 / 600; min-height: 0; }
     .range { max-height: none; margin-top: 24px; }
     .range-in { width: 200%; margin-left: -70%; }
   }
@@ -245,7 +242,7 @@
 </head>
 
 <body>
-<a class="skip" href="#work">Skip to our work</a>
+<a class="skip" href="#work">Skip to what we build</a>
 <canvas class="dots" aria-hidden="true"></canvas>
 
 <header class="site-head">
@@ -259,11 +256,11 @@
   <section class="hero" id="hero" style="padding:0">
     <div class="wrap">
       <div class="enter">
-        <h1>Websites and web platforms, <em>built in Ladakh.</em></h1>
-        <p class="lede">Snolep Technologies designs and builds the sites that associations, museums and businesses in the Himalaya run on, from member directories to accounting tools.</p>
+        <h1>Software, platforms and websites, <em>built in Ladakh.</em></h1>
+        <p class="lede">Snolep Technologies builds the software that associations, museums, hotels and businesses in the Himalaya run on, from member platforms to accounting and HR tools.</p>
         <div class="actions">
           <a class="btn primary" href="#contact">Start a project <i aria-hidden="true">→</i></a>
-          <a class="btn ghost" href="#work">See our work</a>
+          <a class="btn ghost" href="#work">See what we build</a>
         </div>
       </div>
       <div class="logo-art">
@@ -272,52 +269,47 @@
       </div>
     </div>
     <div class="built-for">
-      <span class="label">Built for</span>
-      <ul><li>ALHGHA</li><li>ALATOA</li><li>Fynivo</li><li>Central Asian Museum</li></ul>
+      <span class="label">Our work</span>
+      <ul><li>ALATOA</li><li>ALHGHA</li><li>Fynivo</li><li>Innovate Office</li><li>Central Asian Museum</li><li>Crystalakmo</li></ul>
     </div>
   </section>
 
   <section class="work" id="work">
     <div class="wrap">
       <div class="head">
-        <h2>Work that is live</h2>
-        <p>Four projects so far. Two of them carry the member registers of Ladakh's hotel and tour operator associations.</p>
+        <h2>What we build</h2>
+        <p>Software products, platforms and websites, and advice on working sustainably. Each kind below comes with one we have already made.</p>
       </div>
       <div class="work-grid">
-        <a class="card" href="https://alhgha.com/" target="_blank" rel="noopener">
-          <div class="shot"><img src="./img/work-alhgha.webp" width="1152" height="3120" loading="lazy" alt="ALHGHA home page: Discover trusted stays in Ladakh"></div>
-          <div class="meta"><h3>ALHGHA</h3><span class="go">alhgha.com ↗</span><p class="kind">Stay directory and member platform for the All Ladakh Hotels &amp; Guest Houses Association</p></div>
-        </a>
-        <a class="card" href="https://alatoa.in/" target="_blank" rel="noopener">
-          <div class="shot"><img src="./img/work-alatoa.webp" width="1152" height="3120" loading="lazy" alt="ALATOA home page: Discover the land of high passes"></div>
-          <div class="meta"><h3>ALATOA</h3><span class="go">alatoa.in ↗</span><p class="kind">Experiences, operators and membership for the All Ladakh Adventure &amp; Tour Operators Association</p></div>
-        </a>
-        <a class="card" href="https://fynivo.in/" target="_blank" rel="noopener">
-          <div class="shot"><img src="./img/work-fynivo.webp" width="1152" height="3120" loading="lazy" alt="Fynivo home page: Simplify your accounts"></div>
-          <div class="meta"><h3>Fynivo</h3><span class="go">fynivo.in ↗</span><p class="kind">Cloud accounting that connects businesses with their chartered accountants</p></div>
-        </a>
-        <a class="card" href="https://centralasianmuseum.org/" target="_blank" rel="noopener">
-          <div class="shot"><img src="./img/work-museum.webp" width="1152" height="3120" loading="lazy" alt="Central Asian Museum home page: A museum at the crossroads of Central Asia and Ladakh"></div>
-          <div class="meta"><h3>Central Asian Museum</h3><span class="go">centralasianmuseum.org ↗</span><p class="kind">Website for the museum in Leh, on the ties between Ladakh and Central Asia</p></div>
-        </a>
+        <article class="card">
+          <div class="shot"><img src="./img/work-alatoa.webp" width="1152" height="3120" loading="lazy" alt="ALATOA website: Discover the land of high passes"></div>
+          <div class="meta"><h3>Association management and marketing platforms</h3><p>Membership, member directories, listings and news, together with the public site that markets the region to visitors.</p><p class="eg">Run by <a href="https://alatoa.in/" target="_blank" rel="noopener">ALATOA <i aria-hidden="true">↗</i></a> and <a href="https://alhgha.com/" target="_blank" rel="noopener">ALHGHA <i aria-hidden="true">↗</i></a></p></div>
+        </article>
+        <article class="card">
+          <div class="shot"><img src="./img/work-fynivo.webp" width="1152" height="3120" loading="lazy" alt="Fynivo website: Simplify your accounts"></div>
+          <div class="meta"><h3>Financial software</h3><p>Our own product: cloud accounting that connects businesses with their chartered accountants.</p><p class="eg">Our product <a href="https://fynivo.in/" target="_blank" rel="noopener">Fynivo <i aria-hidden="true">↗</i></a></p></div>
+        </article>
+        <article class="card">
+          <div class="shot plate"><!-- visual to come: Innovate Office screens, 1152 px wide --><b>Innovate Office</b></div>
+          <div class="meta"><h3>HR management software</h3><p>Employee records, attendance and leave in one system that the HR team and staff both use.</p><p class="eg">Our product <span>Innovate Office</span></p></div>
+        </article>
+        <article class="card">
+          <div class="shot"><img src="./img/work-museum.webp" width="1152" height="3120" loading="lazy" alt="Central Asian Museum website: A museum at the crossroads of Central Asia and Ladakh"></div>
+          <div class="meta"><h3>Museum websites with a CMS</h3><p>A site the museum's own staff keep up to date: collections, visiting hours and news, without calling a developer.</p><p class="eg">Built for the <a href="https://centralasianmuseum.org/" target="_blank" rel="noopener">Central Asian Museum <i aria-hidden="true">↗</i></a></p></div>
+        </article>
+        <article class="card">
+          <div class="shot plate"><!-- visual to come: a hotel site we built, 1152 px wide --><b>Hotel websites</b></div>
+          <div class="meta"><h3>Hotel websites</h3><p>Sites that show the rooms and the view, load on a mountain connection and send enquiries straight to the hotel.</p><p class="eg">For hotels and guest houses</p></div>
+        </article>
+        <article class="card">
+          <div class="shot plate"><!-- visual to come: laundry system screens, 1152 px wide --><b>Crystalakmo</b></div>
+          <div class="meta"><h3>Laundry tracking and CRM</h3><p>Follows every item through the laundry cycle, runs the daily operation and keeps the customer relationship in one place.</p><p class="eg">Built for <span>Crystalakmo</span></p></div>
+        </article>
+        <article class="card wide">
+          <div class="shot plate"><!-- visual to come: a sustainability project picture, wide --><b>Sustainability</b></div>
+          <div class="meta"><h3>Sustainability consulting</h3><p>Advice for organisations that want to work more sustainably, grounded in what a fragile mountain region like Ladakh needs.</p><p class="eg"><a href="#contact">Talk to us about it <i aria-hidden="true">→</i></a></p></div>
+        </article>
       </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="services" id="services">
-    <div class="wrap">
-      <div class="intro">
-        <h2>What we build</h2>
-        <p>One small team takes a project from the first sketch to launch day, and stays with it afterwards.</p>
-        <a class="btn ghost" href="#contact">Tell us about yours <i aria-hidden="true">→</i></a>
-      </div>
-      <ul class="list">
-        <li><span class="n" aria-hidden="true"></span><h3>Websites</h3><p>Clear, quick sites for organisations, hotels and institutions, designed for the phone first because that is where most visitors arrive.</p></li>
-        <li><span class="n" aria-hidden="true"></span><h3>Member and directory platforms</h3><p>Sign-up, member profiles, listings and news in one place, the way ALHGHA and ALATOA run theirs.</p></li>
-        <li><span class="n" aria-hidden="true"></span><h3>Web applications</h3><p>Dashboards and working tools for the daily job, like the accounting workspace inside Fynivo.</p></li>
-        <li><span class="n" aria-hidden="true"></span><h3>Care after launch</h3><p>Hosting, updates and changes handled by the people who wrote the code.</p></li>
-      </ul>
     </div>
   </section>
 
@@ -351,8 +343,8 @@
           <legend>What do you need?</legend>
           <div class="chips">
             <label><input type="radio" name="need" value="A website" checked><span>A website</span></label>
-            <label><input type="radio" name="need" value="A member or directory platform"><span>A member platform</span></label>
-            <label><input type="radio" name="need" value="A web application"><span>A web application</span></label>
+            <label><input type="radio" name="need" value="A platform or software"><span>A platform or software</span></label>
+            <label><input type="radio" name="need" value="Sustainability consulting"><span>Sustainability consulting</span></label>
             <label><input type="radio" name="need" value="Not sure yet"><span>Not sure yet</span></label>
           </div>
         </fieldset>
@@ -383,13 +375,12 @@
   <nav class="rail-block rail-index" aria-label="Index">
     <span class="rail-label">Index</span>
     <a href="#top" data-section="hero"><span>01</span>Home</a>
-    <a href="#work" data-section="work"><span>02</span>Work</a>
-    <a href="#services" data-section="services"><span>03</span>Services</a>
-    <a href="#roots" data-section="roots"><span>04</span>Roots</a>
-    <a href="#contact" data-section="contact"><span>05</span>Contact</a>
+    <a href="#work" data-section="work"><span>02</span>What we build</a>
+    <a href="#roots" data-section="roots"><span>03</span>Roots</a>
+    <a href="#contact" data-section="contact"><span>04</span>Contact</a>
   </nav>
   <div class="rail-block rail-links">
-    <span class="rail-label">Selected work</span>
+    <span class="rail-label">Live work</span>
     <a href="https://alhgha.com/" target="_blank" rel="noopener">ALHGHA <i aria-hidden="true">↗</i></a>
     <a href="https://alatoa.in/" target="_blank" rel="noopener">ALATOA <i aria-hidden="true">↗</i></a>
     <a href="https://fynivo.in/" target="_blank" rel="noopener">Fynivo <i aria-hidden="true">↗</i></a>
