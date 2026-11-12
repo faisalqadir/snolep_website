@@ -227,15 +227,14 @@ export function createDots(opts) {
       } else if (OX[j] || OY[j]) OX[j] = OY[j] = VX[j] = VY[j] = 0;
       if (r < 0.2 || x < -6 || y < -6 || x > vw + 6 || y > vh + 6) continue;
       let bucket = teal;
-      if (coat >= 0) { bucket = coat ? 0 : 5; if (coat) for (const d of darks) if (y >= d.top && y <= d.bottom && x >= d.left && x <= d.right) { bucket = 6; break; } } else
+      if (coat >= 0) bucket = coat ? 0 : 5; else
       if (!bucket) for (const d of darks) if (y >= d.top && y <= d.bottom && x >= d.left && x <= d.right) { bucket = 2; break; }
       if (top < 0.5 && bucket !== 1 && coat < 0) bucket = bucket ? 4 : 3;
-      if (coat === 1 && bucket === 0) { const h = r + 0.7; paths[5].moveTo(x + h, y); paths[5].arc(x, y, h, 0, 6.2832); }   // a light rim, so spots read on dark rock
       paths[bucket].moveTo(x + r, y); paths[bucket].arc(x, y, r, 0, 6.2832);
     }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, vw, vh);
-    for (const b of [3, 4, 5, 0, 6, 1, 2]) { ctx.fillStyle = fills[b]; ctx.fill(paths[b]); }
+    for (const b of [3, 4, 5, 0, 1, 2]) { ctx.fillStyle = fills[b]; ctx.fill(paths[b]); }
   }
 
   let resizeT = 0;

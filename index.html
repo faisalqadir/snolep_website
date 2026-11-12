@@ -189,6 +189,7 @@
   /* the close: a short brief, then the name in dots */
   .finale { background: var(--navy); color: var(--mint); padding: clamp(64px, 10vh, 112px) 0 0; min-height: 100vh; display: flex; flex-direction: column; }
   .contact { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(28px, 5vw, 88px); align-items: start; }
+  .finale .wrap.contact { z-index: 1; }            /* under the dots, so the leopard can land on the button */
   .contact .say p { margin-top: 20px; max-width: 24em; color: var(--aqua); }
   .contact .say a.ig { display: inline-flex; align-items: center; min-height: 44px; margin-top: 14px; font-weight: 600; text-decoration-color: var(--teal); text-underline-offset: 5px; }
   .contact .say a.ig:hover { color: var(--aqua); }
@@ -542,17 +543,22 @@
   })();
   // Where the leopard is, from the page's scroll: RUN goes 0 to 1 as the summit and then the end
   // of the line pass the middle of the screen; OUT carries it off the left edge after that; HOME
-  // is the last stretch of the page, where it comes back in from the right and becomes the name.
+  // is the contact form, where it bounds back in from the right onto the Send button.
   const runAt = (rect, vh) => {
     const h = rect.height, a = vh * 0.5 - ridge.at(0).y * h, b = vh * 0.45 - ridge.at(1).y * h;
     return { run: clamp((a - rect.top) / (a - b)), out: clamp((b - rect.top) / (vh * 0.3)) };
   };
-  // HOME runs on the clock: once the name is on screen the leopard comes in from the right
-  // (IN seconds), then scatters into the letters (from SCATTER on); scrolling away resets it
-  const IN = 1.4, SCATTER = [1.1, 2.1];
+  // HOME runs on the clock: once the Send button is on screen the leopard bounds in from the right
+  // and lands on it (IN seconds); when the name at the bottom shows, it scatters into the letters
+  const IN = 1.3, SCATTER = [0, 1];
+  const nameClock = (t) => {
+    if (wordmark.getBoundingClientRect().bottom > innerHeight + 4 || homeClock(t) < IN) { homeState.nameSince = undefined; return -1; }
+    if (homeState.nameSince === undefined) homeState.nameSince = t;
+    return t - homeState.nameSince;
+  };
   const homeClock = (t) => {
-    const w = wordmark.getBoundingClientRect();
-    if (w.bottom > innerHeight + 4) { homeState.since = undefined; return -1; }
+    const w = document.getElementById('send').getBoundingClientRect();
+    if (w.bottom > innerHeight - 20) { homeState.since = undefined; return -1; }
     if (homeState.since === undefined) homeState.since = t;
     return t - homeState.since;
   };
@@ -604,31 +610,38 @@
             let angle = Math.atan2(at.ty, at.tx) + Math.PI;     // the drawing faces left; turn it to the slope
             angle = Math.atan2(Math.sin(angle), Math.cos(angle));
             angle = Math.max(-0.6, Math.min(0.6, angle));
-            const gone = (end.x * rect.width + 440 * scale * 1.2) * out;   // off the left edge
-            x -= gone; angle *= 1 - out;
-            const g = stride(st, (at.d * rect.width + gone) / scale, t, dt, run > 0 && run < 1 || (out > 0 && out < 1));
+            const g = stride(st, at.d * rect.width / scale, t, dt, run > 0 && run < 1);
             angle *= 0.35 + 0.65 * (st.run ?? 0);
+            if (out > 0) {                                   // the leap: off the end of the line, down into the dark and away
+              const gone = (end.x * rect.width + 440 * scale * 1.3) * out;
+              x -= gone; y += rect.width * 0.1 * out * out - Math.sin(Math.PI * Math.min(1, out * 1.6)) * 440 * scale * 0.35;
+              angle = -0.15 + 0.6 * out;
+              return leopardRig.pose({ x, y, angle, scale, a: LEAP }, X, Y);
+            }
             return leopardRig.pose({ x, y, angle, scale, a: g.a, b: g.b, t: g.t }, X, Y);
           },
         },
-        { // at the bottom of the page: back in from the right, over the name, and into it
+        { // by the contact form: bounds in from the right and lands on the Send button
           el: wordmark, rig: leopardRig,
           presence: ({ vh, t, calm }) => [!calm && homeClock(t) >= 0 && runAt(range.getBoundingClientRect(), vh).out >= 1 ? 1 : 0],
           place: ({ vw, vh, t }, X, Y) => {
             const st = homeState, dt = Math.min(0.1, Math.max(0, t - (st.time ?? t))); st.time = t;
-            const tau = Math.max(0, homeClock(t));
-            const w = wordmark.getBoundingClientRect(), r = range.getBoundingClientRect();
-            const scale = Math.min(0.42, r.width * (small ? 0.24 : 0.145) / 440);
-            const from = vw + 440 * scale * 0.9, to = w.left + w.width * (small ? 0.62 : 0.58);
-            const k = 1 - (1 - clamp(tau / IN)) ** 2.2;     // runs in, slowing as it arrives
-            const x = from + (to - from) * k, y = w.top - 6;
-            const g = stride(st, (from - x) / scale, t, dt, k < 0.995);
-            return leopardRig.pose({ x, y, angle: 0, scale, a: g.a, b: g.b, t: g.t }, X, Y);
+            const tau = Math.max(0, homeClock(t)), k = clamp(tau / IN), e = 1 - (1 - k) ** 2;
+            const btn = document.getElementById('send').getBoundingClientRect(), form = document.getElementById('brief').getBoundingClientRect();
+            const scale = Math.min(0.42, range.getBoundingClientRect().width * (small ? 0.24 : 0.145) / 440);
+            // the curve: in at the right edge above the form, sweeping left then down onto the button
+            const P0 = [vw + 440 * scale, form.top - vh * 0.06], P1 = [btn.left + form.width * 0.25, form.top - vh * 0.02], P2 = [btn.left + btn.width * 0.5, btn.top];
+            const q = (i) => (1 - e) ** 2 * P0[i] + 2 * (1 - e) * e * P1[i] + e * e * P2[i];
+            const dq = (i) => 2 * (1 - e) * (P1[i] - P0[i]) + 2 * e * (P2[i] - P1[i]);
+            const x = q(0), y = q(1);
+            const g = stride(st, (P0[0] - x + (y - P0[1])) / scale, t, dt, k < 0.995);
+            const angle = k < 0.995 ? Math.max(-0.6, Math.min(0.9, Math.atan2(-dq(1), -dq(0)))) * (1 - k) : 0;
+            return leopardRig.pose({ x, y, angle, scale, a: k < 0.995 ? (k > 0.55 ? LEAP : g.a) : STAND, b: k < 0.995 ? (k > 0.55 ? LEAP : g.b) : STAND, t: g.t }, X, Y);
           },
         },
         { // the name
           el: wordmark, text: (w) => (w < 620 ? ['SNOLEP', 'TECHNOLOGIES'] : ['SNOLEP TECHNOLOGIES']), font: '800 100px Archivo',
-          presence: ({ vh, t, calm }) => [calm ? clamp(1 - (document.documentElement.scrollHeight - innerHeight - scrollY) / (vh * 0.5)) : span(Math.max(0, homeClock(t)), SCATTER)],
+          presence: ({ vh, t, calm }) => [calm ? clamp(1 - (document.documentElement.scrollHeight - innerHeight - scrollY) / (vh * 0.5)) : span(Math.max(0, nameClock(t)), SCATTER)],
         },
       ],
     });
