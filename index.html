@@ -184,7 +184,6 @@
   .range { position: relative; z-index: 1; margin-top: clamp(40px, 9vh, 96px); max-height: 66vh; clip-path: inset(-400px 0 0 0); }
   .range-in { position: relative; aspect-ratio: 1672 / 941; }
   .range-in > img { width: 100%; height: 100%; }
-  #perch { position: absolute; left: 71.4%; top: 13.4%; width: 17%; aspect-ratio: 873 / 738; transform: translateY(-100%); }
 
   /* the close: a short brief, then the name in dots */
   .finale { background: var(--navy); color: var(--mint); padding: clamp(64px, 10vh, 112px) 0 0; min-height: 100vh; display: flex; flex-direction: column; }
@@ -202,11 +201,13 @@
   .chips label:hover span { border-color: var(--mint); }
   .chips input:checked + span { background: var(--mint); border-color: var(--mint); color: var(--navy); }
   .chips input:focus-visible + span { outline: 2px solid var(--teal); outline-offset: 3px; }
-  .brief input[type=text], .brief textarea { width: 100%; padding: 13px 14px; border: 1px solid rgba(173, 220, 218, .4); border-radius: 10px; background: transparent; color: var(--mint); font: 400 16px/1.45 var(--body); }
+  .brief .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .brief input[type=text], .brief input[type=email], .brief textarea { width: 100%; padding: 13px 14px; border: 1px solid rgba(173, 220, 218, .4); border-radius: 10px; background: transparent; color: var(--mint); font: 400 16px/1.45 var(--body); }
   .brief textarea { min-height: 96px; resize: vertical; }
   .brief ::placeholder { color: rgba(173, 220, 218, .6); }
   .brief .send { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
   .brief .btn { background: var(--teal); border-color: var(--teal); color: var(--navy); }
+  .brief .btn:disabled { opacity: .6; cursor: default; }
   .brief .btn:hover { background: var(--mint); border-color: var(--mint); }
   .brief .status { flex: 1 1 14em; font-size: 14px; line-height: 1.4; color: var(--aqua); }
   .name { position: relative; z-index: 3; width: min(1240px, 100% - 2 * var(--pad)); margin: auto auto 0; padding-top: clamp(40px, 8vh, 88px); }
@@ -230,7 +231,7 @@
     .hero .actions .btn, .brief .btn { width: 100%; }
     .services .wrap, .contact { grid-template-columns: 1fr; }
     .roots .text { grid-template-columns: 1fr; max-width: none; }
-    .work-grid { grid-template-columns: 1fr; }
+    .work-grid, .brief .pair { grid-template-columns: 1fr; }
     .range { max-height: none; overflow: hidden; clip-path: none; padding-top: 110px; margin-top: 0; }
     .range-in { width: 200%; margin-left: -100%; }
   }
@@ -324,7 +325,6 @@
     <div class="range">
       <div class="range-in">
         <img src="./img/range.webp" width="1672" height="941" loading="lazy" alt="Snow-covered Himalayan peaks drawn in the Snolep colours">
-        <div id="perch" aria-hidden="true"></div>
       </div>
     </div>
   </section>
@@ -335,10 +335,9 @@
     <div class="wrap contact">
       <div class="say">
         <h2>Tell us what you are building</h2>
-        <p>Write a few lines here and send them to us on Instagram. We read every message ourselves.</p>
-        <a class="ig" href="https://www.instagram.com/snolep.in/" target="_blank" rel="noopener">@snolep.in on Instagram ↗</a>
+        <p>A few lines are enough. The message lands in our inbox and we answer by email.</p>
       </div>
-      <form class="brief" id="brief" novalidate>
+      <form class="brief" id="brief">
         <fieldset>
           <legend>What do you need?</legend>
           <div class="chips">
@@ -348,10 +347,14 @@
             <label><input type="radio" name="need" value="Not sure yet"><span>Not sure yet</span></label>
           </div>
         </fieldset>
-        <div><label for="b-name">Your name</label><input id="b-name" type="text" name="name" autocomplete="name" placeholder="Name or organisation"></div>
-        <div><label for="b-about">About the project</label><textarea id="b-about" name="about" placeholder="What it is for, and when you need it"></textarea></div>
+        <div class="pair">
+          <div><label for="b-name">Your name</label><input id="b-name" type="text" name="name" autocomplete="name" required></div>
+          <div><label for="b-email">Your email</label><input id="b-email" type="email" name="email" autocomplete="email" required></div>
+        </div>
+        <div><label for="b-about">About the project</label><textarea id="b-about" name="message" required placeholder="What it is for, and when you need it"></textarea></div>
+        <input type="text" name="_honey" tabindex="-1" autocomplete="off" hidden>
         <div class="send">
-          <a class="btn" id="send" href="https://ig.me/m/snolep.in" target="_blank" rel="noopener">Copy brief and open Instagram <i aria-hidden="true">↗</i></a>
+          <button class="btn" id="send" type="submit">Send message <i aria-hidden="true">→</i></button>
           <p class="status" id="status" role="status"></p>
         </div>
       </form>
@@ -456,16 +459,25 @@
     fit();
   })();
 
-  // The brief: the button is a plain link to the Instagram chat; on the way it copies what was written.
+  // The brief: sent to our inbox through FormSubmit; the address lives in LEADS.
   (() => {
+    const LEADS = '__LEADS__';
     const form = document.getElementById('brief'), send = document.getElementById('send'), status = document.getElementById('status');
-    send.addEventListener('click', () => {
-      const d = new FormData(form);
-      const name = (d.get('name') || '').trim(), about = (d.get('about') || '').trim();
-      const text = ['Hi Snolep,', name && `this is ${name}.`, `I need: ${d.get('need')}.`, about].filter(Boolean).join(' ');
-      const done = () => { status.textContent = 'Brief copied. Paste it into the Instagram chat that just opened.'; };
-      const fail = () => { status.textContent = 'Could not copy on this browser. Please type your message in the Instagram chat.'; };
-      try { navigator.clipboard.writeText(text).then(done, fail); } catch { fail(); }
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const d = Object.fromEntries(new FormData(form));
+      if (d._honey) return;
+      delete d._honey;
+      if (LEADS.startsWith('__')) { status.textContent = 'This form is still being connected. Please check back shortly.'; return; }
+      send.disabled = true; status.textContent = 'Sending…';
+      try {
+        const r = await fetch(`https://formsubmit.co/ajax/${LEADS}`, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ ...d, _subject: `New project enquiry from ${d.name}`, _template: 'table' }) });
+        const j = await r.json();
+        if (!r.ok || String(j.success) !== 'true') throw new Error(j.message || 'failed');
+        form.reset(); status.textContent = 'Sent. Thank you, we will reply by email.';
+      } catch { status.textContent = 'That did not send. Please try again in a minute.'; }
+      send.disabled = false;
     });
   })();
 
@@ -505,8 +517,7 @@
 </script>
 
 <script type="module">
-  // The dots. The snow leopard gathers on the logo, blows away as snow when the page moves, settles
-  // again on a summit of the range, and ends as the company's name.
+  // The dots. The snow leopard gathers on the logo, blows away as snow when the page moves, and ends as the company's name.
   import { createDots } from './js/dots.js';
 
   const leopard = document.getElementById('leopard');
@@ -529,10 +540,6 @@
             show(drawn);
             return [Math.min(smooth(t / 1.5), 1 - clamp((scrollY - vh * 0.07) / (vh * 0.6))), 1 - drawn];
           },
-        },
-        { // the same leopard, small, on the summit
-          el: document.getElementById('perch'), image: leopard, crop: [162 / 1150, 4 / 1194, 1035 / 1150, 742 / 1194],
-          presence: ({ rect, vh }) => [Math.min(clamp((vh * 1.02 - rect.top) / (vh * 0.45)), clamp((rect.bottom + vh * 0.06) / (vh * 0.3)))],
         },
         { // the name
           el: document.getElementById('wordmark'), text: (w) => (w < 620 ? ['SNOLEP', 'TECHNOLOGIES'] : ['SNOLEP TECHNOLOGIES']), font: '800 100px Archivo',
