@@ -181,9 +181,11 @@
   .roots .text { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px clamp(28px, 5vw, 88px); max-width: 78%; }
   .roots .text p { color: var(--muted); }
   .roots .text h2 { grid-column: 1 / -1; }
-  .range { position: relative; z-index: 1; margin-top: clamp(40px, 9vh, 96px); max-height: 66vh; clip-path: inset(-400px 0 0 0); }
+  .range { position: relative; z-index: 1; margin-top: clamp(40px, 9vh, 96px); max-height: 72vh; overflow: hidden; }
   .range-in { position: relative; aspect-ratio: 1672 / 941; }
   .range-in > img { width: 100%; height: 100%; }
+  .range-fade { position: absolute; left: 0; right: 0; bottom: -1px; height: 38%; background: linear-gradient(rgba(0, 39, 53, 0), rgba(0, 39, 53, .55) 45%, rgba(0, 39, 53, .9) 78%, var(--navy)); }
+  .range-dark { position: absolute; left: 0; right: 0; bottom: 0; height: 14%; }
 
   /* the close: a short brief, then the name in dots */
   .finale { background: var(--navy); color: var(--mint); padding: clamp(64px, 10vh, 112px) 0 0; min-height: 100vh; display: flex; flex-direction: column; }
@@ -232,8 +234,8 @@
     .services .wrap, .contact { grid-template-columns: 1fr; }
     .roots .text { grid-template-columns: 1fr; max-width: none; }
     .work-grid, .brief .pair { grid-template-columns: 1fr; }
-    .range { max-height: none; overflow: hidden; clip-path: none; padding-top: 110px; margin-top: 0; }
-    .range-in { width: 200%; margin-left: -100%; }
+    .range { max-height: none; margin-top: 24px; }
+    .range-in { width: 200%; margin-left: -70%; }
   }
 </style>
 </head>
@@ -327,6 +329,8 @@
       <div class="range-in">
         <img src="./img/range.webp" width="1672" height="941" loading="lazy" alt="Snow-covered Himalayan peaks drawn in the Snolep colours">
       </div>
+      <div class="range-fade" aria-hidden="true"></div>
+      <div class="range-dark" aria-hidden="true"></div>
     </div>
   </section>
 </main>
@@ -520,18 +524,57 @@
 <script type="module">
   // The dots. The snow leopard gathers on the logo, blows away as snow when the page moves, and ends as the company's name.
   import { createDots } from './js/dots.js';
+  import { createLeopard } from './js/leopard.js';
 
   const leopard = document.getElementById('leopard');
   const clamp = (v) => Math.min(1, Math.max(0, v));
   const smooth = (v) => { v = clamp(v); return v * v * (3 - 2 * v); };
   const show = (v) => { leopard.style.opacity = v.toFixed(3); };
 
+  // The ridge the leopard runs down, as fractions of the mountain drawing: from the high summit,
+  // left along the crest and out through the bottom. It stays level with LINE on the screen, so
+  // the mountain rises past it as it runs.
+  const range = document.querySelector('.range-in'), wordmark = document.getElementById('wordmark');
+  const small = matchMedia('(max-width: 900px)').matches;
+  const LINE = 0.56;
+  const ridge = (() => {
+    const pts = small
+      ? [[0.808, 0.122], [0.729, 0.203], [0.657, 0.327], [0.608, 0.387], [0.547, 0.441], [0.5, 0.505], [0.475, 0.6], [0.47, 0.72], [0.47, 0.85], [0.47, 0.97]]
+      : [[0.808, 0.122], [0.729, 0.203], [0.657, 0.327], [0.608, 0.387], [0.547, 0.441], [0.492, 0.511], [0.426, 0.613], [0.377, 0.664], [0.335, 0.672], [0.274, 0.721], [0.201, 0.775], [0.158, 0.84], [0.116, 0.916], [0.106, 0.965]];
+    const cr = (a, b, c, d, t) => 0.5 * (2 * b + (c - a) * t + (2 * a - 5 * b + 4 * c - d) * t * t + (3 * b - a - 3 * c + d) * t * t * t);
+    const xs = [], ys = [], ds = [0];
+    for (let i = 0; i < pts.length - 1; i++) for (let k = 0; k < 16; k++) {
+      const p = [pts[Math.max(0, i - 1)], pts[i], pts[i + 1], pts[Math.min(pts.length - 1, i + 2)]];
+      xs.push(cr(p[0][0], p[1][0], p[2][0], p[3][0], k / 16)); ys.push(cr(p[0][1], p[1][1], p[2][1], p[3][1], k / 16));
+    }
+    xs.push(pts[pts.length - 1][0]); ys.push(pts[pts.length - 1][1]);
+    for (let i = 1; i < ys.length; i++) { ys[i] = Math.max(ys[i], ys[i - 1] + 1e-5); ds.push(ds[i - 1] + Math.hypot(xs[i] - xs[i - 1], (ys[i] - ys[i - 1]) * 941 / 1672)); }
+    const y0 = ys[0], y1 = ys[ys.length - 1];
+    // the point a fraction v of the way down, with its heading and the distance run so far
+    const at = (v) => {
+      const y = y0 + clamp(v) * (y1 - y0);
+      let lo = 0, hi = ys.length - 1;
+      while (hi - lo > 1) { const m = (lo + hi) >> 1; if (ys[m] <= y) lo = m; else hi = m; }
+      const f = (y - ys[lo]) / (ys[hi] - ys[lo]), a = Math.max(0, lo - 5), b = Math.min(ys.length - 1, hi + 5);
+      return { x: xs[lo] + (xs[hi] - xs[lo]) * f, y, d: ds[lo] + (ds[hi] - ds[lo]) * f, tx: xs[b] - xs[a], ty: ys[b] - ys[a] };
+    };
+    return { at, y0, y1 };
+  })();
+  // 0 until the ridge runs out, then up to 1 at the bottom of the page: the leap to the name
+  const leapAmount = (rect, vh) => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const end = scrollY + rect.top + ridge.y1 * rect.height - vh * LINE;
+    return clamp(1 - (max - scrollY) / Math.max(vh * 0.3, max - end));
+  };
+  let leopardRig;
+
   const start = async () => {
     try { await leopard.decode(); await document.fonts.load('800 100px Archivo'); } catch { /* draw with what there is */ }
     if (!leopard.naturalWidth) { show(1); return; }
+    leopardRig = createLeopard(innerWidth < 700 ? 2400 : 4200, innerWidth < 700 ? 1900 : 3200);
     window.dots = createDots({
       canvas: document.querySelector('.dots'),
-      dark: ['.finale'],
+      dark: ['.finale', '.range-dark'],
       forms: [
         { // the logo's leopard: dots gather on load, the drawing takes over, and scrolling blows it away
           el: leopard, image: leopard,
@@ -542,9 +585,28 @@
             return [Math.min(smooth(t / 1.5), 1 - clamp((scrollY - vh * 0.07) / (vh * 0.6))), 1 - drawn];
           },
         },
+        { // the running leopard: gathers on the summit, gallops down the ridge as the page moves, and leaps
+          el: range, rig: leopardRig,
+          presence: ({ rect, vh }) => [clamp((vh * 0.97 - (rect.top + ridge.y0 * rect.height)) / (vh * 0.36))],
+          place: ({ rect, vh }, X, Y) => {
+            const L = Math.min(125, Math.max(70, rect.width * 0.09));
+            const at = ridge.at(((vh * LINE - rect.top) / rect.height - ridge.y0) / (ridge.y1 - ridge.y0));
+            const q = leapAmount(rect, vh);
+            let gx = rect.left + at.x * rect.width, gy = rect.top + at.y * rect.height, fx = at.tx * rect.width, fy = at.ty * rect.height;
+            if (q > 0) {                                     // off the ridge, over to the name
+              const w = wordmark.getBoundingClientRect(), e = q * q * (3 - 2 * q);
+              const wx = w.left + w.width * 0.5, wy = w.top + w.height * 0.5, lift = vh * 0.2;
+              fx = wx - gx; fy = wy - gy - Math.cos(Math.PI * e) * Math.PI * lift;
+              gx += (wx - gx) * e; gy += (wy - gy) * e - Math.sin(Math.PI * e) * lift;
+            }
+            const lim = 0.55 - 0.3 * smooth(q * 4), tilt = Math.max(-lim, Math.min(lim, Math.atan2(fy, Math.abs(fx)))), dir = fx < 0 ? -1 : 1;
+            leopardRig.pose({ gx, gy, fx: dir * Math.cos(tilt), fy: Math.sin(tilt), L, phase: at.d * rect.width / (L * 2.5), run: smooth(at.d / 0.06), leap: smooth(q * 6) }, X, Y);
+            return L * leopardRig.grid * 0.52;
+          },
+        },
         { // the name
-          el: document.getElementById('wordmark'), text: (w) => (w < 620 ? ['SNOLEP', 'TECHNOLOGIES'] : ['SNOLEP TECHNOLOGIES']), font: '800 100px Archivo',
-          presence: ({ vh, scrollY }) => [clamp(1 - (document.documentElement.scrollHeight - innerHeight - scrollY) / (vh * 0.5))],
+          el: wordmark, text: (w) => (w < 620 ? ['SNOLEP', 'TECHNOLOGIES'] : ['SNOLEP TECHNOLOGIES']), font: '800 100px Archivo',
+          presence: ({ vh, calm }) => [calm ? clamp(1 - (document.documentElement.scrollHeight - innerHeight - scrollY) / (vh * 0.5)) : smooth((leapAmount(range.getBoundingClientRect(), vh) - 0.3) / 0.7)],
         },
       ],
     });

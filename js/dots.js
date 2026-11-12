@@ -22,7 +22,7 @@ export function createDots(opts) {
   const colors = Object.assign({ ink: '#002735', accent: '#00a6a2', light: '#e9f7f4' }, opts.colors);
   const darkEls = (opts.dark || []).map((s) => document.querySelector(s)).filter(Boolean);
   const forms = opts.forms;
-  const N = opts.count || (innerWidth < 700 ? 1700 : 2800);
+  const N = opts.count || (innerWidth < 700 ? 2400 : 4200);
   const R = opts.radius || 1.75;
 
   // what each dot is when it's snow
@@ -135,9 +135,10 @@ export function createDots(opts) {
     for (const f of forms) {
       f.x = f.x || new Float32Array(N); f.y = f.y || new Float32Array(N);
       f.teal = f.teal || new Uint8Array(N); f.hide = f.hide || new Uint8Array(N); f.d = f.d || new Float32Array(N);
-      if (f.image) fromImage(f); else fromText(f);
+      if (f.rig) { f.ax = new Float32Array(N); f.ay = new Float32Array(N); f.size = f.rig.size; f.hide = f.rig.hide; f.n = f.rig.used; }
+      else if (f.image) fromImage(f); else fromText(f);
       // the order they leave in: the windward side first, with some scatter
-      for (let j = 0; j < N; j++) f.d[j] = 0.55 * (1 - f.x[j]) + 0.45 * ((j * 0.6180339) % 1);
+      for (let j = 0; j < N; j++) f.d[j] = f.rig ? (j * 0.6180339) % 1 : 0.55 * (1 - f.x[j]) + 0.45 * ((j * 0.6180339) % 1);
     }
   }
 
@@ -152,8 +153,8 @@ export function createDots(opts) {
   addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') { mx = e.clientX; my = e.clientY; } }, { passive: true });
   document.documentElement.addEventListener('pointerleave', () => { mx = my = -999; });
 
-  const paths = [null, null, null, null, null];
-  const fills = [colors.ink, colors.accent, colors.light, 'rgba(0, 39, 53, .34)', 'rgba(233, 247, 244, .45)'];
+  const paths = [null, null, null, null, null, null];
+  const fills = [colors.ink, colors.accent, colors.light, 'rgba(0, 39, 53, .34)', 'rgba(233, 247, 244, .45)', '#ffffff'];
   const t0 = performance.now();
   let raf = 0;
   const state = { form: -1, amount: 0, n: N };
@@ -164,22 +165,28 @@ export function createDots(opts) {
     px += (mx - px) * 0.18; py += (my - py) * 0.18;
     if (mx < -900) { px = mx; py = my; }
 
-    let k = -1, w = 0, scale = 1, rect = null;
-    forms.forEach((f, i) => {
+    // every form that is present, in page order: each pulls the dots on from wherever the one
+    // before left them, so a form can hand over to the next without passing through snow
+    const act = [];
+    for (const f of forms) {
       const r = f.el.getBoundingClientRect();
-      const p = f.presence({ rect: r, vh, vw, t, scrollY: sy, calm });
-      const amount = calm ? (p[0] > 0.5 ? 1 : 0) : p[0];
-      if (amount > w) { w = amount; k = i; scale = p[1] === undefined ? 1 : p[1]; rect = r; }
-    });
-    state.form = k; state.amount = w;
-    const f = k < 0 ? null : forms[k];
+      const env = { rect: r, vh, vw, t, scrollY: sy, calm };
+      const p = f.presence(env);
+      const amount = calm ? (p[0] > 0.5 && !f.rig ? 1 : 0) : p[0];
+      if (amount <= 0) continue;
+      const scale = p[1] === undefined ? 1 : p[1];
+      f._w = amount; f._rect = r;
+      f._r = (f.rig ? f.place(env, f.ax, f.ay) : f.image ? Math.min(f.r, r.width / f.gw * 0.54) : f.r) * scale;
+      act.push(f);
+    }
+    state.form = act.length ? forms.indexOf(act[act.length - 1]) : -1;
+    state.amount = act.length ? act[act.length - 1]._w : 0;
     const darks = darkEls.map((el) => el.getBoundingClientRect());
-    for (let b = 0; b < 5; b++) paths[b] = new Path2D();
-    const fr = f ? (f.image ? Math.min(f.r, rect.width / f.gw * 0.54) : f.r) * scale : 0;
+    for (let b = 0; b < 6; b++) paths[b] = new Path2D();
     const S = 1.1, spanY = vh + 40, spanX = vw + 40;
 
     for (let j = 0; j < N; j++) {
-      let x, y, r = 0, ww = 0;
+      let x, y, r = 0, top = 0, teal = 0, coat = -1;
       if (SR[j]) {
         x = ((U[j] * spanX + tt * WIND[j] + Math.sin(tt * 0.5 + PH[j]) * 14) % spanX) - 20;
         y = ((((V[j] * spanY + tt * FALL[j] - sy * PAR[j]) % spanY) + spanY) % spanY) - 20;
@@ -187,27 +194,33 @@ export function createDots(opts) {
       } else {
         x = U[j] * vw + Math.sin(tt * 0.3 + PH[j]) * 30; y = V[j] * vh + Math.cos(tt * 0.25 + PH[j]) * 30;
       }
-      if (f) {
-        ww = Math.min(1, Math.max(0, w * (1 + S) - f.d[j] * S));
+      for (let a = 0; a < act.length; a++) {
+        const f = act[a], rect = f._rect;
+        let ww = Math.min(1, Math.max(0, f._w * (1 + S) - f.d[j] * S));
+        if (ww <= 0) continue;
         ww = ww * ww * (3 - 2 * ww);
-        if (ww > 0) {
-          const arc = Math.sin(Math.PI * ww);
-          x += (rect.left + f.x[j] * rect.width - x) * ww + arc * SWX[j];
-          y += (rect.top + f.y[j] * rect.height - y) * ww + arc * SWY[j];
-          r += ((f.hide[j] ? 0 : fr) - r) * ww;
-          const dx = x - px, dy = y - py, d2 = dx * dx + dy * dy;
-          if (d2 < 12100 && d2 > 0.01) { const d = Math.sqrt(d2), push = (1 - d / 110) ** 2 * 42 * ww; x += dx / d * push; y += dy / d * push; }
-        }
+        const arc = Math.sin(Math.PI * ww) * (a ? 0.45 : 1);
+        const tx = f.rig ? f.ax[j] : rect.left + f.x[j] * rect.width, ty = f.rig ? f.ay[j] : rect.top + f.y[j] * rect.height;
+        x += (tx - x) * ww + arc * SWX[j];
+        y += (ty - y) * ww + arc * SWY[j];
+        r += ((f.hide[j] ? 0 : f._r * (f.rig ? f.size[j] : 1)) - r) * ww;
+        if (ww > 0.5) { teal = f.rig ? 0 : f.teal[j]; coat = f.rig ? f.rig.tone[j] : -1; }
+        top = Math.max(top, ww);
+      }
+      if (top > 0) {
+        const dx = x - px, dy = y - py, d2 = dx * dx + dy * dy;
+        if (d2 < 12100 && d2 > 0.01) { const d = Math.sqrt(d2), push = (1 - d / 110) ** 2 * 42 * top; x += dx / d * push; y += dy / d * push; }
       }
       if (r < 0.2 || x < -6 || y < -6 || x > vw + 6 || y > vh + 6) continue;
-      let bucket = f && ww > 0.5 && f.teal[j] ? 1 : 0;
+      let bucket = teal;
+      if (coat >= 0) bucket = coat ? 0 : 5; else
       if (!bucket) for (const d of darks) if (y >= d.top && y <= d.bottom && x >= d.left && x <= d.right) { bucket = 2; break; }
-      if (ww < 0.5 && bucket !== 1) bucket = bucket ? 4 : 3;
+      if (top < 0.5 && bucket !== 1 && coat < 0) bucket = bucket ? 4 : 3;
       paths[bucket].moveTo(x + r, y); paths[bucket].arc(x, y, r, 0, 6.2832);
     }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, vw, vh);
-    for (let b = 0; b < 5; b++) { ctx.fillStyle = fills[b]; ctx.fill(paths[b]); }
+    for (const b of [3, 4, 5, 0, 1, 2]) { ctx.fillStyle = fills[b]; ctx.fill(paths[b]); }
   }
 
   let resizeT = 0;
