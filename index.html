@@ -176,14 +176,12 @@
   .card.wide .meta { justify-content: center; padding: clamp(22px, 3vw, 40px); }
   .card.wide .meta p.eg { margin-top: 8px; }
 
-  /* roots: a tall stage whose inside stays pinned while the snow leopard runs the ridge */
-  .roots { height: 300vh; padding: 0; }
-  .roots-pin { position: sticky; top: 0; height: 100vh; height: 100svh; display: flex; flex-direction: column; overflow: hidden; }
-  .roots .wrap { padding-top: clamp(56px, 9vh, 104px); }
-  .roots .text { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px clamp(28px, 5vw, 88px); max-width: 78%; }
+  /* roots: the range the snow leopard runs down */
+  .roots { padding-bottom: 0; }
+  .roots .text { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px clamp(28px, 5vw, 88px); max-width: 78%; }
   .roots .text p { color: var(--muted); }
   .roots .text h2 { grid-column: 1 / -1; }
-  .range { position: relative; z-index: 1; flex: 1; min-height: 0; margin-top: clamp(8px, 3vh, 40px); overflow: hidden; }
+  .range { position: relative; z-index: 1; margin-top: clamp(40px, 9vh, 96px); overflow: hidden; }
   .range-in { position: relative; aspect-ratio: 1672 / 941; }
   .range-in > img { width: 100%; height: 100%; }
   .range-fade { position: absolute; left: 0; right: 0; bottom: -1px; height: 34%; background: linear-gradient(rgba(0, 39, 53, 0), rgba(0, 39, 53, .55) 45%, rgba(0, 39, 53, .9) 78%, var(--navy)); }
@@ -236,9 +234,7 @@
     .roots .text { grid-template-columns: 1fr; max-width: none; }
     .work-grid, .brief .pair, .card.wide { grid-template-columns: 1fr; }
     .card.wide .shot { aspect-ratio: 1152 / 600; min-height: 0; }
-    .roots { height: 260vh; }
-    .roots .text p:last-child { display: none; }
-    .range { flex: 0 0 auto; margin-top: auto; }
+    .range { margin-top: 32px; }
     .range-in { width: 135%; margin-left: -16%; }
   }
 </style>
@@ -313,7 +309,6 @@
   </section>
 
   <section class="roots" id="roots">
-    <div class="roots-pin">
     <div class="wrap">
       <div class="text">
         <h2>Rooted in Ladakh</h2>
@@ -326,7 +321,6 @@
         <img src="./img/range.webp" width="1672" height="941" loading="lazy" alt="Snow-covered Himalayan peaks drawn in the Snolep colours">
       </div>
       <div class="range-fade" aria-hidden="true"></div>
-    </div>
     </div>
   </section>
 </main>
@@ -529,7 +523,6 @@
   // The path the leopard runs, traced from the line drawn on the mountain: fractions of the
   // picture, from the high summit down to the jump. Paws on the line.
   const range = document.querySelector('.range-in'), wordmark = document.getElementById('wordmark');
-  const stage = document.getElementById('roots');
   const small = matchMedia('(max-width: 900px)').matches;
   const RIDGE = [[0.8056,0.1138],[0.7997,0.1261],[0.7937,0.1381],[0.7872,0.1491],[0.7802,0.1589],[0.7727,0.1676],[0.7654,0.1766],[0.7587,0.1865],[0.7525,0.1974],[0.7469,0.2095],[0.7416,0.2227],[0.7362,0.2356],[0.7304,0.248],[0.724,0.2593],[0.7172,0.2698],[0.7101,0.2796],[0.7025,0.2882],[0.6944,0.2955],[0.6862,0.3018],[0.6777,0.3069],[0.6689,0.3108],[0.6603,0.3151],[0.6518,0.3201],[0.6435,0.326],[0.6359,0.334],[0.6291,0.3441],[0.6229,0.3554],[0.6172,0.3676],[0.6117,0.3803],[0.606,0.3926],[0.5998,0.4043],[0.5931,0.415],[0.586,0.4251],[0.5789,0.4352],[0.5719,0.4455],[0.5652,0.4563],[0.5592,0.4681],[0.5537,0.4807],[0.5482,0.4934],[0.5425,0.5055],[0.5363,0.5167],[0.5292,0.5264],[0.5216,0.5349],[0.5136,0.5428],[0.5058,0.551],[0.4981,0.5596],[0.4908,0.5689],[0.4836,0.5787],[0.4763,0.5878],[0.4685,0.5949],[0.4604,0.5995],[0.4518,0.6017],[0.4428,0.6018],[0.4338,0.6018],[0.425,0.6032],[0.4165,0.6067],[0.4081,0.612],[0.3998,0.6183],[0.3917,0.6253],[0.3836,0.6325],[0.3755,0.6396],[0.3674,0.6467],[0.3593,0.6541],[0.3514,0.662],[0.3437,0.6703],[0.336,0.6786],[0.3282,0.6867],[0.3204,0.6948],[0.3123,0.702],[0.304,0.7083],[0.2956,0.7144],[0.2872,0.7207],[0.2788,0.7271],[0.2705,0.7335],[0.2623,0.7404],[0.2542,0.7476],[0.2461,0.7547],[0.2379,0.7616],[0.23,0.7694],[0.2213,0.7746]];
   const ridge = (() => {
@@ -547,12 +540,37 @@
     };
     return { at, total };
   })();
-  // how far through the pinned stage the page is: 0 as it pins, 1 as it lets go
-  const stageAt = (vh) => { const r = stage.getBoundingClientRect(); return clamp(-r.top / Math.max(1, r.height - vh)); };
-  const RUN = [0.06, 0.74], JUMP = [0.74, 0.86], SCATTER = [0.77, 1];
+  // Where the leopard is, from the page's scroll: RUN goes 0 to 1 as the summit and then the end
+  // of the line pass the middle of the screen; OUT carries it off the left edge after that; HOME
+  // is the last stretch of the page, where it comes back in from the right and becomes the name.
+  const runAt = (rect, vh) => {
+    const h = rect.height, a = vh * 0.5 - ridge.at(0).y * h, b = vh * 0.45 - ridge.at(1).y * h;
+    return { run: clamp((a - rect.top) / (a - b)), out: clamp((b - rect.top) / (vh * 0.3)) };
+  };
+  // HOME runs on the clock: once the name is on screen the leopard comes in from the right
+  // (IN seconds), then scatters into the letters (from SCATTER on); scrolling away resets it
+  const IN = 1.4, SCATTER = [1.1, 2.1];
+  const homeClock = (t) => {
+    const w = wordmark.getBoundingClientRect();
+    if (w.bottom > innerHeight + 4) { homeState.since = undefined; return -1; }
+    if (homeState.since === undefined) homeState.since = t;
+    return t - homeState.since;
+  };
   const span = (q, [a, b]) => clamp((q - a) / (b - a));
-  // the stride: frames advance with the distance run; when the page stops, it stands
-  const gait = { last: 0, moved: -1, run: 0, time: 0 };
+  // eases a value towards where the scroll puts it, so wheel steps don't jerk the animal
+  const follow = (st, key, want, dt, rate = 9) => (st[key] = st[key] === undefined || Math.abs(want - st[key]) > 0.5 ? want : st[key] + (want - st[key]) * (1 - Math.exp(-dt * rate)));
+  // gallop: the pose advances with the ground covered; when the page stops, it stands
+  const stride = (st, dist, t, dt, moving) => {
+    if (Math.abs(dist - (st.dist ?? dist)) > 0.01) st.moved = t;
+    st.dist = dist;
+    const want = moving && t - (st.moved ?? -1) < 0.2 ? 1 : 0;
+    st.run = (st.run ?? 0) + (want - (st.run ?? 0)) * (1 - Math.exp(-dt * (want ? 12 : 4)));
+    const c = (dist / (440 * 1.15)) * 6, i = Math.floor(c), f = c - i;
+    const a = CYCLE[((i % 6) + 6) % 6], b = CYCLE[(((i + 1) % 6) + 6) % 6];
+    // standing: blend the gallop pose back to the standing one
+    return st.run > 0.98 ? { a, b, t: f } : { a: STAND, b: f < 0.5 ? a : b, t: st.run };
+  };
+  const ridgeState = {}, homeState = {};
   let leopardRig;
 
   const start = async () => {
@@ -572,41 +590,45 @@
             return [Math.min(smooth(t / 1.5), 1 - clamp((scrollY - vh * 0.07) / (vh * 0.6))), 1 - drawn];
           },
         },
-        { // the running leopard: gathers on the summit, gallops down the drawn line as the page
-          // scrolls, and at the end of it jumps and scatters into the name
+        { // on the mountain: gathers on the summit, gallops down the drawn line as the page scrolls,
+          // and runs off the left edge at the end of it
           el: range, rig: leopardRig,
-          presence: ({ vh }) => [clamp((vh * 0.75 - stage.getBoundingClientRect().top) / (vh * 0.75))],
+          presence: ({ rect, vh }) => [clamp((vh * 0.95 - (rect.top + ridge.at(0).y * rect.height)) / (vh * 0.3))],
           place: ({ rect, vh, t }, X, Y) => {
-            const q = stageAt(vh), u = span(q, RUN), j = span(q, JUMP);
+            const st = ridgeState, dt = Math.min(0.1, Math.max(0, t - (st.time ?? t))); st.time = t;
+            const want = runAt(rect, vh);
+            const run = follow(st, 'run', want.run, dt), out = follow(st, 'out', want.out, dt);
             const scale = Math.min(0.42, rect.width * (small ? 0.24 : 0.145) / 440);
-            const at = ridge.at(u);
+            const at = ridge.at(run), end = ridge.at(1);
             let x = rect.left + at.x * rect.width, y = rect.top + at.y * rect.height;
-            let angle = Math.atan2(-at.ty, -at.tx);           // the drawing faces left, so its +x points back up the slope
-            angle = Math.max(-0.6, Math.min(0.6, angle > Math.PI / 2 ? angle - Math.PI : angle < -Math.PI / 2 ? angle + Math.PI : angle));
-            // gait: run while the path is moving, settle to standing soon after it stops
-            const dt = Math.min(0.1, Math.max(0, t - gait.time)); gait.time = t;
-            if (Math.abs(u - gait.last) > 1e-5) gait.moved = t;
-            gait.last = u;
-            const want = u > 0 && u < 1 && t - gait.moved < 0.18 ? 1 : 0;
-            gait.run += (want - gait.run) * (1 - Math.exp(-dt * (want ? 14 : 5)));
-            const stride = 440 * scale * 1.15;               // px of ground per cycle
-            const cyc = ((at.d * rect.width) / stride) * 6, i = Math.floor(cyc) % 6, f = cyc - Math.floor(cyc);
-            let a = CYCLE[i], b = CYCLE[(i + 1) % 6], blend = clamp((f - 0.46) / 0.08);
-            if (gait.run < 0.5) { b = a; a = STAND; blend = clamp((gait.run - 0.2) / 0.1); }
-            angle *= 0.35 + 0.65 * gait.run;              // stands upright, leans into the slope as it runs
-            if (j > 0) {                                     // the jump: up and forward off the end of the line
-              const e = Math.sin(Math.PI * Math.min(1, j * 1.2));
-              x -= j * 440 * scale * 0.7;
-              y -= e * 440 * scale * 0.55;
-              angle = angle * (1 - j) - 0.28 * Math.sin(Math.PI * j);
-              a = b = LEAP; blend = 0;
-            }
-            return leopardRig.pose({ x, y, angle, scale, a, b, t: blend }, X, Y);
+            let angle = Math.atan2(at.ty, at.tx) + Math.PI;     // the drawing faces left; turn it to the slope
+            angle = Math.atan2(Math.sin(angle), Math.cos(angle));
+            angle = Math.max(-0.6, Math.min(0.6, angle));
+            const gone = (end.x * rect.width + 440 * scale * 1.2) * out;   // off the left edge
+            x -= gone; angle *= 1 - out;
+            const g = stride(st, (at.d * rect.width + gone) / scale, t, dt, run > 0 && run < 1 || (out > 0 && out < 1));
+            angle *= 0.35 + 0.65 * (st.run ?? 0);
+            return leopardRig.pose({ x, y, angle, scale, a: g.a, b: g.b, t: g.t }, X, Y);
+          },
+        },
+        { // at the bottom of the page: back in from the right, over the name, and into it
+          el: wordmark, rig: leopardRig,
+          presence: ({ vh, t, calm }) => [!calm && homeClock(t) >= 0 && runAt(range.getBoundingClientRect(), vh).out >= 1 ? 1 : 0],
+          place: ({ vw, vh, t }, X, Y) => {
+            const st = homeState, dt = Math.min(0.1, Math.max(0, t - (st.time ?? t))); st.time = t;
+            const tau = Math.max(0, homeClock(t));
+            const w = wordmark.getBoundingClientRect(), r = range.getBoundingClientRect();
+            const scale = Math.min(0.42, r.width * (small ? 0.24 : 0.145) / 440);
+            const from = vw + 440 * scale * 0.9, to = w.left + w.width * (small ? 0.62 : 0.58);
+            const k = 1 - (1 - clamp(tau / IN)) ** 2.2;     // runs in, slowing as it arrives
+            const x = from + (to - from) * k, y = w.top - 6;
+            const g = stride(st, (from - x) / scale, t, dt, k < 0.995);
+            return leopardRig.pose({ x, y, angle: 0, scale, a: g.a, b: g.b, t: g.t }, X, Y);
           },
         },
         { // the name
           el: wordmark, text: (w) => (w < 620 ? ['SNOLEP', 'TECHNOLOGIES'] : ['SNOLEP TECHNOLOGIES']), font: '800 100px Archivo',
-          presence: ({ vh, calm }) => [calm ? clamp(1 - (document.documentElement.scrollHeight - innerHeight - scrollY) / (vh * 0.5)) : Math.max(span(stageAt(vh), SCATTER), stage.getBoundingClientRect().bottom < vh ? 1 : 0)],
+          presence: ({ vh, t, calm }) => [calm ? clamp(1 - (document.documentElement.scrollHeight - innerHeight - scrollY) / (vh * 0.5)) : span(Math.max(0, homeClock(t)), SCATTER)],
         },
       ],
     });

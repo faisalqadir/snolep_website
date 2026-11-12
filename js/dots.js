@@ -155,8 +155,8 @@ export function createDots(opts) {
   addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') { mx = e.clientX; my = e.clientY; } }, { passive: true });
   document.documentElement.addEventListener('pointerleave', () => { mx = my = -999; });
 
-  const paths = [null, null, null, null, null, null];
-  const fills = [colors.ink, colors.accent, colors.light, 'rgba(0, 39, 53, .34)', 'rgba(233, 247, 244, .45)', '#ffffff'];
+  const paths = [null, null, null, null, null, null, null];
+  const fills = [colors.ink, colors.accent, colors.light, 'rgba(0, 39, 53, .34)', 'rgba(233, 247, 244, .45)', '#ffffff', '#7fc9c5'];
   const t0 = performance.now();
   let raf = 0;
   const state = { form: -1, amount: 0, n: N };
@@ -185,7 +185,7 @@ export function createDots(opts) {
     state.form = act.length ? forms.indexOf(act[act.length - 1]) : -1;
     state.amount = act.length ? act[act.length - 1]._w : 0;
     const darks = darkEls.map((el) => el.getBoundingClientRect());
-    for (let b = 0; b < 6; b++) paths[b] = new Path2D();
+    for (let b = 0; b < 7; b++) paths[b] = new Path2D();
     const S = 1.1, spanY = vh + 40, spanX = vw + 40;
 
     for (let j = 0; j < N; j++) {
@@ -227,14 +227,15 @@ export function createDots(opts) {
       } else if (OX[j] || OY[j]) OX[j] = OY[j] = VX[j] = VY[j] = 0;
       if (r < 0.2 || x < -6 || y < -6 || x > vw + 6 || y > vh + 6) continue;
       let bucket = teal;
-      if (coat >= 0) bucket = coat ? 0 : 5; else
+      if (coat >= 0) { bucket = coat ? 0 : 5; if (coat) for (const d of darks) if (y >= d.top && y <= d.bottom && x >= d.left && x <= d.right) { bucket = 6; break; } } else
       if (!bucket) for (const d of darks) if (y >= d.top && y <= d.bottom && x >= d.left && x <= d.right) { bucket = 2; break; }
       if (top < 0.5 && bucket !== 1 && coat < 0) bucket = bucket ? 4 : 3;
+      if (coat === 1 && bucket === 0) { const h = r + 0.7; paths[5].moveTo(x + h, y); paths[5].arc(x, y, h, 0, 6.2832); }   // a light rim, so spots read on dark rock
       paths[bucket].moveTo(x + r, y); paths[bucket].arc(x, y, r, 0, 6.2832);
     }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, vw, vh);
-    for (const b of [3, 4, 5, 0, 1, 2]) { ctx.fillStyle = fills[b]; ctx.fill(paths[b]); }
+    for (const b of [3, 4, 5, 0, 6, 1, 2]) { ctx.fillStyle = fills[b]; ctx.fill(paths[b]); }
   }
 
   let resizeT = 0;
