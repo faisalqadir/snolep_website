@@ -13,7 +13,7 @@ export const STAND = 0, LEAP = 1, CYCLE = [1, 2, 3, 4, 5, 6];
 
 export function createLeopard(N) {
   const fx = new Int8Array(bytes(FX).buffer), fy = new Int8Array(bytes(FY).buffer), v = bytes(V);
-  const used = Math.min(N, COUNT);
+  const used = Math.min(Math.floor(N * 0.62), COUNT);   // within the dots dots.js lets shapes use
   const size = new Float32Array(N), tone = new Uint8Array(N), hide = new Uint8Array(N);
   for (let k = used; k < N; k++) hide[k] = 1;
   const dotSize = (b) => (b >= 128 ? 0.45 + 0.55 * (b - 128) / 127 : b ? 0.62 : 0);

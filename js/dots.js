@@ -2,8 +2,8 @@
  * dots.js: one canvas of dots that gather into shapes and blow away as snow.
  *
  * Each form is a picture or a line of text, turned into dots and pinned to an element on the page.
- * The page says how present each form is (0 to 1) from the scroll; between forms the dots drift as
- * a light snowfall. Every dot's place is worked out from the scroll and the clock alone, so nothing
+ * The page says how present each form is (0 to 1) from the scroll. Every dot is snow when no form
+ * holds it: it falls, drifts and sways; a share of the dots never joins a form, so it always snows. Every dot's place is worked out from the scroll and the clock alone, so nothing
  * lags or overshoots however fast the page moves. No libraries.
  *
  *   import { createDots } from './js/dots.js';
@@ -24,18 +24,24 @@ export function createDots(opts) {
   const forms = opts.forms;
   const N = opts.count || (innerWidth < 700 ? 4500 : 5600);
   const R = opts.radius || 1.75;
+  // shapes draw on the first FORM dots; the rest are always snow, so the snowfall never stops
+  const FORM = Math.floor(N * 0.62);
 
   // what each dot is when it's snow
   const rnd = (() => { let s = 20241; return () => ((s = (s * 16807) % 2147483647) / 2147483647); })();
   const U = new Float32Array(N), V = new Float32Array(N), PH = new Float32Array(N), FALL = new Float32Array(N);
   const WIND = new Float32Array(N), PAR = new Float32Array(N), SR = new Float32Array(N), SWX = new Float32Array(N), SWY = new Float32Array(N);
+  // Every dot is snow when no shape holds it: it falls, drifts with the wind and sways. A few in a
+  // hundred show at rest, in three depths: far flakes small and slow, near ones bigger and faster
+  // and moving more with the page. The rest fall unseen until a shape gathers them.
   for (let j = 0; j < N; j++) {
     U[j] = rnd(); V[j] = rnd(); PH[j] = rnd() * 6.283;
-    const flake = rnd() < 0.05;                    // the few that show as snow
-    SR[j] = flake ? 0.9 + rnd() * 1.3 : 0;
-    FALL[j] = flake ? 9 + rnd() * 22 : 0;
-    WIND[j] = flake ? 5 + rnd() * 12 : 0;
-    PAR[j] = flake ? 0.12 + rnd() * 0.3 : 0;
+    const seen = j >= FORM && rnd() < 0.2, depth = rnd();
+    const layer = depth < 0.55 ? 0 : depth < 0.88 ? 1 : 2;
+    SR[j] = seen ? [0.7, 1.15, 1.8][layer] + rnd() * [0.35, 0.5, 0.9][layer] : 0;
+    FALL[j] = [9, 16, 28][layer] + rnd() * [6, 9, 14][layer];
+    WIND[j] = [3, 6, 10][layer] + rnd() * 5;
+    PAR[j] = [0.06, 0.16, 0.34][layer];
     SWX[j] = (rnd() - 0.35) * 150; SWY[j] = (rnd() - 0.6) * 110;
   }
 
@@ -79,7 +85,7 @@ export function createDots(opts) {
   function fromImage(f) {
     const img = f.image, c = f.crop || [0, 0, 1, 1];
     const sw = img.naturalWidth * (c[2] - c[0]), sh = img.naturalHeight * (c[3] - c[1]);
-    const w = Math.round(Math.sqrt(N * 4.2 * sw / sh)), h = Math.round(w * sh / sw);
+    const w = Math.round(Math.sqrt(FORM * 4.2 * sw / sh)), h = Math.round(w * sh / sw);
     scratch.width = w; scratch.height = h;
     sctx.clearRect(0, 0, w, h);
     sctx.drawImage(img, img.naturalWidth * c[0], img.naturalHeight * c[1], sw, sh, 0, 0, w, h);
@@ -92,7 +98,7 @@ export function createDots(opts) {
       teal[i] = g - r > 70 && lum < 0.75 ? 1 : 0;
       tone[i] = Math.max(0.05, teal[i] ? 0.7 : 1 - lum);
     }
-    const on = ditherExactly(tone, w, h, N);
+    const on = ditherExactly(tone, w, h, FORM);
     f.n = on.length;
     for (let j = 0; j < N; j++) {
       const i = on[j % on.length];
@@ -120,7 +126,7 @@ export function createDots(opts) {
       const px = sctx.getImageData(0, 0, w, h).data;
       pts = [];
       for (let i = 0; i < w * h; i++) if (px[i * 4 + 3] > 120) pts.push(i);
-      if (pts.length <= N) { f.gw = w; f.gh = h; break; }
+      if (pts.length <= FORM) { f.gw = w; f.gh = h; break; }
     }
     f.n = pts.length;
     for (let j = 0; j < N; j++) {
@@ -155,8 +161,8 @@ export function createDots(opts) {
   addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') { mx = e.clientX; my = e.clientY; } }, { passive: true });
   document.documentElement.addEventListener('pointerleave', () => { mx = my = -999; });
 
-  const paths = [null, null, null, null, null, null, null];
-  const fills = [colors.ink, colors.accent, colors.light, 'rgba(0, 39, 53, .34)', 'rgba(233, 247, 244, .45)', '#ffffff', '#7fc9c5'];
+  const paths = [null, null, null, null, null, null, null, null];
+  const fills = [colors.ink, colors.accent, colors.light, '#ffffff', 'rgba(255, 255, 255, .72)', '#ffffff', '#7fc9c5', 'rgba(0, 39, 53, .2)'];
   const t0 = performance.now();
   let raf = 0;
   const state = { form: -1, amount: 0, n: N };
@@ -185,23 +191,25 @@ export function createDots(opts) {
     state.form = act.length ? forms.indexOf(act[act.length - 1]) : -1;
     state.amount = act.length ? act[act.length - 1]._w : 0;
     const darks = darkEls.map((el) => el.getBoundingClientRect());
-    for (let b = 0; b < 7; b++) paths[b] = new Path2D();
+    for (let b = 0; b < 8; b++) paths[b] = new Path2D();
     const S = 1.1, spanY = vh + 40, spanX = vw + 40;
 
     for (let j = 0; j < N; j++) {
       let x, y, r = 0, top = 0, teal = 0, coat = -1;
-      if (SR[j]) {
-        x = ((U[j] * spanX + tt * WIND[j] + Math.sin(tt * 0.5 + PH[j]) * 14) % spanX) - 20;
-        y = ((((V[j] * spanY + tt * FALL[j] - sy * PAR[j]) % spanY) + spanY) % spanY) - 20;
-        r = calm ? 0 : SR[j];
-      } else {
-        x = U[j] * vw + Math.sin(tt * 0.3 + PH[j]) * 30; y = V[j] * vh + Math.cos(tt * 0.25 + PH[j]) * 30;
-      }
+      x = ((U[j] * spanX + tt * WIND[j] + Math.sin(tt * 0.5 + PH[j]) * 14) % spanX) - 20;
+      y = ((((V[j] * spanY + tt * FALL[j] - sy * PAR[j]) % spanY) + spanY) % spanY) - 20;
+      r = calm ? 0 : SR[j];
+      const sx = x, sy0 = y, sr = r;
       for (let a = 0; a < act.length; a++) {
         const f = act[a], rect = f._rect;
         let ww = Math.min(1, Math.max(0, f._w * (1 + S) - f.d[j] * S));
         if (ww <= 0) continue;
         ww = ww * ww * (3 - 2 * ww);
+        if (f.hide[j]) {                              // not part of this shape: back to falling snow
+          x += (sx - x) * ww; y += (sy0 - y) * ww; r += (sr - r) * ww; top *= 1 - ww;
+          if (ww > 0.5) { teal = 0; coat = -1; }
+          continue;
+        }
         const arc = Math.sin(Math.PI * ww) * (a ? 0.45 : 1);
         const tx = f.rig ? f.ax[j] : rect.left + f.x[j] * rect.width, ty = f.rig ? f.ay[j] : rect.top + f.y[j] * rect.height;
         x += (tx - x) * ww + arc * SWX[j];
@@ -230,11 +238,12 @@ export function createDots(opts) {
       if (coat >= 0) bucket = coat ? 0 : 5; else
       if (!bucket) for (const d of darks) if (y >= d.top && y <= d.bottom && x >= d.left && x <= d.right) { bucket = 2; break; }
       if (top < 0.5 && bucket !== 1 && coat < 0) bucket = bucket ? 4 : 3;
+      if (bucket === 3) { const e = r + 0.6; paths[7].moveTo(x + e, y); paths[7].arc(x, y, e, 0, 6.2832); }   // snow on a light ground: a faint edge
       paths[bucket].moveTo(x + r, y); paths[bucket].arc(x, y, r, 0, 6.2832);
     }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, vw, vh);
-    for (const b of [3, 4, 5, 0, 1, 2]) { ctx.fillStyle = fills[b]; ctx.fill(paths[b]); }
+    for (const b of [7, 3, 4, 5, 0, 1, 2]) { ctx.fillStyle = fills[b]; ctx.fill(paths[b]); }
   }
 
   let resizeT = 0;
