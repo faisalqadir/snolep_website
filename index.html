@@ -240,15 +240,41 @@
   .foot { position: relative; z-index: 3; width: min(1240px, 100% - 2 * var(--pad)); margin: 0 auto; padding: 22px 0 26px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 24px; font-size: 14px; color: var(--aqua); }
   .foot a { display: inline-flex; align-items: center; min-height: 44px; margin-block: -12px; }
 
-  /* the cursor (fine pointers): a ring that fills with how far down the page you are */
-  .cursor { position: fixed; left: 0; top: 0; z-index: 40; pointer-events: none; width: 44px; height: 44px; margin: -22px 0 0 -22px; color: var(--navy); display: none;
+  /* the cursor (fine pointers): a ring that fills with how far down the page you are; over the
+     contact section it becomes a "Work with us" bubble that smears behind itself as it moves */
+  .cursor, .cursor-ghost { position: fixed; left: 0; top: 0; z-index: 40; pointer-events: none; }
+  .cursor { width: 44px; height: 44px; margin: -22px 0 0 -22px; color: var(--navy); display: none;
             transform: translate3d(var(--x, -100px), var(--y, -100px), 0); }
   .cursor.on-dark { color: var(--aqua); }
-  .cursor svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
+  .cursor svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; transition: opacity .25s ease, transform .35s ease; }
   .cursor circle { fill: none; stroke: currentColor; }
   .cursor .track { stroke-width: 1; opacity: .25; }
   .cursor .progress { stroke-width: 1.8; stroke-dasharray: 1 1; stroke-dashoffset: var(--left, 1); stroke: var(--teal); }
+  .cursor .disc, .cursor-ghost { width: 96px; height: 96px; border-radius: 50%; background: var(--teal); }
+  .cursor .disc { position: absolute; left: 50%; top: 50%; margin: -48px 0 0 -48px; display: grid; place-items: center; color: var(--navy);
+                  font: 500 14px/1.1 var(--body); text-align: center;
+                  transform: rotate(var(--angle, 0deg)) scale(calc(var(--s, 0) * var(--stretch, 1)), calc(var(--s, 0) / var(--stretch, 1))); }
+  .cursor .disc span { transform: rotate(calc(-1 * var(--angle, 0deg))); display: block; }
+  .cursor.is-link svg { opacity: 0; transform: rotate(-90deg) scale(.6); }
+  .cursor-ghost { margin: -48px 0 0 -48px; opacity: 0; will-change: transform, opacity; }
   @media (pointer: fine) { .cursor { display: block; } }
+  @media (pointer: fine) and (min-width: 901px) { .finale.is-target, .finale.is-target a, .finale.is-target button { cursor: none; } }
+
+  /* on a desktop the form opens in a panel from the contact section; on a phone it stays in place */
+  .open-brief { display: none; margin-top: 28px; background: var(--teal); border-color: var(--teal); color: var(--navy); }
+  .open-brief:hover { background: var(--mint); border-color: var(--mint); }
+  .contact.form-away { grid-template-columns: 1fr; }
+  .contact.form-away h2 { font-size: clamp(48px, 7vw, 112px); line-height: .98; letter-spacing: -.04em; }
+  .contact.form-away .say p { font-size: 19px; max-width: 30em; }
+  .contact.form-away .open-brief { display: inline-flex; }
+  .brief-dialog { width: min(640px, 100% - 32px); max-height: calc(100vh - 48px); margin: auto; padding: 0; border: 0; border-radius: 18px; background: #04303f; color: var(--mint); overflow: auto; }
+  .brief-dialog::backdrop { background: rgba(0, 20, 28, .72); }
+  .brief-dialog .brief { border: 0; }
+  .brief-dialog .close { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border: 1px solid rgba(173, 220, 218, .4); border-radius: 50%;
+                         background: none; color: var(--mint); font: 400 22px/1 var(--body); cursor: pointer; }
+  .brief-dialog .close:hover { border-color: var(--mint); }
+  .brief-dialog .brief { padding-top: 64px; }
+  .brief-dialog h3 { position: absolute; top: 24px; left: clamp(20px, 2.4vw, 32px); font-size: 20px; }
 
   @media (max-width: 1240px) and (min-width: 901px) { .traits { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 900px) {
@@ -382,6 +408,7 @@
       <div class="say">
         <h2>Project enquiries</h2>
         <p>A few lines are enough. The message lands in our inbox and we answer by email.</p>
+        <button class="btn open-brief" type="button">Start a project <i aria-hidden="true">→</i></button>
       </div>
       <form class="brief" id="brief">
         <fieldset>
@@ -443,8 +470,14 @@
   </div>
 </aside>
 
+<dialog class="brief-dialog" aria-label="Project enquiry">
+  <h3>Project enquiry</h3>
+  <button class="close" type="button" aria-label="Close">×</button>
+</dialog>
+
 <div class="cursor" aria-hidden="true">
   <svg viewBox="0 0 44 44"><circle class="track" cx="22" cy="22" r="20"/><circle class="progress" cx="22" cy="22" r="20" pathLength="1"/></svg>
+  <span class="disc"><span>Work<br>with us</span></span>
 </div>
 
 <script>
@@ -527,11 +560,38 @@
     });
   })();
 
-  // The cursor ring: eased behind the pointer, filled with the scroll progress.
+  // The form: on a desktop it lives in a panel the contact section opens; on a phone it stays in place.
+  const desk = matchMedia('(pointer: fine) and (min-width: 901px)');
+  const brief = (() => {
+    const form = document.getElementById('brief'), contact = document.querySelector('.contact'), dialog = document.querySelector('.brief-dialog');
+    const place = () => {
+      if (desk.matches) { dialog.appendChild(form); contact.classList.add('form-away'); }
+      else { if (dialog.open) dialog.close(); contact.appendChild(form); contact.classList.remove('form-away'); }
+    };
+    desk.addEventListener('change', place); place();
+    const open = () => { if (!dialog.open) { dialog.showModal(); form.querySelector('input:checked').focus(); } };
+    dialog.querySelector('.close').addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });     // a click on the dimmed page
+    document.querySelector('.open-brief').addEventListener('click', open);
+    // the other Start a project buttons open the same panel on a desktop
+    document.querySelectorAll('a.btn[href="#contact"], a.rail-cta').forEach((l) => l.addEventListener('click', (e) => { if (desk.matches) { e.preventDefault(); open(); } }));
+    return { open, dialog };
+  })();
+
+  // The cursor: a ring eased behind the pointer, filled with the scroll progress. Over the contact
+  // section (desktop) it turns into a "Work with us" bubble, stretched along its motion and trailing
+  // fading copies of itself; a click anywhere there opens the form.
   (() => {
     const fine = matchMedia('(pointer: fine)');
+    const still = matchMedia('(prefers-reduced-motion: reduce)');
     const el = document.querySelector('.cursor'), dark = document.querySelector('.finale');
-    let mx = -100, my = -100, x = mx, y = my, raf = 0, seen = false;
+    const ghosts = Array.from({ length: 12 }, () => {
+      const g = document.createElement('span');
+      g.className = 'cursor-ghost';
+      document.body.appendChild(g);
+      return { el: g, x: 0, y: 0, t: -1, s: 1 };
+    });
+    let gi = 0, mx = -100, my = -100, x = mx, y = my, s = 0, seen = false, raf = 0, last = 0, lx = 0, ly = 0, stretch = 1, angle = 0, inLink = false;
     const progress = () => {
       const max = document.documentElement.scrollHeight - innerHeight;
       el.style.setProperty('--left', (1 - Math.min(1, Math.max(0, scrollY / Math.max(1, max)))).toFixed(4));
@@ -539,26 +599,60 @@
     const head = document.querySelector('.site-head');
     const shade = () => head.classList.toggle('on-dark', dark.getBoundingClientRect().top < 32);
     addEventListener('scroll', shade, { passive: true }); shade();
-    const tick = () => {
+    const tick = (now) => {
       raf = 0;
-      x += (mx - x) * 0.22; y += (my - y) * 0.22;
+      const dt = Math.min(0.05, last ? (now - last) / 1000 : 1 / 60);
+      last = now;
+      const k = still.matches ? 1 : 1 - Math.exp(-dt * 14);
+      const px = x, py = y;
+      x += (mx - x) * k; y += (my - y) * k;
+      const d = dark.getBoundingClientRect();
+      const over = mx >= d.left && mx <= d.right && my >= d.top && my <= d.bottom;
+      inLink = over && desk.matches && !brief.dialog.open;
+      el.classList.toggle('is-link', inLink);
+      dark.classList.toggle('is-target', inLink);
+      el.classList.toggle('on-dark', over);
+      s += ((inLink ? 1 : 0) - s) * (still.matches ? 1 : 1 - Math.exp(-dt * 12));
+      // motion blur: squash and stretch along the direction of travel, and leave copies behind
+      const vx = (x - px) / dt, vy = (y - py) / dt, speed = Math.hypot(vx, vy);
+      const want = still.matches ? 1 : 1 + Math.min(0.35, speed / 4000);
+      stretch += (want - stretch) * (1 - Math.exp(-dt * 18));
+      if (speed > 30) angle = Math.atan2(vy, vx) * 180 / Math.PI;
+      if (inLink && s > 0.5 && !still.matches && Math.hypot(x - lx, y - ly) > 9) {
+        const g = ghosts[gi++ % ghosts.length];
+        g.x = lx; g.y = ly; g.t = now; g.s = s;
+        lx = x; ly = y;
+      } else if (!inLink) { lx = x; ly = y; }
+      let busy = false;
+      for (const g of ghosts) {
+        if (g.t < 0) continue;
+        const age = (now - g.t) / 320;
+        if (age >= 1) { g.t = -1; g.el.style.opacity = 0; continue; }
+        busy = true;
+        g.el.style.opacity = (0.55 * (1 - age) * (1 - age)).toFixed(3);
+        g.el.style.transform = `translate3d(${g.x.toFixed(1)}px, ${g.y.toFixed(1)}px, 0) scale(${(g.s * (1 - 0.35 * age)).toFixed(3)})`;
+      }
       el.style.setProperty('--x', `${x.toFixed(1)}px`);
       el.style.setProperty('--y', `${y.toFixed(1)}px`);
-      const d = dark.getBoundingClientRect();
-      el.classList.toggle('on-dark', y >= d.top && y <= d.bottom && x <= d.right);
-      if (Math.abs(mx - x) + Math.abs(my - y) > 0.2) raf = requestAnimationFrame(tick);
+      el.style.setProperty('--s', s.toFixed(3));
+      el.style.setProperty('--stretch', stretch.toFixed(3));
+      el.style.setProperty('--angle', `${angle.toFixed(1)}deg`);
+      if (busy || Math.abs(mx - x) + Math.abs(my - y) > 0.2 || Math.abs((inLink ? 1 : 0) - s) > 0.002 || Math.abs(stretch - 1) > 0.002) raf = requestAnimationFrame(tick);
+      else last = 0;
     };
     const go = () => { if (!raf) raf = requestAnimationFrame(tick); };
     addEventListener('pointermove', (e) => {
       if (e.pointerType !== 'mouse' || !fine.matches) return;
       mx = e.clientX; my = e.clientY;
-      if (!seen) { seen = true; x = mx; y = my; }
+      if (!seen) { seen = true; x = lx = mx; y = ly = my; }
       go();
     }, { passive: true });
     document.documentElement.addEventListener('pointerleave', () => { mx = my = -100; seen = false; go(); });
     addEventListener('scroll', () => { progress(); go(); }, { passive: true });
     addEventListener('resize', progress);
     progress();
+    // anywhere in the section opens the form, except its own links
+    dark.addEventListener('click', (e) => { if (desk.matches && !e.target.closest('a, button, dialog')) brief.open(); });
   })();
 </script>
 
@@ -607,9 +701,11 @@
     if (homeState.nameSince === undefined) homeState.nameSince = t;
     return t - homeState.nameSince;
   };
+  const deskQ = matchMedia('(pointer: fine) and (min-width: 901px)');
+  const landing = () => document.querySelector(deskQ.matches ? '.open-brief' : '#send');
   const homeClock = (t) => {
-    const w = document.getElementById('send').getBoundingClientRect();
-    if (w.bottom > innerHeight - 20) { homeState.since = undefined; return -1; }
+    const w = landing().getBoundingClientRect();
+    if (!w.width || w.bottom > innerHeight - 20) { homeState.since = undefined; return -1; }
     if (homeState.since === undefined) homeState.since = t;
     return t - homeState.since;
   };
@@ -693,7 +789,7 @@
           place: ({ vw, vh, t }, X, Y) => {
             const st = homeState, dt = Math.min(0.1, Math.max(0, t - (st.time ?? t))); st.time = t;
             const tau = Math.max(0, homeClock(t)), k = clamp(tau / IN), e = 1 - (1 - k) ** 2;
-            const btn = document.getElementById('send').getBoundingClientRect(), form = document.getElementById('brief').getBoundingClientRect();
+            const btn = landing().getBoundingClientRect(), form = (deskQ.matches ? document.querySelector('.contact') : document.getElementById('brief')).getBoundingClientRect();
             const scale = Math.min(0.42, range.getBoundingClientRect().width * (small ? 0.24 : 0.145) / 440);
             // the curve: in at the right edge above the form, sweeping left then down onto the button
             const P0 = [vw + 440 * scale, form.top - vh * 0.06], P1 = [btn.left + form.width * 0.25, form.top - vh * 0.02], P2 = [btn.left + btn.width * 0.5, btn.top];
