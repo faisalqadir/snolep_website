@@ -24,7 +24,7 @@
     --aqua: #addcda;
     --mint: #e9f7f4;
     --white: #fffeff;
-    --muted: #46656f;
+    --muted: #33515b;
     --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
     --body: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -51,8 +51,8 @@
 
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 26px; border: 1.5px solid var(--navy); border-radius: 999px;
          font: 600 16px/1 var(--body); text-decoration: none; cursor: pointer; transition: transform .25s var(--ease), background .2s ease, color .2s ease, border-color .2s ease; }
-  .btn.primary { background: var(--navy); color: var(--mint); }
-  .btn.primary:hover { background: var(--teal-ink); border-color: var(--teal-ink); }
+  .btn.primary { background: var(--teal); border-color: var(--teal); color: var(--navy); }
+  .btn.primary:hover { background: var(--navy); border-color: var(--navy); color: var(--mint); }
   .btn.ghost { background: transparent; color: var(--navy); }
   .btn.ghost:hover { background: var(--navy); color: var(--mint); }
   .btn:hover { transform: translateY(-2px); }
@@ -84,7 +84,7 @@
                   font: 500 15px/1.2 var(--body); transition: color .25s ease; }
   .rail-index a span { font: 500 10px/1 var(--mono); color: var(--muted); transition: color .25s ease; }
   .rail-index a::after { content: ''; align-self: center; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); opacity: 0; transform: scale(.3); transition: opacity .25s ease, transform .25s ease; }
-  .rail-index a:hover, .rail-index a[aria-current="true"], .rail-index a[aria-current="true"] span { color: var(--teal); }
+  .rail-index a:hover, .rail-index a[aria-current="true"], .rail-index a[aria-current="true"] span { color: var(--teal-ink); }
   .rail-index a[aria-current="true"]::after { opacity: 1; transform: none; }
   .rail-links a { display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0; font-size: 13px; text-decoration: none; transition: color .2s ease; }
   .rail-links a i { font: 500 11px/1 var(--mono); font-style: normal; color: var(--muted); transition: transform .25s ease, color .2s ease; }
@@ -99,11 +99,11 @@
   .rail-time time { font: 500 12px/1.4 var(--mono); color: var(--navy); }
   .rail-foot { margin-top: auto; padding-top: 24px; display: grid; justify-items: center; gap: 12px; }
   .rail-cta { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 6px 6px 6px 22px; border-radius: 999px;
-              background: var(--teal); color: var(--white); text-decoration: none; font: 600 15px/1 var(--body); transition: background .25s ease; }
-  .rail-cta i { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: var(--white); color: var(--teal);
+              background: var(--teal); color: var(--navy); text-decoration: none; font: 600 15px/1 var(--body); transition: background .25s ease, color .25s ease; }
+  .rail-cta i { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: var(--white); color: var(--navy);
                 font: 600 16px/1 var(--body); font-style: normal; transition: transform .35s ease; }
-  .rail-cta:hover { background: var(--navy); }
-  .rail-cta:hover i { transform: rotate(45deg); }
+  .rail-cta:hover { background: var(--navy); color: var(--mint); }
+  .rail-cta:hover i { transform: translateX(3px); }
   .rail-top { padding: 4px; border: 0; background: none; color: var(--muted); font: 400 12px/1 var(--body); cursor: pointer; }
   .rail-top:hover { color: var(--navy); }
   .rail-close { display: none; }
@@ -189,16 +189,13 @@
   /* inspiration: the snow leopard's four habits, and the mountain it runs; each habit lights up as
      the leopard passes its mark on the ridge */
   .traits { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(16px, 2vw, 28px); margin-top: clamp(28px, 5vh, 48px); }
-  .traits li { padding-top: 16px; border-top: 1px solid var(--aqua); transition: border-color .4s ease; }
+  .traits li { position: relative; padding-top: 18px; border-top: 1px solid var(--aqua); }
+  .traits li::before { content: ''; position: absolute; left: 0; top: -1px; height: 2px; width: 100%; background: var(--navy); transform: scaleX(var(--p, 0)); transform-origin: left; }
   .traits .n { display: inline-grid; place-items: center; width: 26px; height: 26px; margin-bottom: 12px; border: 1px solid var(--navy); border-radius: 50%;
                font: 500 13px/1 var(--body); transition: background .4s ease, color .4s ease, border-color .4s ease; }
   .traits h3 { font-size: 20px; line-height: 1.25; }
   .traits p { margin-top: 8px; font-size: 15px; color: var(--muted); }
-  .traits li.is-on { border-color: var(--navy); }
   .traits li.is-on .n { background: var(--navy); color: var(--mint); }
-  .marks span { position: absolute; display: grid; place-items: center; width: 22px; height: 22px; margin: -32px 0 0 -11px; border-radius: 50%;
-                background: var(--mint); color: var(--navy); border: 1px solid var(--navy); font: 500 12px/1 var(--body); transition: background .4s ease, color .4s ease; }
-  .marks span.is-on { background: var(--navy); color: var(--mint); border-color: var(--mint); }
 
   /* the range the snow leopard runs down */
   .roots { padding-bottom: 0; }
@@ -212,7 +209,6 @@
   /* the close: a short brief, then the name in dots */
   .finale { background: var(--navy); color: var(--mint); padding: clamp(64px, 10vh, 112px) 0 0; min-height: 100vh; display: flex; flex-direction: column; }
   .contact { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(28px, 5vw, 88px); align-items: start; }
-  .finale .wrap.contact { z-index: 1; }            /* under the dots, so the leopard can land on the button */
   .contact .say p { margin-top: 20px; max-width: 24em; color: var(--aqua); }
   .contact .say a.ig { display: inline-flex; align-items: center; min-height: 44px; margin-top: 14px; font-weight: 600; text-decoration-color: var(--teal); text-underline-offset: 5px; }
   .contact .say a.ig:hover { color: var(--aqua); }
@@ -379,7 +375,7 @@
     </div>
   </section>
 
-  <section class="roots" id="inspiration" data-moment>
+  <section class="roots" id="inspiration">
     <div class="wrap">
       <div class="text">
         <h2>Lessons from the snow leopard</h2>
@@ -395,7 +391,6 @@
     <div class="range">
       <div class="range-in">
         <img src="./img/range.webp" width="1672" height="941" loading="lazy" alt="Snow-covered Himalayan peaks drawn in the Snolep colours">
-        <div class="marks" aria-hidden="true"></div>
       </div>
       <div class="range-fade" aria-hidden="true"></div>
     </div>
@@ -465,7 +460,7 @@
     <div class="rail-time"><span>Ladakh</span><time class="rail-clock" data-zone="Asia/Kolkata" data-suffix="IST">--:-- IST</time></div>
   </div>
   <div class="rail-foot">
-    <a class="rail-cta" href="#contact">Start a project <i aria-hidden="true">↗</i></a>
+    <a class="rail-cta" href="#contact">Start a project <i aria-hidden="true">→</i></a>
     <button class="rail-top" type="button">Back to top ↑</button>
   </div>
 </aside>
@@ -657,7 +652,9 @@
 </script>
 
 <script type="module">
-  // The dots. The snow leopard gathers on the logo, blows away as snow when the page moves, and ends as the company's name.
+  // The dots are snow. On load it settles into the logo's leopard and falls away from it as the page
+  // starts to move; on the mountain it settles into the leopard that runs the ridge and leaps off
+  // the end into snow again; at the bottom it settles into the company's name.
   import { createDots } from './js/dots.js';
   import { createLeopard, STAND, LEAP, CYCLE } from './js/leopard.js';
 
@@ -686,28 +683,19 @@
     };
     return { at, total };
   })();
-  // Where the leopard is, from the page's scroll: RUN goes 0 to 1 as the summit and then the end
-  // of the line pass the middle of the screen; OUT carries it off the left edge after that; HOME
-  // is the contact form, where it bounds back in from the right onto the Send button.
+  // The one moment: as the mountain scrolls by, RUN goes 0 to 1 while the summit and then the end
+  // of the drawn line pass the middle of the screen; OUT is the leap after it, in which the
+  // leopard falls apart into snow. Both follow the scrollbar, so scrolling back runs it backwards.
   const runAt = (rect, vh) => {
     const h = rect.height, a = vh * 0.5 - ridge.at(0).y * h, b = vh * 0.45 - ridge.at(1).y * h;
-    return { run: clamp((a - rect.top) / (a - b)), out: clamp((b - rect.top) / (vh * 0.3)) };
+    return { run: clamp((a - rect.top) / (a - b)), out: clamp((b - rect.top) / (vh * 0.28)) };
   };
-  // HOME runs on the clock: once the Send button is on screen the leopard bounds in from the right
-  // and lands on it (IN seconds); when the name at the bottom shows, it scatters into the letters
-  const IN = 1.3, SCATTER = [0, 1];
+  // The name at the bottom settles out of the snow, on the clock, once it is on screen
+  const nameState = {};
   const nameClock = (t) => {
-    if (wordmark.getBoundingClientRect().bottom > innerHeight + 4 || homeClock(t) < IN) { homeState.nameSince = undefined; return -1; }
-    if (homeState.nameSince === undefined) homeState.nameSince = t;
-    return t - homeState.nameSince;
-  };
-  const deskQ = matchMedia('(pointer: fine) and (min-width: 901px)');
-  const landing = () => document.querySelector(deskQ.matches ? '.open-brief' : '#send');
-  const homeClock = (t) => {
-    const w = landing().getBoundingClientRect();
-    if (!w.width || w.bottom > innerHeight - 20) { homeState.since = undefined; return -1; }
-    if (homeState.since === undefined) homeState.since = t;
-    return t - homeState.since;
+    if (wordmark.getBoundingClientRect().bottom > innerHeight + 4) { nameState.since = undefined; return 0; }
+    if (nameState.since === undefined) nameState.since = t;
+    return smooth((t - nameState.since) / 1.8);
   };
   const span = (q, [a, b]) => clamp((q - a) / (b - a));
   // eases a value towards where the scroll puts it, so wheel steps don't jerk the animal
@@ -723,20 +711,15 @@
     // standing: blend the gallop pose back to the standing one
     return st.run > 0.98 ? { a, b, t: f } : { a: STAND, b: f < 0.5 ? a : b, t: st.run };
   };
-  const ridgeState = {}, homeState = {};
-  // the four habits: a numbered mark on the ridge for each, lit (with its text) once the leopard reaches it
+  const ridgeState = {};
+  // the four habits: each fills a thin line across its top while the leopard runs its stretch
   const traits = [...document.querySelectorAll('.traits li')].map((li) => ({ li, at: +li.dataset.at }));
-  const marksEl = document.querySelector('.marks');
-  traits.forEach((tr, i) => {
-    const p = ridge.at(tr.at), m = document.createElement('span');
-    m.textContent = i + 1; m.style.left = `${(p.x * 100).toFixed(2)}%`; m.style.top = `${(p.y * 100).toFixed(2)}%`;
-    marksEl.appendChild(m); tr.mark = m;
-  });
-  let lit = -1;
-  const light = (n) => {
-    if (n === lit) return;
-    lit = n;
-    traits.forEach((tr, i) => { tr.li.classList.toggle('is-on', i < n); tr.mark.classList.toggle('is-on', i < n); });
+  traits.forEach((tr, i) => { tr.to = i + 1 < traits.length ? traits[i + 1].at : 1.05; });
+  const light = (run, here) => {
+    for (const tr of traits) {
+      const p = here ? clamp((run - tr.at) / (tr.to - tr.at)) : 0;
+      if (tr.p !== p) { tr.p = p; tr.li.style.setProperty('--p', p.toFixed(3)); tr.li.classList.toggle('is-on', here && run >= tr.at); }
+    }
   };
   let leopardRig;
 
@@ -757,53 +740,40 @@
             return [Math.min(smooth(t / 1.5), 1 - clamp((scrollY - vh * 0.07) / (vh * 0.6))), 1 - drawn];
           },
         },
-        { // on the mountain: gathers on the summit, gallops down the drawn line as the page scrolls,
-          // and runs off the left edge at the end of it
+        { // on the mountain: settles out of the snow on the summit, gallops down the drawn line as the
+          // page scrolls, stands when it stops, and leaps off the end of the line into snow
           el: range, rig: leopardRig,
-          presence: ({ rect, vh }) => { const p = clamp((vh * 0.95 - (rect.top + ridge.at(0).y * rect.height)) / (vh * 0.3)); if (p <= 0) light(0); return [p]; },
-          place: ({ rect, vh, t }, X, Y) => {
+          presence: ({ rect, vh, calm }) => {
+            const here = clamp((vh * 0.95 - (rect.top + ridge.at(0).y * rect.height)) / (vh * 0.3));
+            const p = calm ? here : Math.min(here, 1 - smooth(span(runAt(rect, vh).out, [0.15, 0.85])));
+            if (p <= 0) light(0, false);
+            return [p];
+          },
+          place: ({ rect, vh, t, calm }, X, Y) => {
             const st = ridgeState, dt = Math.min(0.1, Math.max(0, t - (st.time ?? t))); st.time = t;
-            const want = runAt(rect, vh);
+            const want = calm ? { run: 0, out: 0 } : runAt(rect, vh);
             const run = follow(st, 'run', want.run, dt), out = follow(st, 'out', want.out, dt);
-            const scale = Math.min(0.42, rect.width * (small ? 0.24 : 0.145) / 440);
-            const at = ridge.at(run), end = ridge.at(1);
+            light(run, true);
+            const scale = Math.min(0.42, rect.width * (small ? 0.24 : 0.145) / 440), body = 440 * scale;
+            const at = ridge.at(run);
             let x = rect.left + at.x * rect.width, y = rect.top + at.y * rect.height;
             let angle = Math.atan2(at.ty, at.tx) + Math.PI;     // the drawing faces left; turn it to the slope
-            angle = Math.atan2(Math.sin(angle), Math.cos(angle));
-            angle = Math.max(-0.6, Math.min(0.6, angle));
-            light(traits.filter((tr) => tr.at <= run + 0.002).length);
+            angle = Math.max(-0.6, Math.min(0.6, Math.atan2(Math.sin(angle), Math.cos(angle))));
             const g = stride(st, at.d * rect.width / scale, t, dt, run > 0 && run < 1);
             angle *= 0.35 + 0.65 * (st.run ?? 0);
-            if (out > 0) {                                   // the leap: off the end of the line, down into the dark and away
-              const gone = (end.x * rect.width + 440 * scale * 1.3) * out;
-              x -= gone; y += rect.width * 0.1 * out * out - Math.sin(Math.PI * Math.min(1, out * 1.6)) * 440 * scale * 0.35;
-              angle = -0.15 + 0.6 * out;
+            if (out > 0) {                                   // the leap: up and out over the dark slope
+              const e = Math.min(1, out * 1.25);
+              x -= body * 1.1 * e;
+              y += -Math.sin(Math.PI * e) * body * 0.32 + e * e * body * 0.35;
+              angle = angle * (1 - e) + (-0.25 + 0.55 * e) * e;
               return leopardRig.pose({ x, y, angle, scale, a: LEAP }, X, Y);
             }
             return leopardRig.pose({ x, y, angle, scale, a: g.a, b: g.b, t: g.t }, X, Y);
           },
         },
-        { // by the contact form: bounds in from the right and lands on the Send button
-          el: wordmark, rig: leopardRig,
-          presence: ({ vh, t, calm }) => [!calm && homeClock(t) >= 0 && runAt(range.getBoundingClientRect(), vh).out >= 1 ? 1 : 0],
-          place: ({ vw, vh, t }, X, Y) => {
-            const st = homeState, dt = Math.min(0.1, Math.max(0, t - (st.time ?? t))); st.time = t;
-            const tau = Math.max(0, homeClock(t)), k = clamp(tau / IN), e = 1 - (1 - k) ** 2;
-            const btn = landing().getBoundingClientRect(), form = (deskQ.matches ? document.querySelector('.contact') : document.getElementById('brief')).getBoundingClientRect();
-            const scale = Math.min(0.42, range.getBoundingClientRect().width * (small ? 0.24 : 0.145) / 440);
-            // the curve: in at the right edge above the form, sweeping left then down onto the button
-            const P0 = [vw + 440 * scale, form.top - vh * 0.06], P1 = [btn.left + form.width * 0.25, form.top - vh * 0.02], P2 = [btn.left + btn.width * 0.5, btn.top];
-            const q = (i) => (1 - e) ** 2 * P0[i] + 2 * (1 - e) * e * P1[i] + e * e * P2[i];
-            const dq = (i) => 2 * (1 - e) * (P1[i] - P0[i]) + 2 * e * (P2[i] - P1[i]);
-            const x = q(0), y = q(1);
-            const g = stride(st, (P0[0] - x + (y - P0[1])) / scale, t, dt, k < 0.995);
-            const angle = k < 0.995 ? Math.max(-0.6, Math.min(0.9, Math.atan2(-dq(1), -dq(0)))) * (1 - k) : 0;
-            return leopardRig.pose({ x, y, angle, scale, a: k < 0.995 ? (k > 0.55 ? LEAP : g.a) : STAND, b: k < 0.995 ? (k > 0.55 ? LEAP : g.b) : STAND, t: g.t }, X, Y);
-          },
-        },
         { // the name
           el: wordmark, text: (w) => (w < 620 ? ['SNOLEP', 'TECHNOLOGIES'] : ['SNOLEP TECHNOLOGIES']), font: '800 100px Archivo',
-          presence: ({ vh, t, calm }) => [calm ? clamp(1 - (document.documentElement.scrollHeight - innerHeight - scrollY) / (vh * 0.5)) : span(Math.max(0, nameClock(t)), SCATTER)],
+          presence: ({ vh, t, calm }) => [calm ? clamp(1 - (document.documentElement.scrollHeight - innerHeight - scrollY) / (vh * 0.5)) : nameClock(t)],
         },
       ],
     });

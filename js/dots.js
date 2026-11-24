@@ -2,8 +2,10 @@
  * dots.js: one canvas of dots that gather into shapes and blow away as snow.
  *
  * Each form is a picture or a line of text, turned into dots and pinned to an element on the page.
- * The page says how present each form is (0 to 1) from the scroll. Every dot is snow when no form
- * holds it: it falls, drifts and sways; a share of the dots never joins a form, so it always snows. Every dot's place is worked out from the scroll and the clock alone, so nothing
+ * The page says how present each form is (0 to 1) from the scroll or the clock. Every dot is snow
+ * when no form holds it: it falls, drifts and sways; a share of the dots never joins a form, so it
+ * always snows. A form gathers the way snow settles: each dot drifts down into its place as it
+ * grows, and when the form lets go its dots drift on down with the wind as they shrink away. Every dot's place is worked out from the scroll and the clock alone, so nothing
  * lags or overshoots however fast the page moves. No libraries.
  *
  *   import { createDots } from './js/dots.js';
@@ -30,7 +32,7 @@ export function createDots(opts) {
   // what each dot is when it's snow
   const rnd = (() => { let s = 20241; return () => ((s = (s * 16807) % 2147483647) / 2147483647); })();
   const U = new Float32Array(N), V = new Float32Array(N), PH = new Float32Array(N), FALL = new Float32Array(N);
-  const WIND = new Float32Array(N), PAR = new Float32Array(N), SR = new Float32Array(N), SWX = new Float32Array(N), SWY = new Float32Array(N);
+  const WIND = new Float32Array(N), PAR = new Float32Array(N), SR = new Float32Array(N);
   // Every dot is snow when no shape holds it: it falls, drifts with the wind and sways. A few in a
   // hundred show at rest, in three depths: far flakes small and slow, near ones bigger and faster
   // and moving more with the page. The rest fall unseen until a shape gathers them.
@@ -42,7 +44,6 @@ export function createDots(opts) {
     FALL[j] = [9, 16, 28][layer] + rnd() * [6, 9, 14][layer];
     WIND[j] = [3, 6, 10][layer] + rnd() * 5;
     PAR[j] = [0.06, 0.16, 0.34][layer];
-    SWX[j] = (rnd() - 0.35) * 150; SWY[j] = (rnd() - 0.6) * 110;
   }
 
   // ---- forms ---------------------------------------------------------------------------------
@@ -102,7 +103,8 @@ export function createDots(opts) {
     f.n = on.length;
     for (let j = 0; j < N; j++) {
       const i = on[j % on.length];
-      f.x[j] = ((i % w) + 0.5) / w; f.y[j] = (Math.floor(i / w) + 0.5) / h;
+      const jx = (((j * 0.7548777) % 1) - 0.5) * 0.7, jy = (((j * 0.5698403) % 1) - 0.5) * 0.7;   // a stipple, not a grid
+      f.x[j] = ((i % w) + 0.5 + jx) / w; f.y[j] = (Math.floor(i / w) + 0.5 + jy) / h;
       f.teal[j] = teal[i]; f.hide[j] = j >= on.length ? 1 : 0;
     }
     f.r = R; f.gw = w;
@@ -143,8 +145,12 @@ export function createDots(opts) {
       f.teal = f.teal || new Uint8Array(N); f.hide = f.hide || new Uint8Array(N); f.d = f.d || new Float32Array(N);
       if (f.rig) { f.ax = new Float32Array(N); f.ay = new Float32Array(N); f.size = f.rig.size; f.hide = f.rig.hide; f.n = f.rig.used; }
       else if (f.image) fromImage(f); else fromText(f);
-      // the order they leave in: the windward side first, with some scatter
-      for (let j = 0; j < N; j++) f.d[j] = f.rig ? (j * 0.6180339) % 1 : 0.55 * (1 - f.x[j]) + 0.45 * ((j * 0.6180339) % 1);
+      // the order dots settle and leave in: text settles from the bottom up, a picture from the
+      // windward side, the leopard all over at once; each with some scatter
+      for (let j = 0; j < N; j++) {
+        const r = (j * 0.6180339) % 1;
+        f.d[j] = f.rig ? r : f.text ? 0.5 * (1 - f.y[j]) + 0.5 * r : 0.55 * (1 - f.x[j]) + 0.45 * r;
+      }
     }
   }
 
@@ -170,6 +176,7 @@ export function createDots(opts) {
     raf = requestAnimationFrame(frame);
     const calm = still.matches;
     const t = (now - t0) / 1000, tt = calm ? 0 : t, sy = scrollY;
+    const dt = Math.min(0.1, Math.max(0, t - (state.t ?? t))); state.t = t;
     const lx = px, ly = py;
     px = mx; py = my;
     const sweep = lx < -900 || px < -900 ? 0 : Math.min(60, Math.hypot(px - lx, py - ly));
@@ -181,7 +188,11 @@ export function createDots(opts) {
       const r = f.el.getBoundingClientRect();
       const env = { rect: r, vh, vw, t, scrollY: sy, calm };
       const p = f.presence(env);
-      const amount = calm ? (p[0] > 0.5 && !f.rig ? 1 : 0) : p[0];
+      const amount = calm ? (p[0] > 0.5 ? 1 : 0) : p[0];
+      // which way it is going: +1 settling in, -1 letting go (eased, so a turn mid-way glides)
+      if (Math.abs(amount - (f._last ?? 0)) > 1e-4) f._dir = amount > (f._last ?? 0) ? 1 : -1;
+      f._last = amount;
+      f._trend = (f._trend ?? 1) + ((f._dir ?? 1) - (f._trend ?? 1)) * (1 - Math.exp(-dt * 5));
       if (amount <= 0) continue;
       const scale = p[1] === undefined ? 1 : p[1];
       f._w = amount; f._rect = r;
@@ -199,22 +210,19 @@ export function createDots(opts) {
       x = ((U[j] * spanX + tt * WIND[j] + Math.sin(tt * 0.5 + PH[j]) * 14) % spanX) - 20;
       y = ((((V[j] * spanY + tt * FALL[j] - sy * PAR[j]) % spanY) + spanY) % spanY) - 20;
       r = calm ? 0 : SR[j];
-      const sx = x, sy0 = y, sr = r;
       for (let a = 0; a < act.length; a++) {
         const f = act[a], rect = f._rect;
+        if (f.hide[j]) continue;                      // not part of this shape: stays snow
         let ww = Math.min(1, Math.max(0, f._w * (1 + S) - f.d[j] * S));
         if (ww <= 0) continue;
         ww = ww * ww * (3 - 2 * ww);
-        if (f.hide[j]) {                              // not part of this shape: back to falling snow
-          x += (sx - x) * ww; y += (sy0 - y) * ww; r += (sr - r) * ww; top *= 1 - ww;
-          if (ww > 0.5) { teal = 0; coat = -1; }
-          continue;
-        }
-        const arc = Math.sin(Math.PI * ww) * (a ? 0.45 : 1);
+        // settling: the dot falls into its place from up the wind; letting go, it falls on past it
+        const gone = (1 - ww) * 3.4, way = -f._trend;
         const tx = f.rig ? f.ax[j] : rect.left + f.x[j] * rect.width, ty = f.rig ? f.ay[j] : rect.top + f.y[j] * rect.height;
-        x += (tx - x) * ww + arc * SWX[j];
-        y += (ty - y) * ww + arc * SWY[j];
-        r += ((f.hide[j] ? 0 : f._r * (f.rig ? f.size[j] : 1)) - r) * ww;
+        const fx = tx + way * WIND[j] * gone + Math.sin(PH[j] + tt) * 6 * (1 - ww), fy = ty + way * FALL[j] * gone;
+        const hold = Math.min(1, ww * 4);
+        x += (fx - x) * hold; y += (fy - y) * hold;
+        r += (f._r * (f.rig ? f.size[j] : 1) - r) * ww;
         if (ww > 0.5) { teal = f.rig ? 0 : f.teal[j]; coat = f.rig ? f.rig.tone[j] : -1; }
         top = Math.max(top, ww);
       }

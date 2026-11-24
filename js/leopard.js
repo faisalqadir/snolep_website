@@ -16,6 +16,11 @@ export function createLeopard(N) {
   const used = Math.min(Math.floor(N * 0.62), COUNT);   // within the dots dots.js lets shapes use
   const size = new Float32Array(N), tone = new Uint8Array(N), hide = new Uint8Array(N);
   for (let k = used; k < N; k++) hide[k] = 1;
+  // a stipple, not a grid: each dot sits a little off its cell and is a little larger or smaller
+  const JX = new Float32Array(used), JY = new Float32Array(used), JS = new Float32Array(used);
+  let seed = 9001;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  for (let k = 0; k < used; k++) { JX[k] = (rnd() - 0.5) * 0.7; JY[k] = (rnd() - 0.5) * 0.7; JS[k] = 0.82 + rnd() * 0.36; }
   const dotSize = (b) => (b >= 128 ? 0.45 + 0.55 * (b - 128) / 127 : b ? 0.62 : 0);
 
   // a, b: the two poses; t: how far from a to b (eased here)
@@ -23,10 +28,10 @@ export function createLeopard(N) {
     const c = Math.cos(angle) * scale * PITCH, s = Math.sin(angle) * scale * PITCH;
     const e = t * t * (3 - 2 * t), A = a * COUNT, B = b * COUNT;
     for (let k = 0; k < used; k++) {
-      const lx = fx[A + k] + (fx[B + k] - fx[A + k]) * e + 0.5, ly = fy[A + k] + (fy[B + k] - fy[A + k]) * e - 0.5;
+      const lx = fx[A + k] + (fx[B + k] - fx[A + k]) * e + 0.5 + JX[k], ly = fy[A + k] + (fy[B + k] - fy[A + k]) * e - 0.5 + JY[k];
       X[k] = x + lx * c - ly * s; Y[k] = y + lx * s + ly * c;
       const va = v[A + k], vb = v[B + k], sa = dotSize(va), sb = dotSize(vb);
-      size[k] = sa + (sb - sa) * e;
+      size[k] = (sa + (sb - sa) * e) * JS[k];
       tone[k] = (e < 0.5 ? va : vb) >= 128 ? 1 : 0;
     }
     for (let k = used; k < N; k++) { X[k] = x; Y[k] = y; }
