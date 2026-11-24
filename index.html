@@ -112,9 +112,18 @@
   .rail-links span.off { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; }
   .rail-brand { font-weight: 800; }
   .rail-cta { min-height: 52px; }
+  /* wide screens: one bar across the top (the name, the sections, the main action); the side panel
+     is only the phone and tablet menu */
+  .site-nav, .head-cta { display: none; }
   @media (min-width: 1100px) {
-    body { padding-right: var(--rail); }
-    .site-head { display: none; }
+    html { scroll-padding-top: 64px; }
+    .rail, .rail-scrim, .menu-btn { display: none; }
+    .site-head .wrap { height: 72px; }
+    .site-nav { display: flex; gap: 32px; margin-left: auto; margin-right: 32px; }
+    .site-nav a { font-size: 15px; text-decoration: none; background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+                  padding: 6px 0; transition: background-size .3s var(--ease); }
+    .site-nav a:hover { background-size: 100% 1px; }
+    .head-cta { display: inline-flex; min-height: 44px; padding: 0 20px; font-size: 15px; }
   }
   @media (max-width: 1099px) {
     .rail { width: min(320px, 86vw); transform: translateX(100%); visibility: hidden; transition: transform .45s var(--ease), visibility 0s .45s; }
@@ -259,28 +268,24 @@
   /* on a desktop the form opens in a panel from the contact section; on a phone it stays in place */
   .open-brief { display: none; margin-top: 28px; background: var(--teal); border-color: var(--teal); color: var(--navy); }
   .open-brief:hover { background: var(--mint); border-color: var(--mint); }
-  .steps, .foot-cols { display: none; }
+  .steps { display: none; }
   .contact.form-away { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); align-items: end; }
   .contact.form-away h2 { font-size: clamp(48px, 5.4vw, 84px); line-height: .98; letter-spacing: -.04em; }
   .contact.form-away .say p { font-size: 19px; max-width: 26em; }
   .contact.form-away .steps { display: block; }
-  .steps .label, .foot-cols .label { color: var(--aqua); opacity: .8; }
+  .steps .label { color: var(--aqua); opacity: .8; }
   .steps ol { list-style: none; margin-top: 12px; border-top: 1px solid rgba(173, 220, 218, .3); counter-reset: step; }
   .steps li { display: grid; grid-template-columns: 40px 1fr; gap: 2px 8px; padding: 16px 0 17px; border-bottom: 1px solid rgba(173, 220, 218, .18); counter-increment: step; }
   .steps li::before { content: counter(step, decimal-leading-zero); grid-row: span 2; font: 500 13px/1.6 var(--body); color: var(--teal); }
   .steps h3 { font-size: 19px; line-height: 1.3; }
   .steps li p { font-size: 15px; color: var(--aqua); }
   @media (pointer: fine) and (min-width: 901px) {
-    .foot-cols { position: relative; z-index: 3; width: min(1240px, 100% - 2 * var(--pad)); margin: clamp(40px, 7vh, 72px) auto 0; padding-top: 28px;
-                 border-top: 1px solid rgba(173, 220, 218, .3); display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); gap: 24px; }
-    .foot-cols > div { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
-    .foot-cols .label { margin-bottom: 6px; }
-    .foot-cols a, .foot-cols span { font-size: 15px; line-height: 1.9; color: var(--mint); text-decoration: none; }
-    .foot-cols a { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size .3s var(--ease), color .2s ease; }
-    .foot-cols a:hover { background-size: 100% 1px; color: var(--aqua); }
-    .foot-lede { font: 500 26px/1.15 var(--display); font-stretch: 112%; letter-spacing: -.02em; max-width: 11em; }
-    .finale .name { padding-top: clamp(28px, 5vh, 56px); }
-    .foot a { display: none; }
+    .finale > section { flex: 1; display: flex; align-items: center; padding: 24px 0 !important; }
+    .finale > section > .wrap { width: min(1240px, 100% - 2 * var(--pad)); }
+    .finale .name { margin-top: 0; padding-top: 0; }
+    .steps li { padding: 22px 0 23px; }
+    .steps h3 { font-size: 22px; }
+    .steps li p { font-size: 16px; margin-top: 2px; }
   }
   .contact.form-away .open-brief { display: inline-flex; }
   .brief-dialog { width: min(640px, 100% - 32px); max-height: calc(100vh - 48px); margin: auto; padding: 0; border: 0; border-radius: 18px; background: #04303f; color: var(--mint); overflow: auto; }
@@ -318,6 +323,8 @@
 <header class="site-head">
   <div class="wrap">
     <a class="brand" href="#top">SNOLEP</a>
+    <nav class="site-nav" aria-label="Main"><a href="#values">Values</a><a href="#work">What we build</a><a href="#inspiration">Inspiration</a></nav>
+    <a class="btn primary head-cta" href="#contact">Start a project <i aria-hidden="true">→</i></a>
     <button class="menu-btn" type="button" aria-controls="rail" aria-expanded="false">Menu <b aria-hidden="true">+</b></button>
   </div>
 </header>
@@ -456,16 +463,11 @@
       </form>
     </div>
   </section>
-  <nav class="foot-cols" aria-label="Footer">
-    <p class="foot-lede">Software and websites, built in Ladakh.</p>
-    <div><p class="label">Pages</p><a href="#values">Values</a><a href="#work">What we build</a><a href="#inspiration">Inspiration</a></div>
-    <div><p class="label">Live work</p><a href="https://alatoa.in/" target="_blank" rel="noopener">ALATOA ↗</a><a href="https://alhgha.com/" target="_blank" rel="noopener">ALHGHA ↗</a><a href="https://fynivo.in/" target="_blank" rel="noopener">Fynivo ↗</a><a href="https://centralasianmuseum.org/" target="_blank" rel="noopener">Central Asian Museum ↗</a></div>
-    <div><p class="label">Studio</p><span>Ladakh, India</span><span><time class="foot-clock" data-zone="Asia/Kolkata">--:--</time> local time</span><a href="https://www.instagram.com/snolep.in/" target="_blank" rel="noopener">Instagram ↗</a></div>
-  </nav>
   <div class="name"><div id="wordmark" role="img" aria-label="Snolep Technologies"></div></div>
   <footer class="foot">
-    <span>© 2026 Snolep Technologies. Ladakh, India.</span>
-    <a href="https://www.instagram.com/snolep.in/" target="_blank" rel="noopener">Instagram</a>
+    <span>© 2026 Snolep Technologies</span>
+    <span>Ladakh, India · <time class="foot-clock" data-zone="Asia/Kolkata">--:--</time> local time</span>
+    <a href="https://www.instagram.com/snolep.in/" target="_blank" rel="noopener">Instagram ↗</a>
   </footer>
 </div>
 
@@ -682,7 +684,7 @@
     addEventListener('resize', progress);
     progress();
     // anywhere in the section opens the form, except its own links
-    dark.addEventListener('click', (e) => { if (desk.matches && !e.target.closest('a, button, dialog, .foot-cols, .foot') && e.clientY <= close.getBoundingClientRect().bottom + 24) brief.open(); });
+    dark.addEventListener('click', (e) => { if (desk.matches && !e.target.closest('a, button, dialog, .foot') && e.clientY <= close.getBoundingClientRect().bottom + 24) brief.open(); });
   })();
 </script>
 
