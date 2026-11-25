@@ -1,0 +1,1001 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Landing 4: Altitude · Snolep Technologies | Websites and web platforms from Ladakh</title>
+<meta name="description" content="Snolep Technologies builds software products, association platforms and websites from Ladakh, in the Indian Himalaya, and offers sustainability consulting.">
+<meta property="og:title" content="Snolep Technologies">
+<meta property="og:description" content="Websites, member platforms and web applications, built in Ladakh.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#e9f7f4">
+<link rel="icon" href="./img/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="./img/snolep-leopard.webp">
+
+<style>
+  /* Snolep palette: navy type, mint page (the sky of the mountain drawing), teal for the one action. */
+  :root {
+    --navy: #002735;
+    --teal: #00a6a2;
+    --teal-ink: #007a78;      /* teal dark enough for small text on the mint */
+    --aqua: #addcda;
+    --mint: #e9f7f4;
+    --white: #fffeff;
+    --muted: #33515b;
+    --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+    --body: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --rail: 248px;
+    --pad: clamp(20px, 4vw, 56px);
+    --ease: cubic-bezier(.2, .8, .2, 1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { overflow-x: clip; scroll-padding-top: 20px; }
+  body { background: var(--mint); color: var(--navy); font: 400 17px/1.55 var(--body); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  img { display: block; max-width: 100%; }
+  :focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; border-radius: 4px; }
+  .skip { position: fixed; left: 12px; top: -60px; z-index: 50; padding: 10px 16px; border-radius: 8px; background: var(--navy); color: var(--mint); }
+  .skip:focus { top: 12px; }
+
+  /* the one canvas that draws every dot; text and cards sit above it, section grounds below */
+  .dots { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 2; pointer-events: none; }
+  .wrap { position: relative; z-index: 3; width: min(1240px, 100% - 2 * var(--pad)); margin-inline: auto; }
+  .label { font: 500 13px/1.3 var(--body); color: var(--muted); }
+  h1, h2, h3 { font-family: var(--display); font-stretch: 112%; letter-spacing: -.02em; text-wrap: balance; }
+  h2 { font-size: clamp(32px, 3.4vw, 48px); line-height: 1.05; font-weight: 500; letter-spacing: -.025em; }
+  h3 { font-weight: 500; letter-spacing: -.01em; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 26px; border: 1.5px solid var(--navy); border-radius: 999px;
+         font: 600 16px/1 var(--body); text-decoration: none; cursor: pointer; transition: transform .25s var(--ease), background .2s ease, color .2s ease, border-color .2s ease; }
+  .btn.primary { background: var(--teal); border-color: var(--teal); color: var(--navy); }
+  .btn.primary:hover { background: var(--navy); border-color: var(--navy); color: var(--mint); }
+  .btn.ghost { background: transparent; color: var(--navy); }
+  .btn.ghost:hover { background: var(--navy); color: var(--mint); }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0) scale(.98); }
+  .btn i { font-style: normal; transition: transform .25s var(--ease); }
+  .btn:hover i { transform: translateX(3px); }
+
+  /* header (narrow screens; wide screens have the rail) */
+  .site-head { position: fixed; top: 0; left: 0; right: 0; z-index: 10; background: rgba(233, 247, 244, .86); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(173, 220, 218, .6); }
+  .site-head .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { font: 800 17px/1 var(--display); font-stretch: 125%; letter-spacing: .02em; text-decoration: none; }
+  .menu-btn { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 18px; border: 1px solid currentColor; border-radius: 999px;
+              background: none; color: inherit; font: 500 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+  .site-head.on-dark { background: rgba(0, 39, 53, .86); border-color: rgba(173, 220, 218, .2); color: var(--mint); }
+  .menu-btn b { font: 400 18px/10px var(--body); }
+
+  /* the rail: a panel that stays put on the right on wide screens (the index, with where you are;
+     the work; contact; the local time; let's talk). Under 1100px it slides in off the Menu button. */
+  :root { --rail: 248px; }
+  .rail { position: fixed; top: 0; right: 0; bottom: 0; width: var(--rail); z-index: 30; display: flex; flex-direction: column;
+          padding: 26px 24px 20px; overflow-y: auto; overscroll-behavior: contain; background: var(--white); color: var(--navy);
+          border-left: 1px solid var(--aqua); }
+  .rail-brand { display: block; text-decoration: none; font: 900 21px/1 var(--display); font-stretch: 125%; letter-spacing: .02em; }
+  .rail-brand small { display: block; margin-top: 6px; font: 500 9px/1 var(--mono); letter-spacing: .32em; color: var(--muted); }
+  .rail-block { border-top: 1px solid var(--aqua); padding: 16px 0 18px; }
+  .rail-brand + .rail-block, .rail-close + .rail-block { margin-top: 24px; }
+  .rail-label { display: block; margin-bottom: 10px; font: 500 13px/1.2 var(--body); color: var(--muted); }
+  .rail-index a { display: grid; grid-template-columns: 28px 1fr auto; align-items: baseline; padding: 8px 0; text-decoration: none;
+                  font: 500 15px/1.2 var(--body); transition: color .25s ease; }
+  .rail-index a span { font: 500 10px/1 var(--mono); color: var(--muted); transition: color .25s ease; }
+  .rail-index a::after { content: ''; align-self: center; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); opacity: 0; transform: scale(.3); transition: opacity .25s ease, transform .25s ease; }
+  .rail-index a:hover, .rail-index a[aria-current="true"], .rail-index a[aria-current="true"] span { color: var(--teal-ink); }
+  .rail-index a[aria-current="true"]::after { opacity: 1; transform: none; }
+  .rail-links a { display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0; font-size: 13px; text-decoration: none; transition: color .2s ease; }
+  .rail-links a i { font: 500 11px/1 var(--mono); font-style: normal; color: var(--muted); transition: transform .25s ease, color .2s ease; }
+  .rail-links a:hover, .rail-links a:hover i { color: var(--teal); }
+  .rail-links a:hover i { transform: translate(2px, -2px); }
+  .rail-mail { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+  .rail-mail a { text-decoration: none; }
+  .rail-mail a:hover { color: var(--teal); }
+  .copy { padding: 3px 6px; border: 1px solid var(--aqua); border-radius: 4px; background: none; color: var(--muted); font: 500 10px/1 var(--mono); cursor: pointer; }
+  .copy:hover { color: var(--navy); border-color: var(--navy); }
+  .rail-time { display: flex; justify-content: space-between; margin-top: 22px; font-size: 13px; color: var(--muted); }
+  .rail-time time { font: 500 12px/1.4 var(--mono); color: var(--navy); }
+  .rail-foot { margin-top: auto; padding-top: 24px; display: grid; justify-items: center; gap: 12px; }
+  .rail-cta { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 6px 6px 6px 22px; border-radius: 999px;
+              background: var(--teal); color: var(--navy); text-decoration: none; font: 600 15px/1 var(--body); transition: background .25s ease, color .25s ease; }
+  .rail-cta i { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: var(--white); color: var(--navy);
+                font: 600 16px/1 var(--body); font-style: normal; transition: transform .35s ease; }
+  .rail-cta:hover { background: var(--navy); color: var(--mint); }
+  .rail-cta:hover i { transform: translateX(3px); }
+  .rail-top { padding: 4px; border: 0; background: none; color: var(--muted); font: 400 12px/1 var(--body); cursor: pointer; }
+  .rail-top:hover { color: var(--navy); }
+  .rail-close { display: none; }
+  .rail-scrim { display: none; }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+  .rail-links span.off { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; }
+  .rail-brand { font-weight: 800; }
+  .rail-cta { min-height: 52px; }
+  /* wide screens: one bar across the top (the name, the sections, the main action); the side panel
+     is only the phone and tablet menu */
+  .site-nav, .head-cta { display: none; }
+  @media (min-width: 1100px) {
+    html { scroll-padding-top: 64px; }
+    .rail, .rail-scrim, .menu-btn { display: none; }
+    .site-head .wrap { height: 72px; }
+    .site-nav { display: flex; gap: 32px; margin-left: auto; margin-right: 32px; }
+    .site-nav a { font-size: 15px; text-decoration: none; background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+                  padding: 6px 0; transition: background-size .3s var(--ease); }
+    .site-nav a:hover { background-size: 100% 1px; }
+    .head-cta { display: inline-flex; min-height: 44px; padding: 0 20px; font-size: 15px; }
+  }
+  @media (max-width: 1099px) {
+    .rail { width: min(320px, 86vw); transform: translateX(100%); visibility: hidden; transition: transform .45s var(--ease), visibility 0s .45s; }
+    .rail.open { transform: none; visibility: visible; box-shadow: -24px 0 60px rgba(0, 39, 53, .18); transition: transform .45s var(--ease); }
+    .rail-close { display: grid; place-items: center; position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border: 1px solid var(--aqua);
+                  border-radius: 50%; background: none; color: var(--navy); font: 400 20px/1 var(--body); cursor: pointer; }
+    .rail-scrim { display: block; position: fixed; inset: 0; z-index: 29; background: rgba(0, 39, 53, .35); opacity: 0; pointer-events: none; transition: opacity .3s ease; }
+    .rail-scrim.open { opacity: 1; pointer-events: auto; }
+    .rail-index a, .rail-links a { padding-block: 12px; }
+  }
+
+  /* hero: what we do on the left, the logo on the right; its snow leopard is drawn by the dots */
+  /* landing (shared) */
+  .lp { position: relative; padding: 0; overflow: clip; }
+  .lp-title { font-size: clamp(40px, 6.3vw, 104px); line-height: .96; font-weight: 500; letter-spacing: -.045em; }
+  .lp-title em { font-style: normal; color: var(--teal-ink); }
+  .lp-title .ln { display: block; overflow: hidden; padding-bottom: .08em; margin-bottom: -.08em; }
+  .lp-title .ln > span { display: inline-block; }
+  .lp .lede { max-width: 28em; font-size: clamp(16px, 1.2vw, 18px); color: var(--muted); }
+  .lp .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+  .built-for { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 32px; }
+  .built-for ul { display: contents; list-style: none; }
+  .built-for li { font: 600 15px/1.2 var(--display); font-stretch: 112%; }
+  @keyframes lineUp { to { transform: none; } }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: no-preference) {
+    .lp-title .ln > span { transform: translateY(105%); animation: lineUp 1s var(--ease) forwards; }
+    .lp-title .ln:nth-child(2) > span { animation-delay: .09s; } .lp-title .ln:nth-child(3) > span { animation-delay: .18s; } .lp-title .ln:nth-child(4) > span { animation-delay: .27s; }
+    .lp .later { opacity: 0; transform: translateY(14px); animation: rise .9s var(--ease) .5s forwards; }
+  }
+  /* 4 altitude: a contour map draws itself under the page while the altitude counts up to Leh's */
+  .lp4 { height: 100vh; height: 100svh; min-height: 640px; display: flex; flex-direction: column; }
+  .lp4-map { position: absolute; inset: 0; color: var(--teal); }
+  .lp4-map svg { width: 100%; height: 100%; }
+  .lp4-map path { fill: none; stroke: currentColor; stroke-width: 1; opacity: .38; vector-effect: non-scaling-stroke; stroke-dasharray: 1; stroke-dashoffset: 0; }
+  .lp4-map path.cb { stroke-width: 1.6; opacity: .6; color: var(--navy); stroke: var(--navy); }
+  .lp4-grid { position: relative; z-index: 2; flex: 1; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, .6fr); align-items: center; gap: 32px clamp(28px, 5vw, 80px); padding-top: 72px; }
+  .lp4-copy { padding: 28px 0; }
+  .lp4-copy .lp-title { font-size: clamp(38px, 4.9vw, 80px); }
+  .lp4-copy .later { margin-top: 36px; }
+  .lp4-alt { justify-self: end; display: grid; grid-template-columns: auto auto; align-items: baseline; column-gap: 8px; padding: 22px 26px; border-radius: 18px; background: rgba(255, 254, 255, .82); border: 1px solid var(--aqua); backdrop-filter: blur(4px); }
+  .lp4-num { font: 500 clamp(56px, 6vw, 96px)/1 var(--display); font-stretch: 112%; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+  .lp4-unit { font: 500 28px/1 var(--display); color: var(--teal-ink); }
+  .lp4-where { grid-column: 1 / -1; margin-top: 8px; font-size: 14px; color: var(--muted); }
+  .lp4-work { position: relative; z-index: 2; padding: 18px 0 22px; border-top: 1px solid var(--aqua); background: linear-gradient(rgba(233, 247, 244, 0), var(--mint) 40%); }
+  @media (prefers-reduced-motion: no-preference) {
+    .lp4-map path { stroke-dashoffset: 1; animation: draw 2.6s var(--ease) forwards; animation-delay: calc(var(--i, 0) * 12ms); }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+  }
+  @media (max-width: 900px) {
+    .lp4 { height: auto; min-height: 100svh; }
+    .lp4-grid { grid-template-columns: 1fr; padding-top: 104px; }
+    .lp4-alt { justify-self: start; }
+  }
+
+  section { padding: clamp(72px, 11vh, 128px) 0; }
+  .head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 48px; margin-bottom: clamp(28px, 5vh, 52px); }
+  .head p { max-width: 30em; color: var(--muted); }
+
+  /* what we build: each kind of work with the one we made; the screenshots are whole pages that
+     scroll through their frame on hover */
+  .work-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 2vw, 28px); }
+  .card { display: flex; flex-direction: column; background: var(--white); border: 1px solid var(--aqua); border-radius: 16px; overflow: hidden;
+          transition: box-shadow .35s var(--ease), border-color .2s ease; }
+  .card:hover { box-shadow: 0 18px 40px -18px rgba(0, 39, 53, .35); border-color: var(--navy); }
+  .card .shot { position: relative; aspect-ratio: 1152 / 600; overflow: hidden; background: var(--navy); }
+  .card .shot img { position: absolute; left: 0; top: 0; width: 100%; height: auto; transition: top .7s var(--ease), transform .7s var(--ease); }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .card:hover .shot img, .card:focus-within .shot img { top: 100%; transform: translateY(-100%); transition-duration: 7s; transition-timing-function: cubic-bezier(.4, 0, .6, 1); }
+  }
+  .card .meta { flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 18px 22px 20px; }
+  .card h3 { font-size: 20px; line-height: 1.25; }
+  .card .meta p { font-size: 15px; color: var(--muted); }
+  .card .meta p.eg { margin-top: auto; padding-top: 6px; color: var(--navy); font-weight: 600; }
+  .card .eg a { display: inline-flex; align-items: center; gap: 4px; min-height: 32px; text-decoration-color: var(--teal); text-underline-offset: 4px; }
+  .card .eg a i { font-style: normal; color: var(--teal-ink); transition: transform .25s var(--ease); }
+  .card .eg a:hover { color: var(--teal-ink); }
+  .card .eg a:hover i { transform: translate(2px, -2px); }
+  .card .plate { display: grid; place-items: center; text-align: center; padding: 8%; color: var(--mint);
+                 background: radial-gradient(circle, rgba(173, 220, 218, .28) 1.2px, transparent 1.6px) 0 0 / 14px 14px, var(--navy); }
+  .card .plate b { font: 500 clamp(22px, 2.6vw, 36px)/1.05 var(--display); font-stretch: 112%; letter-spacing: -.02em; }
+  .card.wide { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .card.wide .shot { aspect-ratio: auto; min-height: 260px; }
+  .card.wide .meta { justify-content: center; padding: clamp(22px, 3vw, 40px); }
+  .card.wide .meta p.eg { margin-top: 8px; }
+
+  /* values and standards. Static (phones, tablets, short screens, reduced motion, no script): a peak
+     beside four rows. Live (desktop): the section is tall, its stage stays on screen, and the four
+     standards play one after another, each animation scrubbed by the scroll. */
+  .values > .wrap { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(28px, 5vw, 88px); align-items: center; }
+  .values-pic { width: 100%; height: auto; border-radius: 16px; }
+  .values .sub { margin-top: 14px; max-width: 30em; color: var(--muted); }
+  .std { list-style: none; margin-top: clamp(24px, 4vh, 40px); border-top: 1px solid var(--navy); }
+  .std li { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 6px 28px; align-items: baseline; padding: 20px 0 22px; border-bottom: 1px solid var(--aqua); }
+  .std h3 { font-size: clamp(19px, 1.6vw, 22px); line-height: 1.25; }
+  .std p { color: var(--muted); }
+  .values.is-live { height: calc(100vh + 4 * 72vh); height: calc(100svh + 4 * 72svh); padding: 0; }
+  .values.is-live > .wrap { display: none; }
+  .values.is-live .v-stage { display: block; position: sticky; top: 0; height: 100vh; height: 100svh; overflow: clip; }
+  .v-grid { height: 100%; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto 1fr;
+            column-gap: clamp(28px, 5vw, 80px); row-gap: clamp(28px, 5vh, 52px); padding-top: calc(72px + clamp(36px, 8vh, 88px)); }
+  .v-title { align-self: start; }
+  /* only the current principle shows; the next one takes its place as the scroll moves on */
+  .v-steps { list-style: none; display: grid; align-self: start; max-width: 440px; }
+  .v-step { grid-area: 1 / 1; display: grid; grid-template-columns: 40px 1fr; column-gap: 0; opacity: 0; transform: translateY(10px);
+            transition: opacity .35s ease, transform .5s var(--ease); pointer-events: none; }
+  .v-step.is-on { opacity: 1; transform: none; pointer-events: auto; }
+  .v-n { grid-row: span 3; font: 500 13px/1.9 var(--body); color: var(--teal-ink); }
+  .v-step h3 { font-size: clamp(19px, 1.6vw, 22px); line-height: 1.3; }
+  .v-step p { margin-top: 6px; color: var(--muted); }
+  .v-bar { grid-column: 2; height: 2px; margin-top: 16px; background: var(--aqua); }
+  .v-bar i { display: block; height: 100%; background: var(--navy); transform: scaleX(var(--q, 0)); transform-origin: left; }
+  .v-frame { grid-column: 1 / -1; align-self: stretch; margin-bottom: clamp(24px, 5vh, 48px); position: relative; border: 1px solid var(--aqua); border-radius: 20px;
+             background: var(--white); overflow: hidden; container-type: size; }
+  .v-scene { position: absolute; inset: 0; opacity: 0; transition: opacity .45s ease; }
+  .v-scene.is-on { opacity: 1; }
+  /* 1 thin signal: a window on one bar of signal; text resolves and the picture sharpens as it loads */
+  .s1-win { position: absolute; inset: 9% 10%; border: 1px solid var(--aqua); border-radius: 12px; background: var(--mint); overflow: hidden; display: flex; flex-direction: column; }
+  .s1-top { display: flex; align-items: center; gap: 4%; padding: 3% 4%; background: var(--white); border-bottom: 1px solid var(--aqua); }
+  .s1-sig { display: inline-flex; align-items: flex-end; gap: 3px; height: 14px; }
+  .s1-sig i { width: 4px; border-radius: 1px; background: var(--aqua); }
+  .s1-sig i:nth-child(1) { height: 25%; } .s1-sig i:nth-child(2) { height: 50%; } .s1-sig i:nth-child(3) { height: 75%; } .s1-sig i:nth-child(4) { height: 100%; }
+  .s1-sig i.on { background: var(--navy); }
+  .s1-url { flex: 1; height: 14px; border-radius: 7px; background: var(--mint); }
+  .s1-ok { font: 500 13px/1 var(--body); color: var(--teal-ink); opacity: var(--ok, 0); }
+  .s1-load { height: 2px; background: transparent; }
+  .s1-load i { display: block; height: 100%; background: var(--teal); transform: scaleX(var(--load, 0)); transform-origin: left; }
+  .s1-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 2.2cqh; padding: 4.5cqh 7%; }
+  .s1-b, .s1-t { display: block; border-radius: 4px; background: color-mix(in srgb, var(--navy) calc(var(--r, 0) * 100%), #d3e9e6); }
+  .s1-b { flex: none; height: 5.2cqh; }
+  .s1-t { flex: none; height: 1.9cqh; background: color-mix(in srgb, var(--muted) calc(var(--r, 0) * 100%), #d3e9e6); }
+  .s1-pic { display: block; flex: 1; min-height: 0; margin: .6cqh 0; border-radius: 8px; background: #cfe6e3 url(./img/peak.webp) 50% 30% / cover; filter: blur(calc((1 - var(--r, 0)) * 14px)) saturate(calc(.3 + var(--r, 0) * .7)); opacity: calc(.45 + var(--r, 0) * .55); }
+  /* 2 phone first: one layout, widened from phone to desktop, its blocks reflowing */
+  .s2-dev { position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%); border: 2px solid var(--navy); background: var(--mint); overflow: hidden; }
+  .s2-dev b { position: absolute; border-radius: 4px; }
+  .s2-dev b[data-b="nav"] { background: var(--white); border: 1px solid var(--aqua); }
+  .s2-dev b[data-b="h1"], .s2-dev b[data-b="h2"] { background: var(--navy); }
+  .s2-dev b[data-b="btn"] { background: var(--teal); border-radius: 99px; }
+  .s2-dev b[data-b="img"] { background: #cfe6e3 url(./img/peak.webp) 50% 30% / cover; border-radius: 6px; }
+  .s2-dev b[data-b^="c"] { background: var(--white); border: 1px solid var(--aqua); }
+  .s2-w { position: absolute; left: 50%; bottom: 5%; transform: translateX(-50%); font: 500 13px/1 var(--body); color: var(--muted); }
+  /* 3 secure and always up: the lock, the checks ticked one by one, thirty days of uptime filling in */
+  .s3 { position: absolute; top: 10%; bottom: 10%; left: 50%; width: min(640px, 84%); transform: translateX(-50%); display: flex; flex-direction: column; justify-content: center; gap: clamp(20px, 6cqh, 44px); }
+  .s3-url { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border: 1px solid var(--aqua); border-radius: 99px; background: var(--mint); font: 500 15px/1 var(--mono); }
+  .s3-url svg { width: 18px; height: 18px; fill: none; stroke: var(--teal-ink); stroke-width: 1.6; opacity: var(--a, 0); transform: scale(calc(.6 + var(--a, 0) * .4)); }
+  .s3-url span { color: var(--teal-ink); opacity: var(--a, 0); }
+  .s3-url i { flex: 1; height: 10px; border-radius: 5px; background: #d3e9e6; }
+  .s3-checks { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+  .s3-checks li { display: flex; align-items: center; gap: 10px; font-size: clamp(14px, 3cqw, 17px); opacity: calc(.35 + var(--a, 0) * .65); }
+  .s3-checks li::before { content: '✓'; display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 13px;
+                          background: color-mix(in srgb, var(--teal) calc(var(--a, 0) * 100%), #e3f1ef); color: color-mix(in srgb, var(--navy) calc(var(--a, 0) * 100%), transparent); }
+  .s3-up p { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: var(--muted); }
+  .s3-up b { font-weight: 500; color: var(--teal-ink); opacity: var(--ok, 0); }
+  .s3-days { display: grid; grid-template-columns: repeat(30, 1fr); gap: 4px; height: 40px; }
+  .s3-days i { border-radius: 3px; background: color-mix(in srgb, var(--teal) calc(var(--a, 0) * 100%), #e3f1ef); }
+  /* 4 looked after: a year on a line from launch, through the winter, with the work done on it */
+  .s4 { position: absolute; inset: 9% 7%; }
+  .s4-status { position: absolute; top: 0; right: 0; display: flex; align-items: center; gap: 8px; padding: 8px 14px; border: 1px solid var(--aqua); border-radius: 99px; font: 500 14px/1 var(--body); }
+  .s4-track { position: absolute; left: 0; right: 0; top: 54%; height: 0; }
+  .s4-winter { position: absolute; left: 42%; width: 30%; top: -120px; height: 240px; border-radius: 12px;
+               background: radial-gradient(circle, rgba(0, 166, 162, .22) 1.3px, transparent 1.8px) 0 0 / 14px 14px, rgba(173, 220, 218, .28); opacity: var(--w, 0); }
+  .s4-winter em { position: absolute; left: 12px; bottom: 10px; font: 500 13px/1 var(--body); font-style: normal; color: var(--teal-ink); }
+  .s4-rail, .s4-line { position: absolute; left: 0; right: 0; top: -1px; height: 2px; background: var(--aqua); }
+  .s4-line { background: var(--navy); transform: scaleX(var(--line, 0)); transform-origin: left; }
+  .s4-pin { position: absolute; left: 0; top: 16px; font: 500 14px/1 var(--body); }
+  .s4-pin::before { content: ''; position: absolute; left: 0; top: -23px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--navy); }
+  .s4-ev { position: absolute; left: calc(var(--x) * 100%); top: 14px; transform: translateX(-50%) translateY(calc((1 - var(--a, 0)) * 8px)); opacity: var(--a, 0);
+           padding: 6px 10px; border-radius: 8px; background: var(--white); border: 1px solid var(--aqua); font: 500 13px/1 var(--body); white-space: nowrap; }
+  .s4-ev.up { top: auto; bottom: 14px; transform: translateX(-50%) translateY(calc((1 - var(--a, 0)) * -8px)); }
+  .s4-ev::before { content: ''; position: absolute; left: 50%; top: -20px; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: var(--teal); }
+  .s4-ev.up::before { top: auto; bottom: -19px; }
+
+  /* inspiration: the snow leopard's four habits, over the mountain */
+  .traits { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(16px, 2vw, 28px); margin-top: clamp(28px, 5vh, 48px); }
+  .traits li { padding-top: 18px; border-top: 1px solid var(--navy); }
+  .traits .n { display: inline-grid; place-items: center; width: 26px; height: 26px; margin-bottom: 12px; border: 1px solid var(--navy); border-radius: 50%;
+               font: 500 13px/1 var(--body); background: var(--navy); color: var(--mint); }
+  .traits h3 { font-size: 20px; line-height: 1.25; }
+  .traits p { margin-top: 8px; font-size: 15px; color: var(--muted); }
+
+  /* the range */
+  .roots { padding-bottom: 0; }
+  .roots .text { max-width: 640px; }
+  .roots .text p { margin-top: 14px; color: var(--muted); }
+  .range { position: relative; z-index: 1; margin-top: clamp(40px, 9vh, 96px); overflow: hidden; }
+  .range-in { position: relative; aspect-ratio: 1672 / 941; }
+  .range-in > img { width: 100%; height: 100%; }
+  .range-fade { position: absolute; left: 0; right: 0; bottom: -1px; height: 34%; background: linear-gradient(rgba(0, 39, 53, 0), rgba(0, 39, 53, .55) 45%, rgba(0, 39, 53, .9) 78%, var(--navy)); }
+
+  /* the close: a short brief, then the name in dots */
+  .finale { background: var(--navy); color: var(--mint); padding: clamp(64px, 10vh, 112px) 0 0; min-height: 100vh; display: flex; flex-direction: column; }
+  .contact { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(28px, 5vw, 88px); align-items: start; }
+  .contact .say p { margin-top: 20px; max-width: 24em; color: var(--aqua); }
+  .contact .say a.ig { display: inline-flex; align-items: center; min-height: 44px; margin-top: 14px; font-weight: 600; text-decoration-color: var(--teal); text-underline-offset: 5px; }
+  .contact .say a.ig:hover { color: var(--aqua); }
+  form.brief { display: grid; gap: 18px; padding: clamp(20px, 2.4vw, 32px); border: 1px solid rgba(173, 220, 218, .28); border-radius: 16px; background: #04303f; }
+  .brief legend, .brief label { display: block; margin-bottom: 8px; font: 500 14px/1.3 var(--body); color: var(--aqua); }
+  .brief fieldset { border: 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chips label { margin: 0; font: 500 15px/1 var(--body); color: var(--mint); cursor: pointer; }
+  .chips input { position: absolute; opacity: 0; }
+  .chips span { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid rgba(173, 220, 218, .4); border-radius: 999px; transition: background .2s ease, color .2s ease, border-color .2s ease; }
+  .chips label:hover span { border-color: var(--mint); }
+  .chips input:checked + span { background: var(--mint); border-color: var(--mint); color: var(--navy); }
+  .chips input:focus-visible + span { outline: 2px solid var(--teal); outline-offset: 3px; }
+  .brief .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .brief input[type=text], .brief input[type=email], .brief textarea { width: 100%; padding: 13px 14px; border: 1px solid rgba(173, 220, 218, .4); border-radius: 10px; background: transparent; color: var(--mint); font: 400 16px/1.45 var(--body); }
+  .brief textarea { min-height: 96px; resize: vertical; }
+  .brief ::placeholder { color: rgba(173, 220, 218, .6); }
+  .brief .send { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
+  .brief .btn { background: var(--teal); border-color: var(--teal); color: var(--navy); }
+  .brief .btn:disabled { opacity: .6; cursor: default; }
+  .brief .btn:hover { background: var(--mint); border-color: var(--mint); }
+  .brief .status { flex: 1 1 14em; font-size: 14px; line-height: 1.4; color: var(--aqua); }
+  .name { position: relative; z-index: 3; width: min(1240px, 100% - 2 * var(--pad)); margin: auto auto 0; padding-top: clamp(40px, 8vh, 88px); }
+  #wordmark { width: 100%; height: 90px; }
+  .foot { position: relative; z-index: 3; width: min(1240px, 100% - 2 * var(--pad)); margin: 0 auto; padding: 22px 0 26px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 24px; font-size: 14px; color: var(--aqua); }
+  .foot a { display: inline-flex; align-items: center; min-height: 44px; margin-block: -12px; }
+
+  /* the cursor (fine pointers): a ring that fills with how far down the page you are; over the
+     contact section it becomes a "Work with us" bubble that smears behind itself as it moves */
+  .cursor, .cursor-ghost { position: fixed; left: 0; top: 0; z-index: 40; pointer-events: none; }
+  .cursor { width: 44px; height: 44px; margin: -22px 0 0 -22px; color: var(--navy); display: none;
+            transform: translate3d(var(--x, -100px), var(--y, -100px), 0); }
+  .cursor.on-dark { color: var(--aqua); }
+  .cursor svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; transition: opacity .25s ease, transform .35s ease; }
+  .cursor circle { fill: none; stroke: currentColor; }
+  .cursor .track { stroke-width: 1; opacity: .25; }
+  .cursor .progress { stroke-width: 1.8; stroke-dasharray: 1 1; stroke-dashoffset: var(--left, 1); stroke: var(--teal); }
+  .cursor .disc, .cursor-ghost { width: 96px; height: 96px; border-radius: 50%; background: var(--teal); }
+  .cursor .disc { position: absolute; left: 50%; top: 50%; margin: -48px 0 0 -48px; display: grid; place-items: center; color: var(--navy);
+                  font: 500 14px/1.1 var(--body); text-align: center;
+                  transform: rotate(var(--angle, 0deg)) scale(calc(var(--s, 0) * var(--stretch, 1)), calc(var(--s, 0) / var(--stretch, 1))); }
+  .cursor .disc span { transform: rotate(calc(-1 * var(--angle, 0deg))); display: block; }
+  .cursor.is-link svg { opacity: 0; transform: rotate(-90deg) scale(.6); }
+  .cursor-ghost { margin: -48px 0 0 -48px; opacity: 0; will-change: transform, opacity; }
+  @media (pointer: fine) { .cursor { display: block; } }
+  @media (pointer: fine) and (min-width: 901px) { .contact.is-target, .contact.is-target a, .contact.is-target button { cursor: none; } }
+
+  /* on a desktop the form opens in a panel from the contact section; on a phone it stays in place */
+  .open-brief { display: none; margin-top: 28px; background: var(--teal); border-color: var(--teal); color: var(--navy); }
+  .open-brief:hover { background: var(--mint); border-color: var(--mint); }
+  .steps { display: none; }
+  .contact.form-away { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); align-items: end; }
+  .contact.form-away h2 { font-size: clamp(48px, 5.4vw, 84px); line-height: .98; letter-spacing: -.04em; }
+  .contact.form-away .say p { font-size: 19px; max-width: 26em; }
+  .contact.form-away .steps { display: block; }
+  .steps .label { color: var(--aqua); opacity: .8; }
+  .steps ol { list-style: none; margin-top: 12px; border-top: 1px solid rgba(173, 220, 218, .3); counter-reset: step; }
+  .steps li { display: grid; grid-template-columns: 40px 1fr; gap: 2px 8px; padding: 16px 0 17px; border-bottom: 1px solid rgba(173, 220, 218, .18); counter-increment: step; }
+  .steps li::before { content: counter(step, decimal-leading-zero); grid-row: span 2; font: 500 13px/1.6 var(--body); color: var(--teal); }
+  .steps h3 { font-size: 19px; line-height: 1.3; }
+  .steps li p { font-size: 15px; color: var(--aqua); }
+  @media (pointer: fine) and (min-width: 901px) {
+    .finale > section { flex: 1; display: flex; align-items: center; padding: 24px 0 !important; }
+    .finale > section > .wrap { width: min(1240px, 100% - 2 * var(--pad)); }
+    .finale .name { margin-top: 0; padding-top: 0; }
+    .steps li { padding: 22px 0 23px; }
+    .steps h3 { font-size: 22px; }
+    .steps li p { font-size: 16px; margin-top: 2px; }
+  }
+  .contact.form-away .open-brief { display: inline-flex; }
+  .brief-dialog { width: min(640px, 100% - 32px); max-height: calc(100vh - 48px); margin: auto; padding: 0; border: 0; border-radius: 18px; background: #04303f; color: var(--mint); overflow: auto; }
+  .brief-dialog::backdrop { background: rgba(0, 20, 28, .72); }
+  .brief-dialog .brief { border: 0; }
+  .brief-dialog .close { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border: 1px solid rgba(173, 220, 218, .4); border-radius: 50%;
+                         background: none; color: var(--mint); font: 400 22px/1 var(--body); cursor: pointer; }
+  .brief-dialog .close:hover { border-color: var(--mint); }
+  .brief-dialog .brief { padding-top: 64px; }
+  .brief-dialog h3 { position: absolute; top: 24px; left: clamp(20px, 2.4vw, 32px); font-size: 20px; }
+
+  @media (max-width: 1240px) and (min-width: 901px) { .traits { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 900px) {
+    .lp .actions .btn, .brief .btn { width: 100%; }
+    .contact { grid-template-columns: 1fr; }
+    .values > .wrap { grid-template-columns: 1fr; }
+    .values-pic { aspect-ratio: 16 / 10; object-fit: cover; object-position: 50% 20%; }
+    .std li { grid-template-columns: 1fr; }
+    .traits { grid-template-columns: 1fr 1fr; gap: 20px 16px; }
+    .work-grid, .brief .pair, .card.wide { grid-template-columns: 1fr; }
+    .card.wide .shot { aspect-ratio: 1152 / 600; min-height: 0; }
+    .range { margin-top: 32px; }
+    .range-in { width: 135%; margin-left: -16%; }
+  }
+  @media (max-width: 600px) { .traits { grid-template-columns: 1fr; } }
+
+  /* titles that open on a phone; on wider screens every one stays open and nothing toggles */
+  .fold summary { list-style: none; }
+  .fold summary::-webkit-details-marker { display: none; }
+  @media (min-width: 641px) { .fold summary { pointer-events: none; } }
+  @media (max-width: 640px) {
+    .fold summary { position: relative; display: flex; align-items: center; gap: 12px; min-height: 44px; padding-right: 36px; cursor: pointer; }
+    .fold summary::after { content: '+'; position: absolute; right: 2px; top: 50%; transform: translateY(-50%); font: 400 24px/1 var(--body); color: var(--teal-ink); transition: transform .3s var(--ease); }
+    .fold[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+    .fold p { margin-top: 8px; }
+    .std li { padding: 10px 0 12px; }
+    .traits li { padding-top: 10px; }
+    .traits .n { margin-bottom: 0; flex: none; }
+  }
+</style>
+</head>
+
+<body>
+<a class="skip" href="#work">Skip to what we build</a>
+<canvas class="dots" aria-hidden="true"></canvas>
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="brand" href="#top">SNOLEP</a>
+    <nav class="site-nav" aria-label="Main"><a href="#values">Principles</a><a href="#work">What we build</a><a href="#inspiration">Inspiration</a></nav>
+    <a class="btn primary head-cta" href="#contact">Start a project <i aria-hidden="true">→</i></a>
+    <button class="menu-btn" type="button" aria-controls="rail" aria-expanded="false">Menu <b aria-hidden="true">+</b></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="lp lp4" id="hero">
+    <div class="lp4-map"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1431 891" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path class="c" d="M594 891 L592 882 L585 872 L575 873 L562 882 L556 891" pathLength="1"/><path class="c" d="M603 891 L602 882 L595 864 L585 857 L567 864 L558 870 L549 875 L534 882 L529 891" pathLength="1"/><path class="c" d="M619 0 L621 9 L630 19 L648 22 L659 18 L664 0" pathLength="1"/><path class="c" d="M686 0 L691 18 L702 24 L720 25 L735 18 L741 9 L744 0" pathLength="1"/><path class="c" d="M611 891 L609 873 L603 856 L594 847 L585 844 L576 847 L564 855 L549 863 L540 865 L523 864 L521 864 L510 873 L508 891" pathLength="1"/><path class="c" d="M609 0 L612 13 L621 25 L630 31 L648 36 L657 37 L675 38 L693 38 L711 39 L729 36 L738 32 L747 24 L756 11 L759 0" pathLength="1"/><path class="c" d="M1431 575 L1422 578 L1419 594 L1430 603 L1431 603" pathLength="1"/><path class="c" d="M450 666 L441 675 L441 675 L450 688 L468 689 L477 684 L477 672 L460 666 L450 666" pathLength="1"/><path class="c" d="M618 891 L618 873 L615 855 L610 846 L598 837 L585 834 L574 837 L561 846 L549 852 L531 850 L522 845 L504 843 L497 855 L494 864 L491 882 L490 891" pathLength="1"/><path class="cb" d="M599 0 L602 18 L607 27 L617 36 L630 42 L640 45 L657 48 L675 49 L693 49 L711 49 L729 47 L738 43 L750 36 L760 27 L766 18 L772 0" pathLength="1"/><path class="cb" d="M234 453 L225 460 L225 473 L234 486 L234 486 L252 479 L257 468 L252 457 L234 453" pathLength="1"/><path class="cb" d="M279 542 L271 558 L279 571 L288 577 L306 582 L316 585 L333 590 L342 594 L360 602 L369 608 L378 616 L387 628 L392 639 L396 656 L399 666 L402 684 L405 693 L416 702 L432 710 L441 716 L450 721 L468 720 L477 719 L495 717 L505 711 L513 701 L519 684 L516 666 L507 657 L495 651 L477 651 L459 649 L450 642 L446 630 L443 612 L438 603 L427 594 L415 585 L405 578 L396 569 L387 560 L378 556 L365 558 L351 566 L342 569 L331 567 L321 558 L313 549 L297 541 L279 542" pathLength="1"/><path class="cb" d="M1431 563 L1413 562 L1405 576 L1408 594 L1413 605 L1425 612 L1431 613" pathLength="1"/><path class="cb" d="M1287 673 L1280 684 L1287 698 L1296 704 L1314 711 L1318 720 L1323 731 L1341 731 L1350 722 L1350 711 L1344 702 L1333 693 L1325 684 L1316 675 L1305 670 L1287 673" pathLength="1"/><path class="cb" d="M1116 679 L1107 691 L1106 702 L1109 711 L1107 727 L1104 738 L1109 747 L1125 749 L1140 747 L1148 738 L1134 730 L1125 720 L1125 720 L1135 711 L1146 702 L1145 684 L1134 675 L1116 679" pathLength="1"/><path class="cb" d="M1224 681 L1215 685 L1206 695 L1197 703 L1179 710 L1169 711 L1157 720 L1153 738 L1170 745 L1179 748 L1195 747 L1206 743 L1224 738 L1233 734 L1242 722 L1245 711 L1245 693 L1239 684 L1224 681" pathLength="1"/><path class="cb" d="M628 891 L629 873 L629 855 L621 841 L612 833 L603 828 L585 823 L567 826 L558 830 L549 837 L531 828 L522 823 L504 822 L493 828 L486 837 L479 855 L473 864 L460 873 L452 882 L450 891" pathLength="1"/><path class="c" d="M588 0 L590 18 L594 30 L603 42 L612 48 L626 54 L639 57 L657 58 L675 58 L693 58 L711 59 L729 56 L738 53 L752 45 L764 36 L773 27 L779 18 L783 4 L784 0" pathLength="1"/><path class="c" d="M459 205 L450 213 L442 225 L432 233 L423 237 L414 245 L414 260 L423 265 L441 261 L449 252 L459 247 L469 252 L486 261 L504 257 L515 252 L525 243 L521 234 L513 223 L504 216 L491 207 L477 202 L459 205" pathLength="1"/><path class="c" d="M641 891 L644 873 L646 855 L639 839 L630 831 L621 824 L612 818 L595 810 L585 807 L573 801 L566 792 L563 774 L560 756 L553 747 L540 739 L531 731 L531 720 L534 711 L540 693 L542 684 L540 666 L537 657 L531 648 L519 639 L506 630 L495 624 L486 620 L476 612 L468 600 L459 593 L447 585 L432 577 L423 573 L413 567 L402 558 L392 549 L378 544 L360 546 L346 549 L335 549 L324 544 L315 538 L298 531 L288 528 L270 524 L261 520 L252 511 L252 504 L261 492 L266 477 L265 459 L259 450 L245 441 L234 432 L234 423 L239 414 L248 405 L256 396 L254 378 L243 375 L231 378 L221 387 L216 396 L212 414 L213 432 L208 450 L206 459 L205 477 L202 495 L200 513 L207 528 L216 534 L232 540 L241 549 L247 558 L254 567 L263 576 L275 585 L288 591 L297 594 L315 602 L324 606 L339 612 L351 619 L360 626 L369 638 L374 648 L378 666 L379 675 L379 693 L378 711 L387 729 L396 735 L405 738 L423 742 L432 750 L439 765 L443 774 L450 786 L459 792 L472 801 L468 814 L460 828 L456 837 L450 849 L441 863 L436 873 L432 886 L431 891" pathLength="1"/><path class="c" d="M657 463 L648 476 L639 485 L635 495 L641 495 L648 486 L660 477 L667 468 L657 463" pathLength="1"/><path class="c" d="M1431 546 L1414 540 L1404 537 L1394 540 L1386 550 L1386 567 L1391 576 L1396 585 L1400 603 L1404 612 L1420 621 L1431 622" pathLength="1"/><path class="c" d="M1260 656 L1251 658 L1233 663 L1221 666 L1208 675 L1201 684 L1192 693 L1179 698 L1163 693 L1157 684 L1151 675 L1141 666 L1125 663 L1112 666 L1098 673 L1089 682 L1087 693 L1088 711 L1088 729 L1086 747 L1092 756 L1107 761 L1125 763 L1143 764 L1161 765 L1170 766 L1188 770 L1199 765 L1212 756 L1224 752 L1242 748 L1251 745 L1269 738 L1270 738 L1283 747 L1290 756 L1302 765 L1310 765 L1321 756 L1331 747 L1341 742 L1350 737 L1359 724 L1360 711 L1359 701 L1350 685 L1341 678 L1332 670 L1323 665 L1305 658 L1296 657 L1278 655 L1260 656" pathLength="1"/><path class="c" d="M572 0 L573 18 L576 32 L584 45 L590 54 L600 63 L612 68 L630 71 L648 69 L666 67 L684 66 L702 67 L720 67 L736 63 L747 58 L756 52 L766 45 L778 36 L786 27 L792 13 L794 0" pathLength="1"/><path class="c" d="M549 70 L540 77 L536 90 L543 99 L551 99 L560 90 L564 72 L549 70" pathLength="1"/><path class="c" d="M0 156 L9 149 L14 135 L11 117 L0 109" pathLength="1"/><path class="c" d="M459 194 L450 199 L440 207 L432 217 L421 225 L407 234 L400 243 L398 261 L406 270 L423 274 L441 275 L459 276 L477 277 L495 272 L504 269 L522 265 L538 261 L548 252 L549 243 L546 234 L540 224 L531 210 L522 203 L508 198 L495 195 L477 191 L459 194" pathLength="1"/><path class="c" d="M297 305 L293 315 L297 324 L306 335 L315 344 L333 346 L342 341 L345 324 L333 317 L324 313 L309 306 L297 305" pathLength="1"/><path class="c" d="M653 891 L656 873 L659 864 L658 846 L655 837 L648 826 L639 817 L630 810 L621 792 L630 775 L631 765 L633 747 L639 729 L635 711 L630 697 L621 692 L612 702 L608 711 L606 729 L612 741 L621 755 L621 759 L618 774 L608 783 L594 784 L585 782 L576 769 L573 756 L570 738 L565 729 L567 711 L569 702 L568 684 L566 675 L561 657 L557 648 L549 637 L540 629 L525 621 L513 615 L504 609 L495 603 L486 594 L475 585 L459 576 L450 572 L438 567 L423 561 L414 556 L405 548 L394 540 L378 535 L360 536 L342 538 L324 533 L315 529 L300 522 L288 517 L279 509 L274 495 L275 477 L273 459 L270 450 L261 438 L252 424 L252 423 L261 411 L270 397 L273 387 L270 370 L261 364 L243 362 L225 364 L214 369 L206 378 L200 396 L198 412 L198 423 L197 441 L193 459 L192 477 L189 495 L187 504 L186 522 L190 531 L198 545 L205 558 L216 565 L225 569 L237 576 L251 585 L261 592 L270 598 L279 603 L297 612 L306 616 L322 621 L333 625 L342 631 L351 640 L360 656 L363 666 L364 684 L362 702 L363 720 L369 733 L378 744 L387 752 L396 757 L413 765 L423 774 L426 783 L428 801 L425 819 L423 829 L420 846 L416 864 L414 873 L412 891" pathLength="1"/><path class="c" d="M1431 412 L1422 418 L1421 432 L1431 436" pathLength="1"/><path class="c" d="M657 439 L648 442 L633 450 L622 459 L618 468 L614 486 L617 504 L623 513 L639 518 L649 513 L658 504 L667 495 L678 486 L685 477 L688 459 L683 450 L672 441 L657 439" pathLength="1"/><path class="c" d="M1431 523 L1419 522 L1404 520 L1395 522 L1385 531 L1377 547 L1375 558 L1377 575 L1381 585 L1385 603 L1383 621 L1386 630 L1404 634 L1422 633 L1431 633" pathLength="1"/><path class="c" d="M1179 556 L1179 562 L1188 573 L1197 579 L1206 589 L1215 595 L1218 585 L1211 576 L1204 567 L1197 557 L1179 556" pathLength="1"/><path class="c" d="M1251 637 L1242 643 L1233 649 L1215 656 L1206 662 L1197 673 L1188 684 L1179 687 L1169 684 L1161 673 L1152 662 L1143 656 L1125 652 L1107 655 L1098 658 L1080 666 L1075 675 L1073 693 L1076 711 L1077 729 L1071 747 L1080 763 L1089 767 L1107 770 L1125 771 L1143 773 L1152 774 L1170 779 L1182 783 L1197 785 L1206 782 L1215 773 L1233 765 L1242 764 L1260 761 L1278 763 L1287 769 L1297 774 L1314 776 L1323 770 L1332 759 L1341 751 L1350 746 L1359 738 L1367 720 L1368 711 L1368 693 L1367 684 L1359 666 L1350 657 L1341 653 L1323 650 L1307 648 L1296 645 L1281 639 L1269 635 L1251 637" pathLength="1"/><path class="c" d="M553 0 L552 18 L550 36 L549 46 L540 58 L531 65 L521 72 L509 81 L502 90 L504 101 L513 111 L518 126 L522 137 L540 142 L556 135 L559 126 L565 108 L571 99 L579 90 L594 85 L612 85 L630 84 L644 81 L657 77 L675 75 L693 75 L711 75 L729 73 L738 71 L754 63 L765 55 L774 49 L783 42 L792 35 L801 20 L804 9 L806 0" pathLength="1"/><path class="c" d="M36 37 L36 51 L54 48 L54 44 L36 37" pathLength="1"/><path class="c" d="M72 60 L66 72 L65 90 L72 106 L86 99 L90 90 L90 80 L81 65 L72 60" pathLength="1"/><path class="c" d="M0 191 L9 187 L17 171 L20 162 L27 147 L32 135 L34 117 L27 105 L18 90 L15 81 L9 68 L0 65" pathLength="1"/><path class="c" d="M666 891 L667 882 L673 864 L673 846 L669 828 L666 815 L661 801 L657 786 L655 774 L654 756 L655 738 L653 720 L651 702 L649 684 L647 675 L639 659 L630 648 L621 644 L603 647 L585 643 L576 637 L567 630 L553 621 L540 614 L531 609 L520 603 L506 594 L498 585 L490 576 L477 569 L468 567 L450 560 L441 556 L423 549 L414 544 L405 537 L393 531 L378 528 L360 527 L342 528 L324 523 L315 519 L303 513 L292 504 L286 495 L283 477 L281 459 L279 450 L272 432 L275 414 L279 404 L285 387 L288 378 L297 364 L315 361 L324 360 L342 355 L351 350 L366 333 L371 324 L378 313 L387 299 L393 288 L405 283 L423 283 L441 288 L450 292 L468 295 L483 288 L495 282 L504 278 L522 274 L540 270 L549 265 L557 252 L559 243 L558 234 L553 216 L549 206 L540 197 L526 189 L513 184 L495 183 L477 180 L459 183 L448 189 L434 198 L423 207 L414 215 L405 220 L396 227 L387 242 L384 252 L382 270 L378 280 L369 295 L360 302 L342 305 L324 301 L315 296 L297 294 L286 297 L279 306 L277 324 L273 342 L261 347 L243 349 L225 349 L207 349 L198 353 L189 362 L185 378 L187 396 L187 414 L187 432 L183 450 L181 468 L180 480 L176 495 L171 510 L170 522 L173 531 L180 549 L180 559 L189 574 L198 579 L216 585 L225 588 L236 594 L252 603 L261 609 L270 615 L279 621 L297 630 L306 632 L324 637 L333 643 L342 651 L349 666 L351 675 L351 684 L347 702 L347 720 L351 729 L360 742 L369 755 L377 765 L386 774 L396 783 L402 792 L404 810 L398 828 L393 837 L388 855 L392 873 L394 891" pathLength="1"/><path class="c" d="M126 325 L125 342 L130 342 L138 333 L126 325" pathLength="1"/><path class="c" d="M1431 399 L1413 405 L1407 414 L1404 423 L1404 433 L1413 445 L1431 450" pathLength="1"/><path class="c" d="M666 423 L657 423 L639 429 L630 432 L612 436 L602 441 L598 459 L598 477 L603 494 L606 504 L612 516 L621 525 L639 528 L655 522 L666 513 L675 504 L684 497 L693 489 L701 477 L704 468 L702 453 L695 441 L686 432 L675 425 L666 423" pathLength="1"/><path class="c" d="M1431 503 L1413 500 L1395 501 L1386 511 L1380 522 L1375 531 L1368 549 L1366 558 L1364 576 L1361 594 L1357 603 L1347 612 L1336 621 L1323 629 L1314 633 L1299 630 L1287 626 L1269 622 L1255 621 L1242 620 L1234 603 L1234 585 L1230 576 L1222 567 L1213 558 L1205 549 L1190 540 L1186 540 L1170 548 L1165 558 L1170 573 L1179 581 L1188 589 L1197 603 L1204 612 L1215 620 L1224 623 L1224 634 L1215 642 L1206 648 L1195 657 L1188 666 L1170 666 L1163 657 L1152 648 L1143 643 L1125 639 L1107 640 L1089 644 L1078 639 L1070 630 L1062 620 L1044 614 L1035 624 L1032 639 L1035 652 L1044 661 L1053 670 L1055 684 L1062 701 L1065 711 L1066 729 L1062 738 L1053 752 L1051 765 L1062 770 L1078 774 L1089 776 L1107 777 L1125 778 L1143 781 L1153 783 L1170 790 L1179 795 L1192 801 L1206 804 L1219 801 L1229 792 L1238 783 L1251 777 L1265 774 L1271 774 L1287 779 L1299 783 L1314 785 L1323 782 L1332 774 L1341 762 L1350 755 L1361 747 L1368 738 L1374 720 L1377 702 L1379 693 L1383 675 L1386 666 L1402 657 L1413 653 L1431 651" pathLength="1"/><path class="c" d="M972 666 L963 669 L954 675 L945 686 L938 702 L935 711 L930 729 L925 738 L918 750 L911 765 L913 783 L927 792 L945 790 L955 783 L963 769 L966 756 L963 744 L959 729 L959 711 L972 703 L981 694 L987 684 L981 670 L972 666" pathLength="1"/><path class="c" d="M927 826 L918 830 L915 846 L921 855 L936 857 L943 846 L936 829 L927 826" pathLength="1"/><path class="c" d="M65 0 L72 16 L81 26 L88 36 L92 45 L99 59 L105 72 L108 90 L100 108 L93 117 L84 126 L72 130 L55 135 L45 143 L38 153 L34 162 L30 180 L32 198 L36 214 L40 225 L45 243 L45 243 L36 259 L27 267 L18 272 L0 275" pathLength="1"/><path class="c" d="M540 0 L538 18 L535 36 L531 48 L522 57 L513 63 L498 72 L489 81 L484 90 L484 108 L485 126 L486 144 L491 153 L498 162 L486 162 L468 165 L458 171 L443 180 L432 187 L423 192 L412 198 L397 207 L388 216 L382 225 L378 234 L372 252 L369 262 L360 278 L351 287 L342 292 L324 291 L313 288 L297 286 L287 288 L271 297 L265 306 L261 319 L252 331 L243 334 L225 333 L216 330 L200 324 L189 321 L171 317 L162 314 L144 307 L135 304 L117 304 L99 306 L90 309 L78 315 L71 324 L72 336 L81 347 L90 352 L108 354 L126 356 L144 357 L156 360 L162 371 L169 387 L173 396 L175 414 L175 432 L171 450 L169 459 L167 477 L162 495 L159 504 L154 522 L151 531 L143 540 L126 545 L108 544 L99 538 L90 530 L79 531 L72 542 L66 558 L63 567 L59 585 L63 595 L81 597 L90 591 L99 581 L108 574 L126 571 L143 576 L153 579 L162 586 L180 594 L189 596 L207 600 L216 605 L230 612 L243 616 L254 621 L268 630 L279 637 L288 641 L306 646 L315 649 L328 657 L334 666 L336 684 L333 694 L328 711 L333 729 L342 738 L350 747 L356 756 L360 765 L369 782 L376 792 L380 801 L378 815 L371 828 L367 837 L365 855 L366 873 L369 891" pathLength="1"/><path class="c" d="M821 0 L819 9 L810 27 L804 36 L794 45 L783 52 L774 58 L765 64 L754 72 L738 79 L727 81 L711 82 L693 82 L675 83 L657 87 L648 90 L630 96 L612 99 L603 99 L585 102 L576 110 L569 126 L567 141 L558 151 L549 153 L531 159 L526 171 L538 180 L549 187 L558 192 L567 199 L570 216 L567 234 L566 243 L561 261 L554 270 L540 278 L531 281 L513 284 L501 288 L487 297 L477 305 L468 308 L450 307 L441 303 L432 297 L414 295 L408 306 L414 317 L423 324 L423 336 L405 340 L387 339 L378 344 L368 351 L353 360 L342 365 L330 369 L315 374 L306 379 L297 389 L291 405 L288 416 L286 432 L288 450 L290 459 L293 477 L297 488 L306 501 L315 508 L324 513 L342 518 L360 519 L378 520 L390 522 L405 526 L414 531 L431 540 L441 544 L456 549 L468 553 L486 553 L504 557 L511 567 L515 576 L522 586 L531 594 L546 603 L558 608 L576 612 L587 612 L595 612 L612 605 L621 601 L632 603 L641 612 L646 630 L649 639 L655 657 L659 666 L666 684 L667 693 L667 711 L674 729 L681 738 L686 738 L693 728 L703 720 L720 719 L729 726 L737 738 L747 746 L756 749 L774 750 L792 751 L810 754 L819 760 L828 768 L832 783 L819 786 L801 787 L787 792 L781 801 L776 819 L765 823 L755 819 L747 801 L745 792 L738 779 L725 774 L715 774 L708 774 L693 766 L684 756 L684 756 L682 774 L684 785 L686 801 L687 819 L689 837 L693 850 L697 864 L702 876 L720 878 L727 891" pathLength="1"/><path class="c" d="M1197 77 L1188 88 L1179 99 L1171 108 L1168 117 L1169 135 L1171 144 L1175 162 L1170 171 L1173 180 L1186 180 L1193 171 L1187 162 L1189 153 L1199 144 L1207 135 L1215 120 L1219 108 L1220 90 L1215 79 L1197 77" pathLength="1"/><path class="c" d="M1161 294 L1161 301 L1170 307 L1188 310 L1191 297 L1179 292 L1161 294" pathLength="1"/><path class="c" d="M1431 389 L1413 392 L1404 397 L1395 408 L1390 423 L1390 441 L1395 455 L1401 468 L1395 477 L1386 487 L1377 502 L1373 513 L1368 524 L1362 540 L1359 549 L1352 567 L1345 576 L1336 585 L1330 594 L1321 603 L1305 609 L1287 610 L1269 611 L1251 604 L1246 594 L1243 576 L1240 567 L1230 558 L1219 549 L1211 540 L1197 531 L1188 530 L1179 533 L1166 540 L1158 549 L1154 567 L1161 582 L1170 590 L1179 600 L1182 612 L1179 629 L1161 626 L1146 621 L1134 621 L1125 621 L1107 623 L1089 623 L1080 617 L1071 606 L1062 594 L1044 586 L1026 587 L1008 591 L990 593 L981 596 L969 603 L962 612 L954 627 L948 639 L942 648 L935 657 L924 666 L914 675 L910 693 L911 711 L910 729 L908 738 L900 755 L894 765 L887 774 L873 781 L864 785 L855 792 L850 810 L837 815 L828 823 L824 837 L828 851 L837 859 L854 855 L864 848 L873 841 L891 845 L896 855 L899 873 L889 882 L880 891" pathLength="1"/><path class="c" d="M603 413 L594 415 L584 423 L580 441 L580 459 L581 477 L585 486 L594 501 L599 513 L604 522 L612 532 L630 539 L648 537 L662 531 L675 522 L688 513 L699 504 L710 495 L720 488 L729 479 L736 468 L738 459 L734 450 L723 441 L711 435 L702 428 L693 421 L681 414 L666 410 L648 407 L630 410 L612 413 L603 413" pathLength="1"/><path class="c" d="M0 698 L13 693 L22 684 L18 668 L9 657 L0 648 L0 647" pathLength="1"/><path class="c" d="M1431 673 L1416 675 L1404 680 L1395 689 L1387 702 L1383 711 L1379 729 L1376 738 L1368 752 L1359 761 L1350 771 L1341 783 L1332 790 L1323 793 L1305 792 L1296 790 L1278 785 L1260 786 L1248 792 L1238 801 L1229 810 L1215 817 L1197 818 L1179 810 L1170 803 L1161 796 L1152 792 L1134 787 L1116 785 L1098 784 L1080 783 L1071 782 L1053 781 L1038 774 L1033 765 L1035 752 L1044 741 L1053 730 L1055 720 L1052 711 L1044 701 L1026 694 L1008 695 L997 702 L990 711 L986 729 L990 745 L993 756 L991 774 L989 783 L984 801 L981 819 L979 828 L972 844 L966 855 L958 864 L951 873 L945 885 L944 891" pathLength="1"/><path class="c" d="M0 825 L12 819 L19 810 L24 792 L22 774 L9 769 L0 769" pathLength="1"/><path class="cb" d="M97 0 L99 10 L105 27 L108 40 L113 54 L118 63 L126 79 L128 90 L122 99 L114 108 L108 117 L99 130 L90 138 L72 144 L63 148 L54 155 L46 171 L49 189 L54 198 L63 207 L75 216 L85 225 L91 234 L94 252 L99 268 L107 279 L117 284 L131 288 L144 292 L162 296 L175 297 L189 299 L207 304 L216 307 L234 306 L243 301 L252 296 L266 288 L279 283 L297 280 L315 282 L333 283 L343 279 L353 270 L360 258 L366 243 L369 233 L376 216 L380 207 L387 198 L400 189 L414 182 L423 177 L433 171 L441 157 L441 152 L423 146 L414 140 L409 126 L414 114 L432 112 L442 117 L450 129 L462 126 L465 108 L468 97 L476 81 L483 72 L494 63 L504 57 L513 50 L522 36 L525 27 L528 9 L528 0" pathLength="1"/><path class="cb" d="M839 0 L836 9 L828 23 L819 35 L810 43 L801 50 L792 55 L779 63 L767 72 L756 79 L747 83 L729 88 L711 89 L693 90 L683 90 L666 94 L652 99 L639 104 L628 108 L612 111 L594 113 L585 117 L579 135 L585 147 L594 159 L595 171 L592 180 L586 198 L585 207 L580 225 L575 234 L570 252 L567 262 L558 276 L549 282 L534 288 L522 291 L504 297 L495 306 L492 315 L497 324 L507 333 L504 343 L494 342 L486 333 L477 323 L459 323 L450 328 L441 339 L432 347 L421 351 L405 353 L387 355 L375 360 L360 368 L351 372 L336 378 L324 384 L315 390 L306 400 L301 414 L298 432 L300 450 L305 468 L309 477 L315 489 L324 498 L334 504 L351 507 L369 509 L387 512 L396 514 L414 518 L423 522 L441 530 L450 533 L468 538 L486 537 L504 538 L513 541 L531 548 L539 558 L540 567 L547 585 L558 592 L576 590 L592 585 L603 577 L612 569 L621 564 L636 567 L648 571 L657 577 L667 585 L670 603 L666 616 L663 630 L666 648 L669 657 L675 670 L684 684 L690 693 L702 699 L720 701 L729 703 L746 711 L756 716 L772 720 L783 724 L801 726 L810 730 L820 738 L834 747 L846 752 L864 756 L882 750 L889 738 L890 720 L883 702 L878 693 L872 684 L867 666 L869 648 L873 630 L880 621 L891 617 L909 616 L927 615 L936 611 L945 602 L954 590 L963 582 L981 577 L999 576 L1008 576 L1026 575 L1044 575 L1053 577 L1070 585 L1078 594 L1087 603 L1098 607 L1116 606 L1125 603 L1137 594 L1142 576 L1143 561 L1147 549 L1154 540 L1164 531 L1179 524 L1188 521 L1206 521 L1215 525 L1224 532 L1234 540 L1251 546 L1260 550 L1265 567 L1260 578 L1260 589 L1269 595 L1278 591 L1287 585 L1305 578 L1314 573 L1324 567 L1335 558 L1343 549 L1350 539 L1358 522 L1362 513 L1368 495 L1371 486 L1377 468 L1377 459 L1377 450 L1376 432 L1377 423 L1382 405 L1386 396 L1396 387 L1413 382 L1431 380" pathLength="1"/><path class="cb" d="M1179 62 L1173 72 L1170 82 L1163 99 L1160 108 L1159 126 L1158 144 L1152 159 L1147 171 L1143 185 L1136 198 L1131 207 L1125 222 L1120 234 L1119 252 L1127 261 L1131 279 L1133 297 L1137 306 L1144 315 L1157 324 L1170 329 L1188 332 L1206 326 L1215 316 L1220 306 L1216 288 L1206 279 L1197 275 L1181 270 L1170 264 L1167 252 L1174 243 L1185 234 L1194 225 L1197 216 L1206 201 L1215 196 L1232 189 L1241 180 L1243 171 L1240 162 L1235 144 L1233 134 L1232 117 L1231 99 L1228 81 L1221 72 L1206 64 L1197 61 L1179 62" pathLength="1"/><path class="cb" d="M0 541 L18 544 L36 549 L51 540 L57 531 L63 519 L69 504 L72 486 L72 477 L81 460 L93 468 L95 486 L99 504 L102 513 L108 522 L126 529 L139 522 L144 513 L150 495 L153 477 L154 468 L157 450 L160 432 L160 414 L158 396 L153 385 L144 372 L135 367 L117 365 L101 369 L90 373 L72 369 L63 368 L45 361 L41 351 L35 342 L22 333 L9 327 L0 326" pathLength="1"/><path class="cb" d="M621 383 L612 390 L603 396 L585 403 L576 410 L568 423 L566 432 L564 450 L563 468 L566 486 L571 495 L577 504 L585 518 L589 531 L594 543 L603 552 L621 557 L639 557 L657 549 L666 544 L675 539 L693 532 L702 528 L711 522 L722 513 L733 504 L742 495 L751 486 L759 477 L765 464 L765 452 L761 441 L753 432 L738 424 L729 422 L711 416 L702 412 L687 405 L675 402 L659 396 L648 389 L639 382 L621 383" pathLength="1"/><path class="cb" d="M334 891 L341 873 L346 864 L349 846 L351 834 L354 819 L356 801 L352 783 L349 774 L342 758 L333 748 L324 741 L315 732 L308 720 L311 702 L315 693 L319 675 L315 666 L300 657 L288 653 L274 648 L261 641 L252 637 L234 636 L223 639 L207 639 L198 633 L189 623 L180 616 L171 612 L153 603 L144 600 L126 598 L113 603 L100 612 L90 620 L81 626 L63 629 L45 623 L30 630 L36 646 L54 642 L70 639 L72 639 L87 648 L97 657 L102 666 L101 684 L94 693 L81 698 L63 702 L54 704 L40 711 L31 720 L25 729 L29 738 L41 747 L49 756 L53 774 L45 788 L37 801 L32 810 L27 819 L18 829 L5 837 L0 838" pathLength="1"/><path class="cb" d="M153 691 L144 693 L126 701 L117 708 L115 720 L121 729 L130 738 L138 747 L141 765 L143 783 L152 792 L160 792 L171 789 L184 783 L191 774 L195 756 L196 738 L200 729 L206 711 L198 699 L180 697 L165 693 L153 691" pathLength="1"/><path class="cb" d="M1431 691 L1417 693 L1404 700 L1395 709 L1389 720 L1386 729 L1382 747 L1377 760 L1369 774 L1364 783 L1357 792 L1346 801 L1332 806 L1314 804 L1304 801 L1287 797 L1269 795 L1254 801 L1244 810 L1234 819 L1224 826 L1215 829 L1197 833 L1180 828 L1170 822 L1161 812 L1152 802 L1143 797 L1125 793 L1116 792 L1099 792 L1089 792 L1071 792 L1053 793 L1035 793 L1019 801 L1016 810 L1015 828 L1011 846 L1006 855 L999 864 L990 873 L980 882 L977 891" pathLength="1"/><path class="cb" d="M1017 716 L1008 722 L1008 730 L1026 733 L1032 720 L1017 716" pathLength="1"/><path class="cb" d="M1098 852 L1098 864 L1107 867 L1117 864 L1109 855 L1098 852" pathLength="1"/><path class="c" d="M137 0 L135 16 L133 27 L135 41 L144 28 L153 22 L171 27 L177 36 L176 54 L172 72 L171 82 L163 99 L153 105 L144 109 L126 116 L117 125 L110 135 L101 144 L90 150 L81 153 L67 162 L63 171 L65 180 L72 189 L87 198 L96 207 L100 216 L106 234 L109 243 L116 261 L126 270 L135 273 L153 279 L162 280 L180 283 L198 286 L216 287 L234 282 L243 278 L261 277 L279 275 L297 275 L315 275 L333 273 L342 268 L351 256 L357 243 L361 234 L367 216 L371 207 L378 193 L387 182 L396 174 L405 165 L405 156 L399 144 L396 134 L395 117 L399 108 L408 99 L423 94 L441 91 L450 85 L459 79 L470 72 L481 63 L492 54 L503 45 L509 36 L513 26 L517 9 L517 0" pathLength="1"/><path class="c" d="M855 0 L853 9 L846 23 L837 33 L828 42 L819 48 L810 54 L792 63 L783 68 L774 75 L765 82 L749 90 L738 93 L720 96 L702 97 L687 99 L675 103 L662 108 L648 113 L636 117 L621 124 L612 126 L598 135 L603 146 L607 162 L603 179 L600 189 L596 207 L594 217 L585 232 L579 243 L576 253 L570 270 L564 279 L553 288 L540 296 L531 301 L520 306 L522 320 L527 333 L523 351 L514 360 L504 365 L486 364 L477 357 L468 347 L451 351 L441 355 L423 359 L414 360 L396 364 L382 369 L369 376 L360 381 L348 387 L335 396 L327 405 L322 414 L316 432 L320 450 L326 459 L334 468 L342 477 L351 488 L367 495 L378 498 L396 502 L405 504 L423 509 L432 513 L450 519 L468 522 L477 522 L495 523 L513 523 L522 521 L536 513 L535 495 L531 485 L521 477 L513 468 L522 461 L534 459 L541 450 L548 432 L550 423 L558 410 L567 400 L576 393 L588 387 L601 378 L612 370 L621 367 L639 368 L648 373 L657 381 L666 388 L684 394 L693 396 L711 402 L729 405 L738 405 L756 410 L765 416 L776 423 L786 432 L792 444 L795 459 L792 476 L786 486 L774 495 L765 500 L756 506 L747 515 L738 526 L730 540 L725 549 L712 558 L702 559 L685 567 L688 585 L686 603 L683 612 L677 630 L679 648 L684 660 L693 672 L702 680 L711 684 L729 687 L747 687 L765 685 L783 685 L793 684 L810 682 L825 684 L835 693 L833 711 L837 724 L846 732 L862 729 L861 711 L855 701 L846 692 L842 675 L848 666 L855 654 L860 639 L862 621 L865 612 L873 603 L891 595 L900 592 L918 590 L936 586 L945 580 L954 573 L964 567 L981 565 L999 566 L1017 565 L1035 565 L1048 567 L1062 570 L1076 576 L1088 585 L1098 590 L1116 589 L1125 580 L1129 567 L1134 551 L1141 540 L1149 531 L1161 522 L1170 518 L1182 513 L1197 508 L1215 508 L1229 513 L1240 522 L1251 529 L1260 532 L1278 536 L1288 540 L1305 544 L1314 535 L1323 528 L1334 522 L1345 513 L1351 504 L1355 486 L1359 469 L1361 459 L1363 441 L1366 423 L1368 411 L1371 396 L1377 383 L1386 376 L1404 373 L1422 372 L1431 371" pathLength="1"/><path class="c" d="M1431 32 L1419 36 L1418 54 L1422 66 L1431 73" pathLength="1"/><path class="c" d="M1179 44 L1170 48 L1161 59 L1158 72 L1155 90 L1152 107 L1151 117 L1150 135 L1143 150 L1134 159 L1128 171 L1125 181 L1120 198 L1116 210 L1111 225 L1105 234 L1099 252 L1107 266 L1116 278 L1120 288 L1125 306 L1130 315 L1136 324 L1144 333 L1154 342 L1170 347 L1188 350 L1206 348 L1215 341 L1224 333 L1235 324 L1243 315 L1251 302 L1256 288 L1260 277 L1268 261 L1273 252 L1278 237 L1278 229 L1269 218 L1265 207 L1269 193 L1272 180 L1270 162 L1266 153 L1258 144 L1251 135 L1244 117 L1242 108 L1239 90 L1233 74 L1224 65 L1215 60 L1204 54 L1188 45 L1179 44" pathLength="1"/><path class="c" d="M1296 203 L1287 212 L1281 225 L1296 232 L1314 231 L1332 226 L1341 220 L1348 207 L1332 200 L1314 199 L1296 203" pathLength="1"/><path class="c" d="M0 522 L18 522 L36 519 L47 513 L53 495 L51 477 L53 459 L57 450 L67 441 L81 436 L97 441 L105 450 L108 459 L112 477 L113 495 L117 507 L134 504 L137 495 L138 477 L140 459 L142 441 L141 423 L143 405 L139 387 L130 378 L117 377 L108 384 L99 396 L92 405 L81 406 L72 404 L63 407 L45 412 L36 415 L30 432 L24 441 L9 449 L0 450" pathLength="1"/><path class="c" d="M1305 458 L1296 468 L1305 484 L1321 477 L1316 459 L1305 458" pathLength="1"/><path class="c" d="M126 618 L117 622 L109 639 L117 651 L126 658 L144 658 L153 651 L157 639 L153 629 L144 621 L126 618" pathLength="1"/><path class="c" d="M317 891 L317 873 L320 855 L323 837 L323 819 L324 809 L326 792 L325 774 L320 765 L311 756 L303 747 L297 738 L288 726 L280 711 L288 701 L297 688 L298 675 L288 669 L279 666 L261 663 L243 661 L236 675 L238 693 L243 702 L252 711 L249 720 L239 729 L231 738 L225 749 L219 765 L216 776 L212 792 L207 806 L198 812 L180 817 L171 823 L153 823 L142 819 L126 812 L108 812 L90 817 L72 814 L54 812 L43 819 L34 828 L25 837 L13 846 L0 850" pathLength="1"/><path class="c" d="M1431 710 L1419 711 L1404 718 L1397 729 L1393 738 L1390 756 L1388 774 L1388 792 L1386 804 L1377 813 L1364 819 L1358 828 L1350 843 L1332 840 L1323 830 L1314 822 L1305 815 L1295 810 L1278 806 L1261 810 L1251 818 L1242 828 L1233 834 L1224 839 L1209 846 L1197 851 L1179 850 L1167 855 L1175 864 L1188 869 L1197 877 L1202 891" pathLength="1"/><path class="c" d="M108 756 L104 765 L113 765 L108 756" pathLength="1"/><path class="c" d="M1059 891 L1063 882 L1064 864 L1063 846 L1071 829 L1080 826 L1093 828 L1107 832 L1125 835 L1141 828 L1145 819 L1141 810 L1125 802 L1116 801 L1106 801 L1089 805 L1071 809 L1062 815 L1054 828 L1049 837 L1041 846 L1033 855 L1021 873 L1016 882 L1015 891" pathLength="1"/><path class="c" d="M183 0 L189 15 L196 27 L200 36 L198 47 L190 63 L187 72 L184 90 L180 103 L171 116 L162 125 L155 135 L146 144 L135 152 L126 160 L117 162 L99 165 L89 171 L97 180 L106 189 L109 198 L114 216 L117 225 L126 243 L135 252 L144 256 L162 259 L174 261 L189 270 L198 273 L216 273 L225 268 L239 261 L252 260 L261 264 L279 268 L297 269 L315 268 L333 262 L342 254 L349 243 L353 234 L360 217 L363 207 L369 190 L375 180 L380 171 L386 153 L383 135 L380 117 L385 99 L391 90 L400 81 L406 72 L406 54 L414 41 L423 45 L430 63 L441 69 L459 65 L468 61 L478 54 L489 45 L496 36 L504 19 L506 9 L507 0" pathLength="1"/><path class="c" d="M870 0 L871 18 L874 27 L873 37 L855 42 L846 45 L829 54 L819 59 L809 63 L792 70 L783 76 L774 84 L765 90 L747 98 L738 100 L720 103 L702 105 L690 108 L675 116 L666 120 L648 125 L639 128 L629 135 L621 146 L617 162 L612 180 L609 189 L605 207 L603 218 L594 234 L588 243 L583 252 L578 270 L574 279 L567 288 L556 297 L548 306 L544 324 L549 339 L549 347 L540 360 L533 369 L528 378 L533 387 L549 391 L558 385 L567 377 L578 369 L594 363 L603 358 L621 353 L639 356 L650 360 L662 369 L673 378 L684 382 L702 387 L711 389 L729 391 L747 389 L765 393 L774 398 L785 405 L795 414 L802 423 L810 438 L816 450 L821 459 L819 473 L811 486 L806 495 L801 507 L792 522 L783 528 L765 531 L756 536 L747 546 L740 558 L733 567 L721 576 L711 580 L702 594 L700 603 L694 621 L691 630 L692 648 L697 657 L708 666 L720 669 L738 669 L756 667 L765 664 L776 657 L781 639 L783 623 L785 612 L791 594 L801 589 L815 594 L825 603 L821 621 L824 639 L831 648 L839 648 L847 639 L847 621 L841 612 L831 603 L837 593 L846 585 L856 576 L864 559 L867 549 L873 539 L891 539 L900 548 L906 558 L914 567 L927 572 L941 567 L954 560 L963 555 L981 554 L999 555 L1017 555 L1035 556 L1048 558 L1062 560 L1080 563 L1092 567 L1107 567 L1116 558 L1121 549 L1126 540 L1134 530 L1143 522 L1154 513 L1169 504 L1179 498 L1188 495 L1206 492 L1224 494 L1233 497 L1245 504 L1255 513 L1269 516 L1278 513 L1285 495 L1280 477 L1283 459 L1289 450 L1305 442 L1314 440 L1325 441 L1341 442 L1348 432 L1351 423 L1352 405 L1349 396 L1341 383 L1332 371 L1327 360 L1326 342 L1327 324 L1340 315 L1341 315 L1356 324 L1362 333 L1368 350 L1377 360 L1386 363 L1404 364 L1422 363 L1431 362" pathLength="1"/><path class="c" d="M1431 8 L1413 6 L1395 9 L1386 20 L1384 36 L1388 45 L1392 63 L1393 81 L1395 98 L1404 106 L1422 105 L1431 105" pathLength="1"/><path class="c" d="M1170 35 L1161 38 L1152 45 L1147 63 L1146 81 L1143 99 L1143 117 L1143 126 L1134 141 L1125 147 L1116 155 L1113 171 L1110 189 L1107 203 L1104 216 L1098 228 L1091 243 L1093 261 L1098 271 L1107 283 L1113 297 L1116 308 L1123 324 L1128 333 L1134 346 L1142 360 L1152 364 L1170 363 L1188 365 L1199 369 L1215 376 L1232 369 L1242 361 L1251 356 L1260 350 L1269 333 L1271 324 L1278 309 L1287 297 L1294 288 L1305 279 L1314 277 L1323 268 L1332 260 L1341 252 L1354 243 L1362 234 L1368 217 L1370 207 L1368 191 L1364 180 L1366 162 L1370 153 L1359 146 L1341 146 L1332 143 L1319 135 L1305 131 L1287 134 L1269 127 L1260 120 L1253 108 L1250 99 L1245 81 L1241 72 L1233 62 L1220 54 L1206 46 L1197 39 L1188 35 L1170 35" pathLength="1"/><path class="c" d="M1296 161 L1295 171 L1305 174 L1308 162 L1296 161" pathLength="1"/><path class="c" d="M414 369 L405 371 L390 378 L378 387 L369 394 L360 404 L355 414 L351 432 L354 450 L360 462 L369 472 L378 479 L395 486 L405 490 L418 495 L432 500 L450 504 L459 504 L469 504 L486 500 L490 486 L488 468 L490 450 L486 436 L477 423 L472 414 L468 405 L461 387 L455 378 L442 369 L432 368 L414 369" pathLength="1"/><path class="c" d="M1431 730 L1413 735 L1408 747 L1408 765 L1413 779 L1421 792 L1416 810 L1407 819 L1398 828 L1390 837 L1382 846 L1374 855 L1366 864 L1358 873 L1350 885 L1341 878 L1332 867 L1323 859 L1314 852 L1305 845 L1296 836 L1287 828 L1269 828 L1260 836 L1251 844 L1242 849 L1232 855 L1226 873 L1227 891" pathLength="1"/><path class="c" d="M303 891 L299 873 L295 864 L288 846 L282 837 L274 828 L268 819 L269 801 L274 792 L282 783 L285 765 L278 756 L261 753 L251 756 L243 765 L241 783 L242 801 L234 815 L225 820 L207 826 L198 831 L189 837 L180 846 L162 851 L153 845 L144 837 L127 828 L117 827 L108 828 L90 833 L72 832 L54 833 L44 837 L31 846 L18 855 L9 858 L0 859" pathLength="1"/><path class="c" d="M292 0 L289 18 L279 22 L266 18 L256 18 L243 22 L234 28 L227 45 L220 54 L207 63 L200 72 L197 81 L194 99 L189 113 L184 126 L180 137 L172 153 L167 162 L162 171 L159 189 L162 203 L162 212 L162 219 L171 230 L180 235 L189 249 L198 257 L216 256 L223 243 L212 234 L198 230 L187 225 L189 207 L198 202 L216 204 L225 211 L232 225 L238 234 L252 241 L261 248 L270 254 L287 261 L297 262 L315 261 L324 257 L333 250 L342 240 L350 225 L354 216 L358 198 L360 189 L366 171 L370 162 L371 144 L369 135 L363 117 L359 108 L351 95 L342 86 L334 72 L328 72 L318 81 L306 86 L292 81 L286 72 L288 54 L297 50 L312 54 L324 63 L341 54 L343 54 L359 63 L369 67 L379 63 L387 52 L393 36 L396 21 L398 9 L398 0" pathLength="1"/><path class="c" d="M418 0 L423 17 L427 27 L433 36 L441 47 L459 53 L474 45 L483 36 L489 27 L495 9 L496 0" pathLength="1"/><path class="c" d="M886 0 L890 18 L894 27 L892 45 L883 54 L873 59 L855 59 L837 62 L828 65 L810 71 L801 75 L789 81 L778 90 L765 99 L756 103 L738 107 L729 109 L711 110 L693 116 L684 121 L675 127 L657 133 L648 136 L638 144 L630 157 L624 171 L621 180 L615 198 L612 216 L610 225 L603 238 L594 250 L590 261 L585 278 L581 288 L573 297 L566 306 L565 324 L572 333 L585 341 L603 337 L621 336 L636 342 L648 345 L666 350 L675 358 L684 365 L693 370 L711 375 L729 378 L747 376 L765 377 L774 380 L788 387 L799 396 L809 405 L819 414 L827 423 L837 432 L846 437 L858 441 L873 448 L882 457 L886 468 L882 482 L873 489 L855 491 L837 492 L828 497 L821 513 L819 522 L815 540 L815 558 L823 567 L837 571 L846 566 L855 549 L857 540 L864 526 L873 522 L882 523 L900 531 L909 540 L915 549 L927 558 L945 552 L954 548 L972 543 L990 545 L1008 545 L1026 544 L1044 545 L1062 547 L1080 544 L1094 540 L1089 522 L1098 511 L1115 513 L1125 514 L1134 508 L1140 495 L1139 477 L1143 466 L1161 467 L1170 468 L1179 465 L1197 465 L1206 471 L1224 477 L1242 471 L1251 459 L1251 459 L1242 446 L1233 438 L1220 432 L1222 414 L1214 405 L1206 396 L1197 386 L1183 378 L1170 377 L1161 381 L1145 387 L1142 387 L1130 378 L1125 367 L1121 351 L1116 337 L1111 324 L1107 311 L1104 297 L1098 284 L1089 271 L1085 261 L1084 243 L1089 227 L1094 216 L1098 198 L1099 189 L1100 171 L1099 153 L1102 135 L1116 128 L1125 125 L1130 108 L1133 90 L1135 81 L1134 63 L1133 54 L1134 45 L1143 31 L1152 26 L1170 23 L1188 25 L1197 29 L1208 36 L1221 45 L1233 52 L1242 58 L1251 72 L1255 81 L1260 96 L1269 106 L1278 111 L1296 114 L1314 115 L1323 117 L1341 124 L1359 120 L1368 110 L1373 99 L1375 81 L1371 63 L1362 54 L1350 49 L1341 42 L1338 27 L1341 11 L1342 0" pathLength="1"/><path class="c" d="M1431 123 L1421 126 L1413 139 L1404 153 L1395 162 L1389 171 L1386 187 L1385 198 L1381 216 L1377 233 L1374 243 L1368 259 L1363 270 L1360 288 L1363 306 L1368 317 L1375 333 L1379 342 L1389 351 L1404 354 L1422 354 L1431 354" pathLength="1"/><path class="c" d="M405 384 L396 392 L388 405 L386 414 L386 432 L386 450 L391 459 L402 468 L414 475 L423 480 L441 485 L459 478 L468 468 L470 459 L468 450 L459 436 L452 423 L449 414 L444 396 L439 387 L423 378 L405 384" pathLength="1"/><path class="c" d="M738 610 L729 613 L716 621 L710 630 L711 646 L720 650 L738 651 L751 648 L761 639 L760 621 L756 611 L738 610" pathLength="1"/><path class="c" d="M289 891 L287 882 L279 869 L270 862 L252 855 L243 850 L234 842 L216 837 L198 846 L190 855 L181 864 L171 870 L155 864 L146 855 L136 846 L126 841 L108 844 L99 849 L81 855 L63 852 L45 854 L36 857 L18 864 L9 865 L0 866" pathLength="1"/><path class="c" d="M1431 840 L1413 845 L1404 851 L1395 859 L1386 867 L1377 878 L1373 891" pathLength="1"/><path class="c" d="M1324 891 L1322 882 L1314 871 L1303 864 L1287 857 L1269 857 L1256 864 L1246 873 L1242 891" pathLength="1"/><path class="c" d="M435 0 L438 18 L442 27 L450 37 L467 36 L474 27 L479 18 L482 0" pathLength="1"/><path class="c" d="M907 0 L909 18 L911 27 L909 44 L903 54 L895 63 L885 72 L873 77 L855 72 L846 71 L837 73 L819 78 L810 82 L792 90 L783 97 L774 104 L765 108 L747 113 L729 116 L716 117 L702 120 L691 126 L675 135 L666 138 L654 144 L644 153 L639 162 L631 180 L627 189 L622 207 L621 216 L617 234 L612 247 L608 261 L607 279 L605 297 L600 306 L612 306 L626 315 L636 324 L648 331 L657 333 L675 340 L684 345 L696 351 L711 358 L720 361 L738 365 L756 366 L774 367 L783 369 L801 377 L810 384 L819 391 L828 396 L846 404 L855 408 L866 414 L874 423 L882 434 L891 449 L895 459 L898 477 L894 495 L900 511 L909 515 L918 523 L927 537 L945 538 L963 535 L981 535 L999 536 L1017 534 L1034 531 L1044 528 L1058 522 L1069 513 L1080 504 L1089 498 L1098 494 L1113 486 L1119 477 L1124 459 L1133 450 L1143 446 L1158 441 L1168 432 L1170 423 L1170 409 L1160 405 L1143 404 L1125 397 L1117 387 L1114 378 L1109 360 L1106 351 L1101 333 L1098 318 L1095 306 L1090 288 L1085 279 L1080 268 L1077 252 L1077 234 L1080 221 L1084 207 L1087 189 L1088 171 L1086 153 L1084 135 L1087 117 L1092 108 L1102 99 L1114 90 L1119 81 L1116 67 L1107 57 L1098 53 L1088 45 L1089 34 L1107 31 L1116 23 L1123 9 L1123 0" pathLength="1"/><path class="c" d="M1018 0 L1026 11 L1037 18 L1053 19 L1062 17 L1071 1 L1071 0" pathLength="1"/><path class="c" d="M1166 0 L1176 9 L1188 12 L1202 18 L1215 26 L1224 31 L1233 36 L1249 45 L1257 54 L1261 63 L1269 79 L1276 90 L1287 99 L1296 102 L1314 103 L1332 102 L1345 99 L1356 90 L1354 72 L1341 65 L1332 58 L1323 48 L1319 36 L1318 18 L1318 0" pathLength="1"/><path class="c" d="M216 79 L211 90 L207 101 L203 117 L200 135 L200 153 L198 170 L198 172 L207 182 L219 189 L230 198 L239 207 L248 216 L257 225 L267 234 L277 243 L288 250 L297 253 L310 252 L324 245 L333 237 L342 226 L347 216 L350 198 L351 180 L353 171 L357 153 L355 135 L351 125 L342 113 L333 106 L315 102 L297 100 L288 98 L270 93 L252 92 L243 90 L232 81 L216 79" pathLength="1"/><path class="c" d="M1431 178 L1420 180 L1408 189 L1403 198 L1395 214 L1391 225 L1387 243 L1385 252 L1379 270 L1377 279 L1376 297 L1378 306 L1383 324 L1387 333 L1397 342 L1413 345 L1431 344" pathLength="1"/><path class="c" d="M432 440 L428 450 L434 450 L432 440" pathLength="1"/><path class="c" d="M136 891 L135 880 L126 864 L125 864 L117 873 L117 882 L119 891" pathLength="1"/><path class="c" d="M275 891 L270 879 L261 871 L243 865 L234 863 L216 857 L204 864 L197 873 L190 891" pathLength="1"/><path class="c" d="M1431 862 L1421 864 L1404 872 L1395 880 L1391 891" pathLength="1"/><path class="c" d="M63 891 L54 873 L45 871 L27 873 L9 873 L0 873" pathLength="1"/><path class="c" d="M1302 891 L1296 881 L1278 875 L1262 882 L1258 891" pathLength="1"/><path class="cb" d="M931 0 L932 18 L934 36 L927 52 L918 59 L909 68 L900 79 L893 90 L884 99 L873 102 L864 97 L853 90 L837 88 L828 90 L810 98 L801 103 L791 108 L774 115 L765 117 L747 121 L729 123 L711 125 L702 128 L689 135 L675 142 L666 146 L656 153 L648 163 L641 180 L637 189 L631 207 L630 216 L628 234 L626 252 L628 270 L631 279 L636 297 L640 306 L648 316 L664 324 L675 329 L685 333 L702 340 L711 343 L729 350 L738 354 L756 357 L774 357 L792 358 L801 361 L815 369 L828 378 L837 382 L849 387 L864 393 L873 399 L882 406 L891 422 L894 432 L900 448 L904 459 L907 477 L909 486 L918 499 L927 507 L936 516 L945 523 L963 526 L981 526 L999 527 L1017 525 L1026 521 L1042 513 L1053 507 L1062 502 L1071 495 L1088 486 L1098 480 L1107 469 L1109 459 L1116 441 L1131 432 L1135 423 L1125 420 L1111 414 L1106 405 L1102 387 L1098 374 L1094 360 L1089 342 L1086 333 L1083 315 L1081 297 L1079 288 L1074 270 L1071 252 L1070 243 L1067 225 L1066 207 L1071 197 L1077 180 L1077 162 L1074 144 L1071 128 L1070 117 L1070 99 L1071 90 L1072 72 L1068 63 L1062 52 L1053 44 L1035 40 L1026 36 L1011 27 L1001 18 L995 9 L991 0" pathLength="1"/><path class="cb" d="M1259 0 L1261 9 L1269 20 L1278 27 L1287 26 L1292 9 L1292 0" pathLength="1"/><path class="cb" d="M1296 64 L1293 81 L1305 87 L1318 81 L1314 70 L1296 64" pathLength="1"/><path class="cb" d="M270 108 L261 108 L243 113 L232 117 L225 135 L226 153 L225 162 L225 172 L234 187 L243 195 L252 202 L261 208 L273 216 L285 225 L297 233 L306 235 L316 234 L331 225 L338 216 L342 198 L339 180 L342 162 L344 153 L342 136 L336 126 L324 117 L315 114 L297 111 L279 108 L270 108" pathLength="1"/><path class="cb" d="M1431 200 L1416 207 L1408 216 L1404 225 L1399 243 L1395 258 L1391 270 L1388 288 L1391 306 L1395 319 L1404 329 L1413 333 L1431 333" pathLength="1"/><path class="cb" d="M261 891 L252 880 L234 881 L228 891" pathLength="1"/><path class="c" d="M963 32 L958 45 L954 54 L945 64 L935 72 L921 81 L913 90 L907 99 L893 117 L882 125 L864 120 L855 113 L837 110 L823 117 L810 126 L801 129 L783 128 L765 129 L747 130 L729 131 L711 133 L702 136 L686 144 L675 149 L666 154 L657 163 L650 180 L647 189 L643 207 L640 225 L639 234 L637 252 L639 264 L643 279 L648 292 L655 306 L666 314 L675 319 L687 324 L702 329 L717 333 L729 338 L738 342 L756 347 L774 346 L792 345 L810 351 L819 356 L828 362 L840 369 L855 376 L864 381 L875 387 L889 396 L896 405 L900 418 L903 432 L909 450 L912 459 L917 477 L922 486 L930 495 L940 504 L953 513 L963 516 L981 517 L999 517 L1017 515 L1026 510 L1036 504 L1046 495 L1053 485 L1062 475 L1080 472 L1089 468 L1092 450 L1089 438 L1086 423 L1086 405 L1086 387 L1082 369 L1077 360 L1069 351 L1060 342 L1062 324 L1065 315 L1067 297 L1067 279 L1066 261 L1063 243 L1060 234 L1053 219 L1052 207 L1056 198 L1062 189 L1068 171 L1065 153 L1062 143 L1056 126 L1051 117 L1044 107 L1035 98 L1022 90 L1011 81 L1008 72 L1000 54 L992 45 L983 36 L972 28 L963 32" pathLength="1"/><path class="c" d="M270 124 L261 131 L252 142 L245 153 L241 162 L243 177 L252 187 L261 193 L270 198 L288 205 L299 207 L315 214 L328 207 L328 189 L328 171 L330 153 L325 135 L315 128 L306 125 L288 123 L270 124" pathLength="1"/><path class="c" d="M1431 221 L1422 225 L1415 243 L1412 252 L1406 270 L1405 288 L1413 297 L1426 297 L1431 296" pathLength="1"/><path class="c" d="M963 88 L954 97 L945 100 L927 104 L918 109 L909 119 L900 129 L891 136 L873 139 L859 135 L846 130 L832 135 L821 144 L810 150 L792 149 L774 145 L765 143 L747 141 L729 140 L711 141 L702 144 L684 152 L675 157 L666 164 L658 180 L657 198 L657 207 L652 225 L648 240 L647 252 L648 261 L654 279 L659 288 L666 300 L675 308 L689 315 L702 319 L720 323 L729 326 L745 333 L756 336 L770 333 L783 329 L801 328 L810 334 L822 342 L834 351 L846 359 L855 364 L864 369 L881 378 L891 383 L900 391 L907 405 L909 419 L911 432 L917 450 L920 459 L927 476 L935 486 L945 495 L954 501 L963 504 L981 507 L999 507 L1016 504 L1026 498 L1035 487 L1040 477 L1044 466 L1053 454 L1062 447 L1071 432 L1071 414 L1072 405 L1074 387 L1071 373 L1062 362 L1053 355 L1044 342 L1047 324 L1052 306 L1055 297 L1058 279 L1059 261 L1056 243 L1051 234 L1044 219 L1043 207 L1046 198 L1053 185 L1058 171 L1053 153 L1049 144 L1043 135 L1035 124 L1026 115 L1013 108 L999 103 L990 98 L981 89 L963 88" pathLength="1"/><path class="c" d="M279 142 L270 148 L261 160 L259 171 L265 180 L279 189 L288 192 L306 192 L315 183 L317 171 L318 153 L312 144 L297 139 L279 142" pathLength="1"/><path class="c" d="M927 123 L918 129 L909 138 L900 145 L882 149 L864 151 L855 154 L839 162 L828 165 L810 169 L792 167 L774 164 L765 162 L747 156 L738 152 L720 150 L704 153 L693 157 L682 162 L671 171 L668 189 L670 207 L666 222 L660 234 L657 244 L657 257 L661 270 L666 280 L675 292 L684 300 L696 306 L711 310 L729 314 L738 316 L756 317 L765 314 L783 308 L801 307 L812 315 L821 324 L831 333 L842 342 L853 351 L864 358 L873 362 L889 369 L900 374 L909 382 L916 396 L918 414 L918 423 L923 441 L927 450 L935 468 L940 477 L949 486 L963 493 L972 495 L990 496 L1004 495 L1017 490 L1026 480 L1031 468 L1035 459 L1044 443 L1053 432 L1054 423 L1058 405 L1062 389 L1062 385 L1054 369 L1044 360 L1037 351 L1033 342 L1035 328 L1039 315 L1044 297 L1046 288 L1050 270 L1050 252 L1044 238 L1038 225 L1035 214 L1035 204 L1040 189 L1044 180 L1044 164 L1039 153 L1033 144 L1025 135 L1014 126 L999 121 L981 126 L972 129 L954 127 L945 124 L927 123" pathLength="1"/><path class="c" d="M288 159 L283 171 L297 177 L304 162 L288 159" pathLength="1"/><path class="c" d="M936 144 L928 153 L921 162 L913 162 L900 159 L882 160 L873 162 L859 171 L847 180 L837 184 L819 185 L801 183 L783 180 L774 179 L756 175 L747 171 L729 163 L720 161 L711 162 L693 168 L684 175 L680 189 L681 207 L676 225 L671 234 L666 251 L666 253 L672 270 L680 279 L693 288 L702 292 L717 297 L729 299 L747 298 L756 296 L774 291 L792 289 L810 293 L819 303 L828 314 L837 323 L846 331 L855 340 L864 346 L874 351 L891 356 L906 360 L918 367 L926 378 L929 387 L929 405 L929 423 L935 441 L939 450 L945 464 L954 476 L963 482 L981 485 L999 481 L1009 477 L1018 468 L1025 450 L1027 441 L1028 423 L1035 409 L1043 396 L1046 387 L1044 376 L1035 365 L1026 353 L1021 342 L1025 324 L1028 315 L1034 297 L1036 288 L1040 270 L1041 252 L1035 237 L1030 225 L1026 207 L1027 198 L1033 180 L1030 162 L1024 153 L1014 144 L999 138 L981 141 L963 143 L945 143 L936 144" pathLength="1"/><path class="cb" d="M954 161 L945 171 L939 180 L930 189 L918 193 L900 191 L891 180 L889 180 L879 189 L873 199 L860 207 L846 211 L828 211 L819 206 L801 199 L792 197 L774 194 L756 190 L747 186 L736 180 L720 175 L702 180 L695 189 L693 198 L690 216 L684 233 L680 243 L682 261 L693 270 L702 273 L720 279 L738 276 L747 270 L763 261 L767 261 L783 264 L801 264 L810 270 L819 281 L828 295 L835 306 L844 315 L855 324 L864 332 L873 338 L891 342 L909 341 L927 338 L937 333 L954 326 L972 330 L981 335 L996 333 L1008 325 L1015 315 L1020 306 L1026 288 L1028 279 L1031 261 L1028 243 L1023 234 L1017 217 L1015 207 L1017 194 L1019 180 L1017 168 L1008 157 L990 154 L972 157 L954 161" pathLength="1"/><path class="cb" d="M972 350 L963 353 L951 360 L945 369 L944 387 L942 405 L943 423 L945 432 L952 450 L958 459 L966 468 L981 470 L990 467 L999 459 L1004 441 L1003 423 L1008 413 L1017 405 L1026 394 L1030 378 L1024 369 L1016 360 L1004 351 L990 344 L972 350" pathLength="1"/><path class="c" d="M963 187 L954 197 L948 207 L945 217 L939 234 L936 247 L927 260 L918 261 L907 270 L898 279 L893 297 L900 307 L918 314 L936 307 L945 300 L963 297 L981 303 L999 303 L1008 296 L1016 279 L1018 270 L1019 252 L1015 243 L1008 232 L999 220 L993 207 L991 189 L981 184 L963 187" pathLength="1"/><path class="c" d="M711 196 L704 207 L702 216 L700 234 L702 243 L719 252 L722 252 L737 243 L747 234 L756 226 L759 216 L747 207 L738 200 L729 195 L711 196" pathLength="1"/><path class="c" d="M837 234 L828 239 L824 252 L828 263 L836 279 L841 288 L848 297 L864 304 L875 297 L873 279 L869 270 L865 252 L864 243 L855 233 L837 234" pathLength="1"/><path class="c" d="M990 368 L981 372 L972 378 L966 396 L966 414 L972 430 L981 415 L987 405 L999 398 L1008 391 L1012 378 L1001 369 L990 368" pathLength="1"/><path class="c" d="M972 238 L963 244 L960 261 L969 270 L981 272 L990 269 L994 252 L985 243 L972 238" pathLength="1"/></svg></div>
+    <div class="wrap lp4-grid">
+      <div class="lp4-copy">
+        <h1 class="lp-title"><span class="ln"><span>Software, platforms</span></span> <span class="ln"><span>and websites,</span></span> <span class="ln"><span><em>built at 3,500 metres.</em></span></span></h1>
+        <div class="later"><p class="lede">Snolep Technologies builds the software that associations, museums, hotels and businesses in the Himalaya run on, from member platforms to accounting and HR tools.</p><div class="actions"><a class="btn primary" href="#contact">Start a project <i aria-hidden="true">→</i></a><a class="btn ghost" href="#work">See what we build</a></div></div>
+      </div>
+      <div class="lp4-alt later" aria-hidden="true"><span class="lp4-num">3,500</span><span class="lp4-unit">m</span><span class="lp4-where">Leh, Ladakh</span></div>
+    </div>
+    <div class="wrap built-for lp4-work later"><span class="label">Our work</span><ul><li>ALATOA</li><li>ALHGHA</li><li>Fynivo</li><li>Innovate Office</li><li>Central Asian Museum</li><li>Crystalakmo</li></ul></div>
+  </section>
+
+  <section class="values" id="values">
+    <div class="wrap">
+      <img class="values-pic" src="./img/peak.webp" width="608" height="753" loading="lazy" alt="A jagged Himalayan peak under snow, drawn in the Snolep colours">
+      <div class="values-text">
+        <h2>Guiding Principles</h2>
+        <p class="sub">Four things we hold to on every project, and what each one means in the work.</p>
+        <ul class="std">
+          <li><details class="fold"><summary><h3>Opens on thin signal</h3></summary><p>Compressed pictures, no heavy libraries, nothing waiting on a slow script.</p></details></li>
+          <li><details class="fold"><summary><h3>Starts on the phone</h3></summary><p>Every screen is planned at phone width first, where most visitors arrive.</p></details></li>
+          <li><details class="fold"><summary><h3>Secure and always up</h3></summary><p>Encrypted connections, locked-down access and backups, watched so your site stays online.</p></details></li>
+          <li><details class="fold"><summary><h3>Looked after past launch day</h3></summary><p>We host, update and fix what we ship, through the winter too.</p></details></li>
+        </ul>
+      </div>
+    </div>
+    <!-- live (desktop): the stage holds on screen while each standard plays, scrubbed by the scroll -->
+    <div class="v-stage" hidden>
+      <div class="wrap v-grid">
+          <h2 class="v-title">Guiding Principles</h2>
+          <ol class="v-steps">
+            <li class="v-step"><span class="v-n">01</span><h3>Opens on thin signal</h3><p><span>Compressed pictures, no heavy libraries, nothing waiting on a slow script.</span></p><span class="v-bar"><i></i></span></li>
+            <li class="v-step"><span class="v-n">02</span><h3>Starts on the phone</h3><p><span>Every screen is planned at phone width first, where most visitors arrive.</span></p><span class="v-bar"><i></i></span></li>
+            <li class="v-step"><span class="v-n">03</span><h3>Secure and always up</h3><p><span>Encrypted connections, locked-down access and backups, watched so your site stays online.</span></p><span class="v-bar"><i></i></span></li>
+            <li class="v-step"><span class="v-n">04</span><h3>Looked after past launch day</h3><p><span>We host, update and fix what we ship, through the winter too.</span></p><span class="v-bar"><i></i></span></li>
+          </ol>
+        <div class="v-frame" aria-hidden="true">
+          <div class="v-scene" data-scene="signal">
+            <div class="s1-win">
+              <div class="s1-top"><span class="s1-sig"><i class="on"></i><i></i><i></i><i></i></span><span class="s1-url"></span><span class="s1-ok">Ready</span></div>
+              <div class="s1-load"><i></i></div>
+              <div class="s1-body">
+                <i class="s1-b" style="width:58%"></i><i class="s1-b" style="width:38%"></i>
+                <i class="s1-pic"></i>
+                <i class="s1-t" style="width:92%"></i><i class="s1-t" style="width:84%"></i><i class="s1-t" style="width:60%"></i>
+              </div>
+            </div>
+          </div>
+          <div class="v-scene" data-scene="phone">
+            <div class="s2-dev"><b data-b="nav"></b><b data-b="h1"></b><b data-b="h2"></b><b data-b="btn"></b><b data-b="img"></b><b data-b="c1"></b><b data-b="c2"></b><b data-b="c3"></b></div>
+            <span class="s2-w">390 px</span>
+          </div>
+          <div class="v-scene" data-scene="secure">
+            <div class="s3">
+              <p class="s3-url"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg><span>https://</span><i></i></p>
+              <ul class="s3-checks"><li>Encrypted connection</li><li>Access locked down</li><li>Backed up</li><li>Updates applied</li></ul>
+              <div class="s3-up"><p><span>Uptime, last 30 days</span><b>Online</b></p><div class="s3-days"></div></div>
+            </div>
+          </div>
+          <div class="v-scene" data-scene="care">
+            <div class="s4">
+              <p class="s4-status"><i></i>Site online</p>
+              <div class="s4-track">
+                <span class="s4-winter"><em>Winter</em></span>
+                <span class="s4-rail"></span><span class="s4-line"></span>
+                <span class="s4-pin">Launch</span>
+                <span class="s4-ev up" style="--x:.18">Update</span>
+                <span class="s4-ev" style="--x:.34">Fix</span>
+                <span class="s4-ev up" style="--x:.52">Backup</span>
+                <span class="s4-ev" style="--x:.7">Update</span>
+                <span class="s4-ev up" style="--x:.88">New page</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="work" id="work">
+    <div class="wrap">
+      <div class="head">
+        <h2>What we build</h2>
+        <p>Software products, platforms and websites, and advice on working sustainably. Each kind below comes with one we have already made.</p>
+      </div>
+      <div class="work-grid">
+        <article class="card">
+          <div class="shot"><img src="./img/work-alatoa.webp" width="1152" height="3120" loading="lazy" alt="ALATOA website: Discover the land of high passes"></div>
+          <div class="meta"><h3>Association management and marketing platforms</h3><p>Membership, member directories, listings and news, together with the public site that markets the region to visitors.</p><p class="eg">Run by <a href="https://alatoa.in/" target="_blank" rel="noopener">ALATOA <i aria-hidden="true">↗</i></a> and <a href="https://alhgha.com/" target="_blank" rel="noopener">ALHGHA <i aria-hidden="true">↗</i></a></p></div>
+        </article>
+        <article class="card">
+          <div class="shot"><img src="./img/work-fynivo.webp" width="1152" height="3120" loading="lazy" alt="Fynivo website: Simplify your accounts"></div>
+          <div class="meta"><h3>Financial software</h3><p>Our own product: cloud accounting that connects businesses with their chartered accountants.</p><p class="eg">Our product <a href="https://fynivo.in/" target="_blank" rel="noopener">Fynivo <i aria-hidden="true">↗</i></a></p></div>
+        </article>
+        <article class="card">
+          <div class="shot plate"><!-- visual to come: Innovate Office screens, 1152 px wide --><b>Innovate Office</b></div>
+          <div class="meta"><h3>HR management software</h3><p>Employee records, attendance and leave in one system that the HR team and staff both use.</p><p class="eg">Our product <span>Innovate Office</span></p></div>
+        </article>
+        <article class="card">
+          <div class="shot"><img src="./img/work-museum.webp" width="1152" height="3120" loading="lazy" alt="Central Asian Museum website: A museum at the crossroads of Central Asia and Ladakh"></div>
+          <div class="meta"><h3>Websites with a CMS</h3><p>Sites for museums, hotels and institutions that their own staff keep up to date: rooms, collections, hours and news, without calling a developer.</p><p class="eg">Built for the <a href="https://centralasianmuseum.org/" target="_blank" rel="noopener">Central Asian Museum <i aria-hidden="true">↗</i></a></p></div>
+        </article>
+        <article class="card">
+          <div class="shot plate"><!-- visual to come: laundry system screens, 1152 px wide --><b>Crystalakmo</b></div>
+          <div class="meta"><h3>Laundry tracking and CRM</h3><p>Follows every item through the laundry cycle, runs the daily operation and keeps the customer relationship in one place.</p><p class="eg">Built for <span>Crystalakmo</span></p></div>
+        </article>
+        <article class="card">
+          <div class="shot plate"><!-- visual to come: a sustainability project picture, wide --><b>Sustainability</b></div>
+          <div class="meta"><h3>Sustainability consulting</h3><p>Advice for organisations that want to work more sustainably, grounded in what a fragile mountain region like Ladakh needs.</p><p class="eg"><a href="#contact">Talk to us about it <i aria-hidden="true">→</i></a></p></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="roots" id="inspiration">
+    <div class="wrap">
+      <div class="text">
+        <h2>Built for the terrain. Ready for what’s next.</h2>
+        <p>In the mountains, survival is about more than strength. It takes patience, precision, adaptability and resilience. The snow leopard embodies these qualities. They also shape how we think, build and innovate.</p>
+      </div>
+      <ol class="traits">
+        <li><details class="fold"><summary><span class="n" aria-hidden="true">1</span><h3>Patience creates precision.</h3></summary><p>The snow leopard knows when to wait and when to strike. We believe great technology starts the same way: understanding the challenge, finding the right opportunity and acting with purpose.</p></details></li>
+        <li><details class="fold"><summary><span class="n" aria-hidden="true">2</span><h3>Speed comes from simplicity.</h3></summary><p>Across the toughest terrain, the snow leopard moves with remarkable efficiency. We take the same approach to technology: breaking complex challenges into smaller steps and turning ideas into meaningful solutions.</p></details></li>
+        <li><details class="fold"><summary><span class="n" aria-hidden="true">3</span><h3>Flexible in approach. Unwavering in purpose.</h3></summary><p>When the terrain changes, the snow leopard changes course. We do too. We embrace new ideas, rethink what isn’t working and adapt our solutions without losing sight of what matters.</p></details></li>
+        <li><details class="fold"><summary><span class="n" aria-hidden="true">4</span><h3>Every setback is another opportunity to evolve.</h3></summary><p>Not every hunt succeeds. But every attempt brings experience. We experiment, learn, refine and try again. Because progress isn’t about getting everything right the first time. It’s about getting better every time.</p></details></li>
+      </ol>
+    </div>
+    <div class="range">
+      <div class="range-in">
+        <img src="./img/range.webp" width="1672" height="941" loading="lazy" alt="Snow-covered Himalayan peaks drawn in the Snolep colours">
+      </div>
+      <div class="range-fade" aria-hidden="true"></div>
+    </div>
+  </section>
+</main>
+
+<div class="finale" id="contact">
+  <section style="padding:0">
+    <div class="wrap contact">
+      <div class="say">
+        <h2>Project enquiries</h2>
+        <p>A few lines are enough. The message lands in our inbox and we answer by email.</p>
+        <button class="btn open-brief" type="button">Start a project <i aria-hidden="true">→</i></button>
+      </div>
+      <div class="steps">
+        <p class="label">How a project starts</p>
+        <ol>
+          <li><h3>Send a few lines</h3><p>What you need and roughly when. A sentence or two is enough.</p></li>
+          <li><h3>We reply by email</h3><p>With our questions, or a time to talk it through on a call.</p></li>
+          <li><h3>You get a plan and a price</h3><p>In writing, before any work starts.</p></li>
+        </ol>
+      </div>
+      <form class="brief" id="brief">
+        <fieldset>
+          <legend>What do you need?</legend>
+          <div class="chips">
+            <label><input type="radio" name="need" value="A website" checked><span>A website</span></label>
+            <label><input type="radio" name="need" value="A platform or software"><span>A platform or software</span></label>
+            <label><input type="radio" name="need" value="Sustainability consulting"><span>Sustainability consulting</span></label>
+            <label><input type="radio" name="need" value="Not sure yet"><span>Not sure yet</span></label>
+          </div>
+        </fieldset>
+        <div class="pair">
+          <div><label for="b-name">Your name</label><input id="b-name" type="text" name="name" autocomplete="name" required></div>
+          <div><label for="b-email">Your email</label><input id="b-email" type="email" name="email" autocomplete="email" required></div>
+        </div>
+        <div><label for="b-about">About the project</label><textarea id="b-about" name="message" required placeholder="What it is for, and when you need it"></textarea></div>
+        <input type="text" name="_honey" tabindex="-1" autocomplete="off" hidden>
+        <div class="send">
+          <button class="btn" id="send" type="submit">Send message <i aria-hidden="true">→</i></button>
+          <p class="status" id="status" role="status"></p>
+        </div>
+      </form>
+    </div>
+  </section>
+  <div class="name"><div id="wordmark" role="img" aria-label="Snolep Technologies"></div></div>
+  <footer class="foot">
+    <span>© 2026 Snolep Technologies</span>
+    <span>Ladakh, India · <time class="foot-clock" data-zone="Asia/Kolkata">--:--</time> local time</span>
+    <a href="https://www.instagram.com/snolep.in/" target="_blank" rel="noopener">Instagram ↗</a>
+  </footer>
+</div>
+
+<div class="rail-scrim" aria-hidden="true"></div>
+<aside class="rail" id="rail" aria-label="Site">
+  <a class="rail-brand" href="#top">SNOLEP<small>Technologies</small></a>
+  <button class="rail-close" type="button" aria-label="Close menu">×</button>
+  <nav class="rail-block rail-index" aria-label="Index">
+    <span class="rail-label">Index</span>
+    <a href="#top" data-section="hero"><span>01</span>Home</a>
+    <a href="#values" data-section="values"><span>02</span>Principles</a>
+    <a href="#work" data-section="work"><span>03</span>What we build</a>
+    <a href="#inspiration" data-section="inspiration"><span>04</span>Inspiration</a>
+    <a href="#contact" data-section="contact"><span>05</span>Contact</a>
+  </nav>
+  <div class="rail-block rail-links">
+    <span class="rail-label">Live work</span>
+    <a href="https://alhgha.com/" target="_blank" rel="noopener">ALHGHA <i aria-hidden="true">↗</i></a>
+    <a href="https://alatoa.in/" target="_blank" rel="noopener">ALATOA <i aria-hidden="true">↗</i></a>
+    <a href="https://fynivo.in/" target="_blank" rel="noopener">Fynivo <i aria-hidden="true">↗</i></a>
+    <a href="https://centralasianmuseum.org/" target="_blank" rel="noopener">Central Asian Museum <i aria-hidden="true">↗</i></a>
+  </div>
+  <div class="rail-block rail-links">
+    <span class="rail-label">Contact</span>
+    <a href="https://www.instagram.com/snolep.in/" target="_blank" rel="noopener">@snolep.in <i aria-hidden="true">↗</i></a>
+    <div class="rail-time"><span>Ladakh</span><time class="rail-clock" data-zone="Asia/Kolkata" data-suffix="IST">--:-- IST</time></div>
+  </div>
+  <div class="rail-foot">
+    <a class="rail-cta" href="#contact">Start a project <i aria-hidden="true">→</i></a>
+    <button class="rail-top" type="button">Back to top ↑</button>
+  </div>
+</aside>
+
+<dialog class="brief-dialog" aria-label="Project enquiry">
+  <h3>Project enquiry</h3>
+  <button class="close" type="button" aria-label="Close">×</button>
+</dialog>
+
+<div class="cursor" aria-hidden="true">
+  <svg viewBox="0 0 44 44"><circle class="track" cx="22" cy="22" r="20"/><circle class="progress" cx="22" cy="22" r="20" pathLength="1"/></svg>
+  <span class="disc"><span>Work<br>with us</span></span>
+</div>
+
+<script>
+  // The rail: the index marks the section you're in; the clock shows the studio's time; Copy copies
+  // the address; Back to top; and under 1100px it's a drawer off the Menu button.
+  (() => {
+    const rail = document.getElementById('rail');
+    const scrim = document.querySelector('.rail-scrim');
+    const menu = document.querySelector('.menu-btn');
+    const wide = matchMedia('(min-width: 1100px)');
+    const still = matchMedia('(prefers-reduced-motion: reduce)');
+    const links = [...rail.querySelectorAll('.rail-index a')];
+    const sections = links.map((a) => document.getElementById(a.dataset.section));
+
+    let queued = false;
+    const mark = () => {
+      queued = false;
+      const line = innerHeight * 0.4;
+      let current = 0;
+      sections.forEach((el, i) => { if (el.getBoundingClientRect().top <= line) current = i; });
+      if (innerHeight + scrollY >= document.documentElement.scrollHeight - 2) current = sections.length - 1;
+      links.forEach((a, i) => a.setAttribute('aria-current', String(i === current)));
+    };
+    const queue = () => { if (!queued) { queued = true; requestAnimationFrame(mark); } };
+    addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', queue);
+    mark();
+
+    const clock = rail.querySelector('.rail-clock'), footClock = document.querySelector('.foot-clock');
+    const fmt = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: clock.dataset.zone });
+    const tick = () => { clock.textContent = `${fmt.format(new Date())} ${clock.dataset.suffix}`; if (footClock) footClock.textContent = `${fmt.format(new Date())} IST`; };
+    tick();
+    setInterval(tick, 15000);
+
+    rail.querySelectorAll('.copy').forEach((btn) => btn.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(btn.dataset.copy); btn.textContent = 'Copied'; }
+      catch { btn.textContent = 'Press ⌘C'; getSelection().selectAllChildren(btn.previousElementSibling); }
+      setTimeout(() => { btn.textContent = 'Copy'; }, 1600);
+    }));
+    rail.querySelector('.rail-top').addEventListener('click', () => scrollTo({ top: 0, behavior: still.matches ? 'auto' : 'smooth' }));
+
+    // the drawer
+    const setOpen = (open) => {
+      rail.classList.toggle('open', open);
+      scrim.classList.toggle('open', open);
+      menu.setAttribute('aria-expanded', String(open));
+      if (!wide.matches) rail.inert = !open;
+      if (open) rail.querySelector('.rail-close').focus();
+      else if (rail.contains(document.activeElement)) menu.focus();
+    };
+    const fit = () => { rail.inert = !wide.matches && !rail.classList.contains('open'); if (wide.matches) setOpen(false); };
+    menu.addEventListener('click', () => setOpen(true));
+    rail.querySelector('.rail-close').addEventListener('click', () => setOpen(false));
+    scrim.addEventListener('click', () => setOpen(false));
+    addEventListener('keydown', (e) => { if (e.key === 'Escape' && rail.classList.contains('open')) setOpen(false); });
+    rail.addEventListener('click', (e) => { if (!wide.matches && e.target.closest('a')) setOpen(false); });
+    wide.addEventListener('change', fit);
+    fit();
+  })();
+
+  // The brief: sent to our inbox through FormSubmit; the address lives in LEADS.
+  (() => {
+    const LEADS = '__LEADS__';
+    const form = document.getElementById('brief'), send = document.getElementById('send'), status = document.getElementById('status');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const d = Object.fromEntries(new FormData(form));
+      if (d._honey) return;
+      delete d._honey;
+      if (LEADS.startsWith('__')) { status.textContent = 'This form is still being connected. Please check back shortly.'; return; }
+      send.disabled = true; status.textContent = 'Sending…';
+      try {
+        const r = await fetch(`https://formsubmit.co/ajax/${LEADS}`, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ ...d, _subject: `New project enquiry from ${d.name}`, _template: 'table' }) });
+        const j = await r.json();
+        if (!r.ok || String(j.success) !== 'true') throw new Error(j.message || 'failed');
+        form.reset(); status.textContent = 'Sent. Thank you, we will reply by email.';
+      } catch { status.textContent = 'That did not send. Please try again in a minute.'; }
+      send.disabled = false;
+    });
+  })();
+
+  // The form: on a desktop it lives in a panel the contact section opens; on a phone it stays in place.
+  const desk = matchMedia('(pointer: fine) and (min-width: 901px)');
+  const brief = (() => {
+    const form = document.getElementById('brief'), contact = document.querySelector('.contact'), dialog = document.querySelector('.brief-dialog');
+    const place = () => {
+      if (desk.matches) { dialog.appendChild(form); contact.classList.add('form-away'); }
+      else { if (dialog.open) dialog.close(); contact.appendChild(form); contact.classList.remove('form-away'); }
+    };
+    desk.addEventListener('change', place); place();
+    const open = () => { if (!dialog.open) { dialog.showModal(); form.querySelector('input:checked').focus(); } };
+    dialog.querySelector('.close').addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });     // a click on the dimmed page
+    document.querySelector('.open-brief').addEventListener('click', open);
+    // the other Start a project buttons open the same panel on a desktop
+    document.querySelectorAll('a.btn[href="#contact"], a.rail-cta').forEach((l) => l.addEventListener('click', (e) => { if (desk.matches) { e.preventDefault(); open(); } }));
+    return { open, dialog };
+  })();
+
+  // The cursor: a ring eased behind the pointer, filled with the scroll progress. Over the contact
+  // section (desktop) it turns into a "Work with us" bubble, stretched along its motion and trailing
+  // fading copies of itself; a click anywhere there opens the form.
+  (() => {
+    const fine = matchMedia('(pointer: fine)');
+    const still = matchMedia('(prefers-reduced-motion: reduce)');
+    const el = document.querySelector('.cursor'), dark = document.querySelector('.finale'), close = document.querySelector('.contact');
+    const ghosts = Array.from({ length: 12 }, () => {
+      const g = document.createElement('span');
+      g.className = 'cursor-ghost';
+      document.body.appendChild(g);
+      return { el: g, x: 0, y: 0, t: -1, s: 1 };
+    });
+    let gi = 0, mx = -100, my = -100, x = mx, y = my, s = 0, seen = false, raf = 0, last = 0, lx = 0, ly = 0, stretch = 1, angle = 0, inLink = false;
+    const progress = () => {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      el.style.setProperty('--left', (1 - Math.min(1, Math.max(0, scrollY / Math.max(1, max)))).toFixed(4));
+    };
+    const head = document.querySelector('.site-head');
+    const lpDark = document.querySelector('.lp-dark');
+    const shade = () => head.classList.toggle('on-dark', dark.getBoundingClientRect().top < 32 || (!!lpDark && lpDark.getBoundingClientRect().bottom > 40));
+    addEventListener('scroll', shade, { passive: true }); shade();
+    const tick = (now) => {
+      raf = 0;
+      const dt = Math.min(0.05, last ? (now - last) / 1000 : 1 / 60);
+      last = now;
+      const k = still.matches ? 1 : 1 - Math.exp(-dt * 14);
+      const px = x, py = y;
+      x += (mx - x) * k; y += (my - y) * k;
+      const d = dark.getBoundingClientRect(), c = close.getBoundingClientRect();
+      const over = mx >= d.left && mx <= d.right && my >= d.top && my <= d.bottom;
+      // the bubble covers the close row: from the top of the dark section to the end of the close
+      inLink = desk.matches && !brief.dialog.open && mx >= d.left && mx <= d.right && my >= d.top && my <= c.bottom + 24;
+      el.classList.toggle('is-link', inLink);
+      close.classList.toggle('is-target', inLink);
+      el.classList.toggle('on-dark', over);
+      s += ((inLink ? 1 : 0) - s) * (still.matches ? 1 : 1 - Math.exp(-dt * 12));
+      // motion blur: squash and stretch along the direction of travel, and leave copies behind
+      const vx = (x - px) / dt, vy = (y - py) / dt, speed = Math.hypot(vx, vy);
+      const want = still.matches ? 1 : 1 + Math.min(0.35, speed / 4000);
+      stretch += (want - stretch) * (1 - Math.exp(-dt * 18));
+      if (speed > 30) angle = Math.atan2(vy, vx) * 180 / Math.PI;
+      if (inLink && s > 0.5 && !still.matches && Math.hypot(x - lx, y - ly) > 9) {
+        const g = ghosts[gi++ % ghosts.length];
+        g.x = lx; g.y = ly; g.t = now; g.s = s;
+        lx = x; ly = y;
+      } else if (!inLink) { lx = x; ly = y; }
+      let busy = false;
+      for (const g of ghosts) {
+        if (g.t < 0) continue;
+        const age = (now - g.t) / 320;
+        if (age >= 1) { g.t = -1; g.el.style.opacity = 0; continue; }
+        busy = true;
+        g.el.style.opacity = (0.55 * (1 - age) * (1 - age)).toFixed(3);
+        g.el.style.transform = `translate3d(${g.x.toFixed(1)}px, ${g.y.toFixed(1)}px, 0) scale(${(g.s * (1 - 0.35 * age)).toFixed(3)})`;
+      }
+      el.style.setProperty('--x', `${x.toFixed(1)}px`);
+      el.style.setProperty('--y', `${y.toFixed(1)}px`);
+      el.style.setProperty('--s', s.toFixed(3));
+      el.style.setProperty('--stretch', stretch.toFixed(3));
+      el.style.setProperty('--angle', `${angle.toFixed(1)}deg`);
+      if (busy || Math.abs(mx - x) + Math.abs(my - y) > 0.2 || Math.abs((inLink ? 1 : 0) - s) > 0.002 || Math.abs(stretch - 1) > 0.002) raf = requestAnimationFrame(tick);
+      else last = 0;
+    };
+    const go = () => { if (!raf) raf = requestAnimationFrame(tick); };
+    addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse' || !fine.matches) return;
+      mx = e.clientX; my = e.clientY;
+      if (!seen) { seen = true; x = lx = mx; y = ly = my; }
+      go();
+    }, { passive: true });
+    document.documentElement.addEventListener('pointerleave', () => { mx = my = -100; seen = false; go(); });
+    addEventListener('scroll', () => { progress(); go(); }, { passive: true });
+    addEventListener('resize', progress);
+    progress();
+    // anywhere in the section opens the form, except its own links
+    dark.addEventListener('click', (e) => { if (desk.matches && !e.target.closest('a, button, dialog, .foot') && e.clientY <= close.getBoundingClientRect().bottom + 24) brief.open(); });
+  })();
+
+  // Values and standards, live on a desktop: the section is tall and its stage stays on screen; the
+  // scroll through it is split four ways, and each standard's animation runs with its quarter, so
+  // scrolling back runs it backwards. Elsewhere the section stays as it is drawn (the static state).
+  (() => {
+    const sec = document.getElementById('values'), stage = sec.querySelector('.v-stage');
+    const steps = [...sec.querySelectorAll('.v-step')], scenes = [...sec.querySelectorAll('.v-scene')];
+    const q01 = (v) => Math.min(1, Math.max(0, v));
+    const ease = (v) => { v = q01(v); return v * v * (3 - 2 * v); };
+    const span = (q, a, b) => ease((q - a) / (b - a));
+    const fits = () => matchMedia('(min-width: 1024px) and (min-height: 640px)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const set = (el, k, v) => el.style.setProperty(k, typeof v === 'number' ? v.toFixed(3) : v);
+
+    // 1: the load line fills; each block resolves once it has passed; the picture sharpens last
+    const s1 = scenes[0], s1Blocks = [...s1.querySelectorAll('.s1-b, .s1-pic, .s1-t')];
+    const order = [0, 1, 3, 4, 5, 2];                            // headline, text, then the picture
+    const signal = (q) => {
+      const load = span(q, 0.04, 0.7);
+      set(s1, '--load', load);
+      order.forEach((b, k) => set(s1Blocks[b], '--r', q01((load - (0.12 + k * 0.13)) / 0.14)));
+      set(s1, '--ok', span(q, 0.74, 0.84));
+    };
+    // 2: one layout in a frame that widens from a phone to a desktop; every block moves between the two
+    const s2 = scenes[1], dev = s2.querySelector('.s2-dev'), label = s2.querySelector('.s2-w');
+    const blocks = Object.fromEntries([...dev.children].map((b) => [b.dataset.b, b]));
+    const PHONE = { nav: [.06, .04, .88, .05], h1: [.06, .13, .72, .04], h2: [.06, .19, .5, .04], btn: [.06, .26, .36, .045],
+                    img: [.06, .33, .88, .24], c1: [.06, .6, .88, .1], c2: [.06, .72, .88, .1], c3: [.06, .84, .88, .1] };
+    const DESK = { nav: [.04, .05, .92, .07], h1: [.04, .2, .4, .07], h2: [.04, .3, .28, .07], btn: [.04, .42, .14, .07],
+                   img: [.52, .18, .44, .36], c1: [.04, .62, .28, .3], c2: [.36, .62, .28, .3], c3: [.68, .62, .28, .3] };
+    const phone = (q) => {
+      const e = span(q, 0.08, 0.78), m = (a, b) => a + (b - a) * e;
+      const W = s2.clientWidth, H = s2.clientHeight, ph = H * 0.74, dw = Math.min(W * 0.7, H * 0.74 / 0.6);
+      dev.style.width = `${m(ph * 0.5, dw)}px`; dev.style.height = `${m(ph, dw * 0.6)}px`; dev.style.borderRadius = `${m(26, 10)}px`;
+      for (const k in blocks) {
+        const a = PHONE[k], b = DESK[k], st = blocks[k].style;
+        st.left = `${m(a[0], b[0]) * 100}%`; st.top = `${m(a[1], b[1]) * 100}%`; st.width = `${m(a[2], b[2]) * 100}%`; st.height = `${m(a[3], b[3]) * 100}%`;
+      }
+      label.textContent = `${Math.round(m(390, 1440) / 10) * 10} px`;
+    };
+    // 3: the lock closes, the checks tick in turn, then thirty days of uptime fill in
+    const s3 = scenes[2], lock = s3.querySelector('.s3-url'), checks = [...s3.querySelectorAll('.s3-checks li')];
+    const days = s3.querySelector('.s3-days');
+    for (let d = 0; d < 30; d++) days.appendChild(document.createElement('i'));
+    const dayEls = [...days.children], upRow = s3.querySelector('.s3-up');
+    const secure = (q) => {
+      set(lock, '--a', span(q, 0.02, 0.14));
+      checks.forEach((c, k) => set(c, '--a', span(q, 0.16 + k * 0.08, 0.22 + k * 0.08)));
+      const fill = q01((q - 0.5) / 0.32) * 30;
+      dayEls.forEach((d, k) => set(d, '--a', q01(fill - k)));
+      set(upRow, '--ok', span(q, 0.82, 0.88));
+    };
+    // 4: the line runs on from launch through the winter; each piece of work shows as it is passed
+    const s4 = scenes[3], evs = [...s4.querySelectorAll('.s4-ev')].map((el) => ({ el, x: +el.style.getPropertyValue('--x') }));
+    const care = (q) => {
+      const line = span(q, 0.04, 0.82);
+      set(s4, '--line', line);
+      set(s4.querySelector('.s4-winter'), '--w', q01((line - 0.36) / 0.08));
+      for (const ev of evs) set(ev.el, '--a', q01((line - ev.x + 0.02) / 0.05));
+    };
+    const plays = [signal, phone, secure, care];
+
+    let live = false, raf = 0, cur = -1;
+    const draw = () => {
+      raf = 0;
+      if (!live) return;
+      const r = sec.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight) return;
+      const p = q01(-r.top / Math.max(1, r.height - innerHeight)), x = p * steps.length;
+      const i = Math.min(steps.length - 1, Math.floor(x)), q = p >= 1 ? 1 : x - i;
+      if (i !== cur) {
+        cur = i;
+        steps.forEach((s, n) => s.classList.toggle('is-on', n === i));
+        scenes.forEach((s, n) => s.classList.toggle('is-on', n === i));
+      }
+      steps.forEach((s, n) => set(s, '--q', n < i ? 1 : n > i ? 0 : q));
+      plays.forEach((play, n) => play(n < i ? 1 : n > i ? 0 : q));   // a scene fading out holds its end
+    };
+    const queue = () => { if (!raf) raf = requestAnimationFrame(draw); };
+    const sync = () => {
+      const want = fits();
+      if (want !== live) { live = want; sec.classList.toggle('is-live', live); stage.hidden = !live; cur = -1; }
+      queue();
+    };
+    addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', sync);
+    matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', sync);
+    sync();
+  })();
+
+  // On a phone the principle and habit titles fold their text away; elsewhere they all stay open
+  (() => {
+    const folds = [...document.querySelectorAll('.fold')], phone = matchMedia('(max-width: 640px)');
+    const fit = () => folds.forEach((d) => { d.open = !phone.matches; });
+    phone.addEventListener('change', fit); fit();
+    folds.forEach((d) => d.querySelector('summary').addEventListener('click', (e) => { if (!phone.matches) e.preventDefault(); }));
+  })();
+</script>
+
+<script type="module">
+  // The dots are snow. On load it settles into the logo's leopard and falls away from it as the page
+  // starts to move; at the bottom it settles into the company's name.
+  import { createDots } from './js/dots.js';
+
+  const leopard = document.getElementById('leopard'), wordmark = document.getElementById('wordmark');
+  const clamp = (v) => Math.min(1, Math.max(0, v));
+  const smooth = (v) => { v = clamp(v); return v * v * (3 - 2 * v); };
+  const show = (v) => { if (leopard) leopard.style.opacity = v.toFixed(3); };
+  const asDots = !!document.querySelector('[data-leopard="dots"]'), heavy = document.querySelector('[data-snow="heavy"]');
+
+  // The name at the bottom settles out of the snow, on the clock, once it is on screen
+  const nameState = {};
+  const nameClock = (t) => {
+    if (wordmark.getBoundingClientRect().bottom > innerHeight + 4) { nameState.since = undefined; return 0; }
+    if (nameState.since === undefined) nameState.since = t;
+    return smooth((t - nameState.since) / 1.8);
+  };
+
+  const start = async () => {
+    try { if (leopard) await leopard.decode(); await document.fonts.load('800 100px Archivo'); } catch { /* draw with what there is */ }
+    if (leopard && !leopard.naturalWidth) { show(1); return; }
+    window.dots = createDots({
+      canvas: document.querySelector('.dots'),
+      dark: ['.finale', '.lp-dark'],
+      // the snow gets heavier over the mountain and stays heavy to the end of the page
+      density: ({ vh }) => heavy && scrollY < vh ? Math.max(1 - clamp(scrollY / (vh * 0.9)), clamp((vh * 0.85 - document.getElementById('inspiration').getBoundingClientRect().top) / (vh * 0.7))) : clamp((vh * 0.85 - document.getElementById('inspiration').getBoundingClientRect().top) / (vh * 0.7)),
+      forms: [
+        ...(leopard ? [        { // the logo's leopard: dots gather on load, the drawing takes over, and scrolling blows it away
+          el: leopard, image: leopard,
+          presence: ({ vh, t, scrollY, calm }) => {
+            if (calm) { show(1); return [0, 0]; }
+            if (asDots) return [Math.min(smooth(t / 2.2), 1 - clamp((scrollY - vh * 0.2) / (vh * 0.6))), 1];
+            const drawn = Math.min(smooth((t - 1.5) / 0.7), 1 - smooth(scrollY / (vh * 0.07)));
+            show(drawn);
+            return [Math.min(smooth(t / 1.5), 1 - clamp((scrollY - vh * 0.07) / (vh * 0.6))), 1 - drawn];
+          },
+        }] : []),
+        { // the name
+          el: wordmark, text: (w) => (w < 620 ? ['SNOLEP', 'TECHNOLOGIES'] : ['SNOLEP TECHNOLOGIES']), font: '800 100px Archivo',
+          presence: ({ vh, t, calm }) => [calm ? clamp(1 - (document.documentElement.scrollHeight - innerHeight - scrollY) / (vh * 0.5)) : nameClock(t)],
+        },
+      ],
+    });
+  };
+  start();
+</script>
+<script>
+  // 4: the contour lines draw in a wave from the summit outwards; the altitude counts up with them
+  (() => {
+    const paths = [...document.querySelectorAll('.lp4-map path')];
+    paths.forEach((p, i) => p.style.setProperty('--i', (i * 7) % 90));
+    const num = document.querySelector('.lp4-num');
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const t0 = performance.now(), D = 2200, end = 3500;
+    const step = (t) => { const k = Math.min(1, (t - t0 - 300) / D), e = 1 - Math.pow(1 - Math.max(0, k), 3);
+      num.textContent = Math.round(e * end).toLocaleString('en-IN'); if (k < 1) requestAnimationFrame(step); };
+    num.textContent = '0'; requestAnimationFrame(step);
+  })();
+</script>
+</body>
+</html>
