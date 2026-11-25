@@ -136,24 +136,40 @@
   }
 
   /* hero: what we do on the left, the logo on the right; its snow leopard is drawn by the dots */
-  .hero { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; }
-  .hero .wrap { flex: 1; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); align-items: center; gap: clamp(24px, 4vw, 72px); padding: 96px 0 24px; }
-  .hero h1 { font-size: clamp(38px, 4.6vw, 72px); line-height: 1; font-weight: 500; letter-spacing: -.035em; }
-  .hero h1 em { font-style: normal; color: var(--teal-ink); }
-  .hero p.lede { margin-top: 24px; max-width: 30em; font-size: clamp(17px, 1.35vw, 20px); color: var(--muted); }
-  .hero .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
-  .logo-art { position: relative; justify-self: center; width: min(58vh, 100%); aspect-ratio: 1150 / 1194; }
-  .logo-art img { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .built-for { position: relative; z-index: 3; width: min(1240px, 100% - 2 * var(--pad)); margin: 0 auto; padding: 20px 0 28px; border-top: 1px solid var(--aqua);
-               display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 36px; }
+  /* landing (shared) */
+  .lp { position: relative; padding: 0; overflow: clip; }
+  .lp-title { font-size: clamp(40px, 6.3vw, 104px); line-height: .96; font-weight: 500; letter-spacing: -.045em; }
+  .lp-title em { font-style: normal; color: var(--teal-ink); }
+  .lp-title .ln { display: block; overflow: hidden; padding-bottom: .08em; margin-bottom: -.08em; }
+  .lp-title .ln > span { display: inline-block; }
+  .lp .lede { max-width: 28em; font-size: clamp(16px, 1.2vw, 18px); color: var(--muted); }
+  .lp .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+  .built-for { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 32px; }
   .built-for ul { display: contents; list-style: none; }
   .built-for li { font: 600 15px/1.2 var(--display); font-stretch: 112%; }
+  @keyframes lineUp { to { transform: none; } }
+  @keyframes rise { to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: no-preference) {
-    .enter > * { opacity: 0; transform: translateY(18px); animation: rise .9s var(--ease) forwards; }
-    .enter > :nth-child(2) { animation-delay: .1s; } .enter > :nth-child(3) { animation-delay: .2s; }
-    .logo-art .logo-word { opacity: 0; animation: rise .9s var(--ease) .25s forwards; }
-    @keyframes rise { to { opacity: 1; transform: none; } }
+    .lp-title .ln > span { transform: translateY(105%); animation: lineUp 1s var(--ease) forwards; }
+    .lp-title .ln:nth-child(2) > span { animation-delay: .09s; } .lp-title .ln:nth-child(3) > span { animation-delay: .18s; } .lp-title .ln:nth-child(4) > span { animation-delay: .27s; }
+    .lp .later { opacity: 0; transform: translateY(14px); animation: rise .9s var(--ease) .5s forwards; }
   }
+  /* 3 ladakh in letters: the headline ends in LADAKH set huge, the mountains showing through it; the
+     scroll zooms through the D into the painting, and the rest of the landing settles over it */
+  .lp3 { height: 230vh; height: 230svh; }
+  .lp3-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
+  .lp3-pic { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(calc(1.12 - var(--p, 0) * .12)); }
+  .lp3-mask { position: absolute; inset: 0; width: 100%; height: 100%; transform-origin: var(--ox, 50%) var(--oy, 60%); transform: scale(var(--z, 1)); opacity: var(--mo, 1); will-change: transform; }
+  #lp3word { font: 800 240px/1 Archivo, sans-serif; font-stretch: 112%; letter-spacing: -8px; }
+  .lp3-copy { position: relative; z-index: 2; height: 100%; padding-top: calc(72px + clamp(28px, 8vh, 96px)); display: flex; flex-direction: column; }
+  .lp3-pre { display: block; max-width: 15em; font-size: clamp(32px, 3.6vw, 56px); line-height: 1.02; font-weight: 500; letter-spacing: -.035em; opacity: var(--po, 1); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .lp3-after { margin-top: auto; margin-bottom: clamp(32px, 7vh, 72px); max-width: 560px; padding: 24px 28px; border-radius: 16px; background: rgba(233, 247, 244, .9); backdrop-filter: blur(6px);
+               opacity: var(--ao, 0); transform: translateY(calc((1 - var(--ao, 0)) * 24px)); }
+  .lp3-after .lede { color: var(--navy); margin-top: 10px; }
+  .lp3-t { font: 500 clamp(26px, 2.4vw, 36px)/1.05 var(--display); letter-spacing: -.03em; }
+  .lp3-t em { font-style: normal; color: var(--teal-ink); }
+  @media (max-width: 900px) { .lp3-pre { max-width: 11em; } }
 
   section { padding: clamp(72px, 11vh, 128px) 0; }
   .head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 48px; margin-bottom: clamp(28px, 5vh, 52px); }
@@ -373,9 +389,7 @@
 
   @media (max-width: 1240px) and (min-width: 901px) { .traits { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 900px) {
-    .hero .wrap { grid-template-columns: 1fr; padding-top: 96px; gap: 8px; }
-    .logo-art { order: -1; width: min(34vh, 62%); justify-self: start; margin-left: -4%; }
-    .hero .actions .btn, .brief .btn { width: 100%; }
+    .lp .actions .btn, .brief .btn { width: 100%; }
     .contact { grid-template-columns: 1fr; }
     .values > .wrap { grid-template-columns: 1fr; }
     .values-pic { aspect-ratio: 16 / 10; object-fit: cover; object-position: 50% 20%; }
@@ -401,6 +415,12 @@
     .traits li { padding-top: 10px; }
     .traits .n { margin-bottom: 0; flex: none; }
   }
+
+  /* the rosettes: the designers' snow-leopard marks, used sparingly (the four habits, the cards still waiting for their pictures) */
+  .traits img.n { width: 44px; height: auto; margin-bottom: 10px; border: 0; border-radius: 0; background: none; }
+  .card .plate { gap: 14px; align-content: center; }
+  .card .shot.plate img.ros, .card:hover .shot.plate img.ros { position: static; width: clamp(56px, 6vw, 84px); height: auto; top: auto; transform: none; transition: none; }
+  @media (max-width: 640px) { .traits img.n { width: 36px; margin-bottom: 0; } }
 </style>
 </head>
 
@@ -418,24 +438,17 @@
 </header>
 
 <main id="top">
-  <section class="hero" id="hero" style="padding:0">
-    <div class="wrap">
-      <div class="enter">
-        <h1>Software, platforms and websites, <em>built in Ladakh.</em></h1>
-        <p class="lede">Snolep Technologies builds the software that associations, museums, hotels and businesses in the Himalaya run on, from member platforms to accounting and HR tools.</p>
-        <div class="actions">
-          <a class="btn primary" href="#contact">Start a project <i aria-hidden="true">→</i></a>
-          <a class="btn ghost" href="#work">See what we build</a>
-        </div>
+  <section class="lp lp3" id="hero">
+    <div class="lp3-stage">
+      <img class="lp3-pic" src="./img/range.webp" width="1672" height="941" alt="Snow-covered Himalayan peaks drawn in the Snolep colours">
+      <svg class="lp3-mask" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <defs><mask id="lp3m"><rect x="-4000" y="-4000" width="9440" height="8900" fill="#fff"/><text id="lp3word" x="720" y="640" text-anchor="middle">LADAKH</text></mask></defs>
+        <rect x="-4000" y="-4000" width="9440" height="8900" fill="#e9f7f4" mask="url(#lp3m)"/>
+      </svg>
+      <div class="wrap lp3-copy">
+        <h1 class="lp3-h1"><span class="lp3-pre">Software, platforms and websites, built in</span><span class="sr">Ladakh.</span></h1>
+        <div class="lp3-after"><p class="lp3-t" aria-hidden="true">Software, platforms and websites, <em>built in Ladakh.</em></p><p class="lede">Snolep Technologies builds the software that associations, museums, hotels and businesses in the Himalaya run on, from member platforms to accounting and HR tools.</p><div class="actions"><a class="btn primary" href="#contact">Start a project <i aria-hidden="true">→</i></a><a class="btn ghost" href="#work">See what we build</a></div></div>
       </div>
-      <div class="logo-art">
-        <img class="logo-word" src="./img/snolep-wordmark.webp" width="1150" height="1194" alt="Snolep Technologies">
-        <img id="leopard" src="./img/snolep-leopard.webp" width="1150" height="1194" alt="" style="opacity:0">
-      </div>
-    </div>
-    <div class="built-for">
-      <span class="label">Our work</span>
-      <ul><li>ALATOA</li><li>ALHGHA</li><li>Fynivo</li><li>Innovate Office</li><li>Central Asian Museum</li><li>Crystalakmo</li></ul>
     </div>
   </section>
 
@@ -522,7 +535,7 @@
           <div class="meta"><h3>Financial software</h3><p>Our own product: cloud accounting that connects businesses with their chartered accountants.</p><p class="eg">Our product <a href="https://fynivo.in/" target="_blank" rel="noopener">Fynivo <i aria-hidden="true">↗</i></a></p></div>
         </article>
         <article class="card">
-          <div class="shot plate"><!-- visual to come: Innovate Office screens, 1152 px wide --><b>Innovate Office</b></div>
+          <div class="shot plate"><!-- visual to come: Innovate Office screens, 1152 px wide --><img class="ros" src="./img/rosettes/r04.webp" width="200" height="180" alt="" loading="lazy"><b>Innovate Office</b></div>
           <div class="meta"><h3>HR management software</h3><p>Employee records, attendance and leave in one system that the HR team and staff both use.</p><p class="eg">Our product <span>Innovate Office</span></p></div>
         </article>
         <article class="card">
@@ -530,11 +543,11 @@
           <div class="meta"><h3>Websites with a CMS</h3><p>Sites for museums, hotels and institutions that their own staff keep up to date: rooms, collections, hours and news, without calling a developer.</p><p class="eg">Built for the <a href="https://centralasianmuseum.org/" target="_blank" rel="noopener">Central Asian Museum <i aria-hidden="true">↗</i></a></p></div>
         </article>
         <article class="card">
-          <div class="shot plate"><!-- visual to come: laundry system screens, 1152 px wide --><b>Crystalakmo</b></div>
+          <div class="shot plate"><!-- visual to come: laundry system screens, 1152 px wide --><img class="ros" src="./img/rosettes/r08.webp" width="200" height="180" alt="" loading="lazy"><b>Crystalakmo</b></div>
           <div class="meta"><h3>Laundry tracking and CRM</h3><p>Follows every item through the laundry cycle, runs the daily operation and keeps the customer relationship in one place.</p><p class="eg">Built for <span>Crystalakmo</span></p></div>
         </article>
         <article class="card">
-          <div class="shot plate"><!-- visual to come: a sustainability project picture, wide --><b>Sustainability</b></div>
+          <div class="shot plate"><!-- visual to come: a sustainability project picture, wide --><img class="ros" src="./img/rosettes/r11.webp" width="200" height="180" alt="" loading="lazy"><b>Sustainability</b></div>
           <div class="meta"><h3>Sustainability consulting</h3><p>Advice for organisations that want to work more sustainably, grounded in what a fragile mountain region like Ladakh needs.</p><p class="eg"><a href="#contact">Talk to us about it <i aria-hidden="true">→</i></a></p></div>
         </article>
       </div>
@@ -548,10 +561,10 @@
         <p>In the mountains, survival is about more than strength. It takes patience, precision, adaptability and resilience. The snow leopard embodies these qualities. They also shape how we think, build and innovate.</p>
       </div>
       <ol class="traits">
-        <li><details class="fold"><summary><span class="n" aria-hidden="true">1</span><h3>Patience creates precision.</h3></summary><p>The snow leopard knows when to wait and when to strike. We believe great technology starts the same way: understanding the challenge, finding the right opportunity and acting with purpose.</p></details></li>
-        <li><details class="fold"><summary><span class="n" aria-hidden="true">2</span><h3>Speed comes from simplicity.</h3></summary><p>Across the toughest terrain, the snow leopard moves with remarkable efficiency. We take the same approach to technology: breaking complex challenges into smaller steps and turning ideas into meaningful solutions.</p></details></li>
-        <li><details class="fold"><summary><span class="n" aria-hidden="true">3</span><h3>Flexible in approach. Unwavering in purpose.</h3></summary><p>When the terrain changes, the snow leopard changes course. We do too. We embrace new ideas, rethink what isn’t working and adapt our solutions without losing sight of what matters.</p></details></li>
-        <li><details class="fold"><summary><span class="n" aria-hidden="true">4</span><h3>Every setback is another opportunity to evolve.</h3></summary><p>Not every hunt succeeds. But every attempt brings experience. We experiment, learn, refine and try again. Because progress isn’t about getting everything right the first time. It’s about getting better every time.</p></details></li>
+        <li><details class="fold"><summary><img class="n ros" src="./img/rosettes/r01.webp" width="200" height="180" alt="" loading="lazy"><h3>Patience creates precision.</h3></summary><p>The snow leopard knows when to wait and when to strike. We believe great technology starts the same way: understanding the challenge, finding the right opportunity and acting with purpose.</p></details></li>
+        <li><details class="fold"><summary><img class="n ros" src="./img/rosettes/r07.webp" width="200" height="180" alt="" loading="lazy"><h3>Speed comes from simplicity.</h3></summary><p>Across the toughest terrain, the snow leopard moves with remarkable efficiency. We take the same approach to technology: breaking complex challenges into smaller steps and turning ideas into meaningful solutions.</p></details></li>
+        <li><details class="fold"><summary><img class="n ros" src="./img/rosettes/r10.webp" width="200" height="180" alt="" loading="lazy"><h3>Flexible in approach. Unwavering in purpose.</h3></summary><p>When the terrain changes, the snow leopard changes course. We do too. We embrace new ideas, rethink what isn’t working and adapt our solutions without losing sight of what matters.</p></details></li>
+        <li><details class="fold"><summary><img class="n ros" src="./img/rosettes/r12.webp" width="200" height="180" alt="" loading="lazy"><h3>Every setback is another opportunity to evolve.</h3></summary><p>Not every hunt succeeds. But every attempt brings experience. We experiment, learn, refine and try again. Because progress isn’t about getting everything right the first time. It’s about getting better every time.</p></details></li>
       </ol>
     </div>
     <div class="range">
@@ -767,7 +780,8 @@
       el.style.setProperty('--left', (1 - Math.min(1, Math.max(0, scrollY / Math.max(1, max)))).toFixed(4));
     };
     const head = document.querySelector('.site-head');
-    const shade = () => head.classList.toggle('on-dark', dark.getBoundingClientRect().top < 32);
+    const lpDark = document.querySelector('.lp-dark');
+    const shade = () => head.classList.toggle('on-dark', dark.getBoundingClientRect().top < 32 || (!!lpDark && lpDark.getBoundingClientRect().bottom > 40));
     addEventListener('scroll', shade, { passive: true }); shade();
     const tick = (now) => {
       raf = 0;
@@ -931,7 +945,8 @@
   const leopard = document.getElementById('leopard'), wordmark = document.getElementById('wordmark');
   const clamp = (v) => Math.min(1, Math.max(0, v));
   const smooth = (v) => { v = clamp(v); return v * v * (3 - 2 * v); };
-  const show = (v) => { leopard.style.opacity = v.toFixed(3); };
+  const show = (v) => { if (leopard) leopard.style.opacity = v.toFixed(3); };
+  const asDots = !!document.querySelector('[data-leopard="dots"]'), heavy = document.querySelector('[data-snow="heavy"]');
 
   // The name at the bottom settles out of the snow, on the clock, once it is on screen
   const nameState = {};
@@ -942,23 +957,24 @@
   };
 
   const start = async () => {
-    try { await leopard.decode(); await document.fonts.load('800 100px Archivo'); } catch { /* draw with what there is */ }
-    if (!leopard.naturalWidth) { show(1); return; }
+    try { if (leopard) await leopard.decode(); await document.fonts.load('800 100px Archivo'); } catch { /* draw with what there is */ }
+    if (leopard && !leopard.naturalWidth) { show(1); return; }
     window.dots = createDots({
       canvas: document.querySelector('.dots'),
-      dark: ['.finale'],
+      dark: ['.finale', '.lp-dark'],
       // the snow gets heavier over the mountain and stays heavy to the end of the page
-      density: ({ vh }) => clamp((vh * 0.85 - document.getElementById('inspiration').getBoundingClientRect().top) / (vh * 0.7)),
+      density: ({ vh }) => heavy && scrollY < vh ? Math.max(1 - clamp(scrollY / (vh * 0.9)), clamp((vh * 0.85 - document.getElementById('inspiration').getBoundingClientRect().top) / (vh * 0.7))) : clamp((vh * 0.85 - document.getElementById('inspiration').getBoundingClientRect().top) / (vh * 0.7)),
       forms: [
-        { // the logo's leopard: dots gather on load, the drawing takes over, and scrolling blows it away
+        ...(leopard ? [        { // the logo's leopard: dots gather on load, the drawing takes over, and scrolling blows it away
           el: leopard, image: leopard,
           presence: ({ vh, t, scrollY, calm }) => {
             if (calm) { show(1); return [0, 0]; }
+            if (asDots) return [Math.min(smooth(t / 2.2), 1 - clamp((scrollY - vh * 0.2) / (vh * 0.6))), 1];
             const drawn = Math.min(smooth((t - 1.5) / 0.7), 1 - smooth(scrollY / (vh * 0.07)));
             show(drawn);
             return [Math.min(smooth(t / 1.5), 1 - clamp((scrollY - vh * 0.07) / (vh * 0.6))), 1 - drawn];
           },
-        },
+        }] : []),
         { // the name
           el: wordmark, text: (w) => (w < 620 ? ['SNOLEP', 'TECHNOLOGIES'] : ['SNOLEP TECHNOLOGIES']), font: '800 100px Archivo',
           presence: ({ vh, t, calm }) => [calm ? clamp(1 - (document.documentElement.scrollHeight - innerHeight - scrollY) / (vh * 0.5)) : nameClock(t)],
@@ -967,6 +983,38 @@
     });
   };
   start();
+</script>
+<script>
+  // 3: the zoom through the D, scrubbed by the scroll over the landing's first screen and a half
+  (() => {
+    const sec = document.querySelector('.lp3'), word = document.getElementById('lp3word'), svg = sec.querySelector('.lp3-mask');
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const c = (v) => Math.min(1, Math.max(0, v));
+    // the origin: inside the stem of the D, in the svg's own units, turned into a share of the box
+    let ox = 0.5, oy = 0.6;
+    const place = () => {
+      try {
+        const e = word.getExtentOfChar(2), r = svg.getBoundingClientRect(), m = svg.getScreenCTM();
+        const pt = svg.createSVGPoint(); pt.x = e.x + e.width * 0.16; pt.y = e.y + e.height * 0.55;
+        const s = pt.matrixTransform(m);
+        ox = (s.x - r.left) / r.width; oy = (s.y - r.top) / r.height;
+        svg.style.setProperty('--ox', `${(ox * 100).toFixed(2)}%`); svg.style.setProperty('--oy', `${(oy * 100).toFixed(2)}%`);
+      } catch { /* the centre will do */ }
+    };
+    const draw = () => {
+      const r = sec.getBoundingClientRect(), p = c(-r.top / Math.max(1, r.height - innerHeight));
+      const z = calm ? 1 : 1 + Math.pow(c(p / 0.62), 3) * 70;
+      svg.style.setProperty('--z', z.toFixed(3));
+      svg.style.setProperty('--mo', (calm ? 1 : 1 - c((p - 0.5) / 0.12)).toFixed(3));
+      sec.style.setProperty('--p', p.toFixed(3));
+      sec.style.setProperty('--po', (1 - c(p / 0.25)).toFixed(3));
+      sec.style.setProperty('--ao', (calm ? 1 : c((p - 0.55) / 0.2)).toFixed(3));
+    };
+    document.fonts.ready.then(() => { place(); draw(); });
+    addEventListener('resize', () => { place(); draw(); });
+    addEventListener('scroll', () => requestAnimationFrame(draw), { passive: true });
+    place(); draw();
+  })();
 </script>
 </body>
 </html>
