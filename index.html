@@ -186,7 +186,9 @@
   .card.wide .meta { justify-content: center; padding: clamp(22px, 3vw, 40px); }
   .card.wide .meta p.eg { margin-top: 8px; }
 
-  /* values and standards: a peak beside four rows */
+  /* values and standards. Static (phones, tablets, short screens, reduced motion, no script): a peak
+     beside four rows. Live (desktop): the section is tall, its stage stays on screen, and the four
+     standards play one after another, each animation scrubbed by the scroll. */
   .values .wrap { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(28px, 5vw, 88px); align-items: center; }
   .values-pic { width: 100%; height: auto; border-radius: 16px; }
   .values .sub { margin-top: 14px; max-width: 30em; color: var(--muted); }
@@ -194,6 +196,79 @@
   .std li { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 6px 28px; align-items: baseline; padding: 20px 0 22px; border-bottom: 1px solid var(--aqua); }
   .std h3 { font-size: clamp(19px, 1.6vw, 22px); line-height: 1.25; }
   .std p { color: var(--muted); }
+  .values.is-live { height: calc(100vh + 4 * 72vh); height: calc(100svh + 4 * 72svh); padding: 0; }
+  .values.is-live > .wrap { display: none; }
+  .values.is-live .v-stage { display: flex; position: sticky; top: 0; height: 100vh; height: 100svh; align-items: center; padding-top: 72px; overflow: clip; }
+  .v-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(28px, 5vw, 80px); align-items: center; }
+  .v-steps { list-style: none; margin-top: clamp(24px, 4vh, 40px); border-top: 1px solid var(--navy); }
+  .v-step { display: grid; grid-template-columns: 40px 1fr; column-gap: 6px; padding: 16px 0 17px; border-bottom: 1px solid var(--aqua); }
+  .v-n { grid-row: span 3; font: 500 13px/1.75 var(--body); color: var(--muted); transition: color .3s ease; }
+  .v-step h3 { font-size: clamp(18px, 1.5vw, 21px); line-height: 1.3; color: var(--muted); transition: color .3s ease; }
+  .v-step p { display: grid; grid-template-rows: 0fr; opacity: 0; color: var(--muted); transition: grid-template-rows .45s var(--ease), opacity .3s ease, margin .45s var(--ease); }
+  .v-step p > span { min-height: 0; overflow: hidden; }
+  .v-step.is-on .v-n { color: var(--teal-ink); }
+  .v-step.is-on h3 { color: var(--navy); }
+  .v-step.is-on p { grid-template-rows: 1fr; opacity: 1; margin-top: 6px; }
+  .v-bar { grid-column: 2; height: 2px; margin-top: 12px; background: var(--aqua); opacity: 0; transition: opacity .3s ease; }
+  .v-step.is-on .v-bar { opacity: 1; }
+  .v-bar i { display: block; height: 100%; background: var(--navy); transform: scaleX(var(--q, 0)); transform-origin: left; }
+  .v-frame { position: relative; height: min(68vh, 560px); border: 1px solid var(--aqua); border-radius: 18px; background: var(--white); overflow: hidden; container-type: size; }
+  .v-scene { position: absolute; inset: 0; opacity: 0; transition: opacity .45s ease; }
+  .v-scene.is-on { opacity: 1; }
+  /* 1 thin signal: a window on one bar of signal; text resolves and the picture sharpens as it loads */
+  .s1-win { position: absolute; inset: 9% 10%; border: 1px solid var(--aqua); border-radius: 12px; background: var(--mint); overflow: hidden; display: flex; flex-direction: column; }
+  .s1-top { display: flex; align-items: center; gap: 4%; padding: 3% 4%; background: var(--white); border-bottom: 1px solid var(--aqua); }
+  .s1-sig { display: inline-flex; align-items: flex-end; gap: 3px; height: 14px; }
+  .s1-sig i { width: 4px; border-radius: 1px; background: var(--aqua); }
+  .s1-sig i:nth-child(1) { height: 25%; } .s1-sig i:nth-child(2) { height: 50%; } .s1-sig i:nth-child(3) { height: 75%; } .s1-sig i:nth-child(4) { height: 100%; }
+  .s1-sig i.on { background: var(--navy); }
+  .s1-url { flex: 1; height: 14px; border-radius: 7px; background: var(--mint); }
+  .s1-ok { font: 500 13px/1 var(--body); color: var(--teal-ink); opacity: var(--ok, 0); }
+  .s1-load { height: 2px; background: transparent; }
+  .s1-load i { display: block; height: 100%; background: var(--teal); transform: scaleX(var(--load, 0)); transform-origin: left; }
+  .s1-body { flex: 1; display: flex; flex-direction: column; gap: 3.2%; padding: 6% 7%; }
+  .s1-b, .s1-t { display: block; border-radius: 4px; background: color-mix(in srgb, var(--navy) calc(var(--r, 0) * 100%), #d3e9e6); }
+  .s1-b { height: 6.5cqh; }
+  .s1-t { height: 2.4cqh; background: color-mix(in srgb, var(--muted) calc(var(--r, 0) * 100%), #d3e9e6); }
+  .s1-pic { display: block; flex: 1; margin: 2% 0; border-radius: 8px; background: #cfe6e3 url(./img/peak.webp) 50% 30% / cover; filter: blur(calc((1 - var(--r, 0)) * 14px)) saturate(calc(.3 + var(--r, 0) * .7)); opacity: calc(.45 + var(--r, 0) * .55); }
+  /* 2 phone first: one layout, widened from phone to desktop, its blocks reflowing */
+  .s2-dev { position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%); border: 2px solid var(--navy); background: var(--mint); overflow: hidden; }
+  .s2-dev b { position: absolute; border-radius: 4px; }
+  .s2-dev b[data-b="nav"] { background: var(--white); border: 1px solid var(--aqua); }
+  .s2-dev b[data-b="h1"], .s2-dev b[data-b="h2"] { background: var(--navy); }
+  .s2-dev b[data-b="btn"] { background: var(--teal); border-radius: 99px; }
+  .s2-dev b[data-b="img"] { background: #cfe6e3 url(./img/peak.webp) 50% 30% / cover; border-radius: 6px; }
+  .s2-dev b[data-b^="c"] { background: var(--white); border: 1px solid var(--aqua); }
+  .s2-w { position: absolute; left: 50%; bottom: 5%; transform: translateX(-50%); font: 500 13px/1 var(--body); color: var(--muted); }
+  /* 3 the people you talk to: a message, the reply, the same person writing the change, live */
+  .s3 { position: absolute; inset: 9% 9%; display: flex; flex-direction: column; justify-content: center; gap: 4%; }
+  .s3-msg { max-width: 72%; padding: 12px 16px; border-radius: 16px; font-size: clamp(14px, 3.2cqw, 17px); line-height: 1.35;
+            opacity: var(--a, 0); transform: translateY(calc((1 - var(--a, 0)) * 12px)); }
+  .s3-in { align-self: flex-start; background: var(--mint); border: 1px solid var(--aqua); border-bottom-left-radius: 4px; }
+  .s3-out { align-self: flex-end; display: flex; gap: 10px; align-items: center; background: var(--navy); color: var(--mint); border-bottom-right-radius: 4px; }
+  .s3 b { flex: none; display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--teal); color: var(--navy); font: 600 12px/1 var(--body); }
+  .s3-code { margin-top: 2%; border-radius: 12px; background: #04303f; color: var(--mint); overflow: hidden; opacity: var(--a, 0); transform: translateY(calc((1 - var(--a, 0)) * 12px)); }
+  .s3-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid rgba(173, 220, 218, .2); font: 500 13px/1 var(--mono); color: var(--aqua); }
+  .s3-code code { display: block; padding: 16px 14px 18px; font: 400 clamp(13px, 2.9cqw, 16px)/1.5 var(--mono); white-space: pre; }
+  .s3-caret { display: inline-block; width: 8px; height: 1.1em; margin-left: 1px; vertical-align: -3px; background: var(--teal); opacity: var(--caret, 1); }
+  .s3-live { display: flex; align-items: center; gap: 8px; font: 500 15px/1 var(--body); color: var(--teal-ink); opacity: var(--a, 0); }
+  .s3-live i, .s4-status i { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); }
+  /* 4 looked after: a year on a line from launch, through the winter, with the work done on it */
+  .s4 { position: absolute; inset: 9% 7%; }
+  .s4-status { position: absolute; top: 0; right: 0; display: flex; align-items: center; gap: 8px; padding: 8px 14px; border: 1px solid var(--aqua); border-radius: 99px; font: 500 14px/1 var(--body); }
+  .s4-track { position: absolute; left: 0; right: 0; top: 54%; height: 0; }
+  .s4-winter { position: absolute; left: 42%; width: 30%; top: -120px; height: 240px; border-radius: 12px;
+               background: radial-gradient(circle, rgba(0, 166, 162, .22) 1.3px, transparent 1.8px) 0 0 / 14px 14px, rgba(173, 220, 218, .28); opacity: var(--w, 0); }
+  .s4-winter em { position: absolute; left: 12px; bottom: 10px; font: 500 13px/1 var(--body); font-style: normal; color: var(--teal-ink); }
+  .s4-rail, .s4-line { position: absolute; left: 0; right: 0; top: -1px; height: 2px; background: var(--aqua); }
+  .s4-line { background: var(--navy); transform: scaleX(var(--line, 0)); transform-origin: left; }
+  .s4-pin { position: absolute; left: 0; top: 16px; font: 500 14px/1 var(--body); }
+  .s4-pin::before { content: ''; position: absolute; left: 0; top: -23px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--navy); }
+  .s4-ev { position: absolute; left: calc(var(--x) * 100%); top: 14px; transform: translateX(-50%) translateY(calc((1 - var(--a, 0)) * 8px)); opacity: var(--a, 0);
+           padding: 6px 10px; border-radius: 8px; background: var(--white); border: 1px solid var(--aqua); font: 500 13px/1 var(--body); white-space: nowrap; }
+  .s4-ev.up { top: auto; bottom: 14px; transform: translateX(-50%) translateY(calc((1 - var(--a, 0)) * -8px)); }
+  .s4-ev::before { content: ''; position: absolute; left: 50%; top: -20px; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: var(--teal); }
+  .s4-ev.up::before { top: auto; bottom: -19px; }
 
   /* inspiration: the snow leopard's four habits, over the mountain */
   .traits { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(16px, 2vw, 28px); margin-top: clamp(28px, 5vh, 48px); }
@@ -360,6 +435,60 @@
           <li><h3>Built by the people you talk to</h3><p>The team that writes your code answers your calls. No layer in between.</p></li>
           <li><h3>Looked after past launch day</h3><p>We host, update and fix what we ship, through the winter too.</p></li>
         </ul>
+      </div>
+    </div>
+    <!-- live (desktop): the stage holds on screen while each standard plays, scrubbed by the scroll -->
+    <div class="v-stage" hidden>
+      <div class="wrap v-grid">
+        <div class="v-text">
+          <h2>Values and standards</h2>
+          <ol class="v-steps">
+            <li class="v-step"><span class="v-n">01</span><h3>Opens on thin signal</h3><p><span>Compressed pictures, no heavy libraries, nothing waiting on a slow script.</span></p><span class="v-bar"><i></i></span></li>
+            <li class="v-step"><span class="v-n">02</span><h3>Starts on the phone</h3><p><span>Every screen is planned at phone width first, where most visitors arrive.</span></p><span class="v-bar"><i></i></span></li>
+            <li class="v-step"><span class="v-n">03</span><h3>Built by the people you talk to</h3><p><span>The team that writes your code answers your calls. No layer in between.</span></p><span class="v-bar"><i></i></span></li>
+            <li class="v-step"><span class="v-n">04</span><h3>Looked after past launch day</h3><p><span>We host, update and fix what we ship, through the winter too.</span></p><span class="v-bar"><i></i></span></li>
+          </ol>
+        </div>
+        <div class="v-frame" aria-hidden="true">
+          <div class="v-scene" data-scene="signal">
+            <div class="s1-win">
+              <div class="s1-top"><span class="s1-sig"><i class="on"></i><i></i><i></i><i></i></span><span class="s1-url"></span><span class="s1-ok">Ready</span></div>
+              <div class="s1-load"><i></i></div>
+              <div class="s1-body">
+                <i class="s1-b" style="width:58%"></i><i class="s1-b" style="width:38%"></i>
+                <i class="s1-pic"></i>
+                <i class="s1-t" style="width:92%"></i><i class="s1-t" style="width:84%"></i><i class="s1-t" style="width:60%"></i>
+              </div>
+            </div>
+          </div>
+          <div class="v-scene" data-scene="phone">
+            <div class="s2-dev"><b data-b="nav"></b><b data-b="h1"></b><b data-b="h2"></b><b data-b="btn"></b><b data-b="img"></b><b data-b="c1"></b><b data-b="c2"></b><b data-b="c3"></b></div>
+            <span class="s2-w">390 px</span>
+          </div>
+          <div class="v-scene" data-scene="talk">
+            <div class="s3">
+              <p class="s3-msg s3-in">Can the booking form ask for arrival time?</p>
+              <p class="s3-msg s3-out"><b>S</b>Yes. I’ll add it this afternoon.</p>
+              <div class="s3-code"><div class="s3-head"><b>S</b>booking-form.html</div><code><span class="s3-typed"></span><i class="s3-caret"></i></code></div>
+              <p class="s3-live"><i></i>Live on your site</p>
+            </div>
+          </div>
+          <div class="v-scene" data-scene="care">
+            <div class="s4">
+              <p class="s4-status"><i></i>Site online</p>
+              <div class="s4-track">
+                <span class="s4-winter"><em>Winter</em></span>
+                <span class="s4-rail"></span><span class="s4-line"></span>
+                <span class="s4-pin">Launch</span>
+                <span class="s4-ev up" style="--x:.18">Update</span>
+                <span class="s4-ev" style="--x:.34">Fix</span>
+                <span class="s4-ev up" style="--x:.52">Backup</span>
+                <span class="s4-ev" style="--x:.7">Update</span>
+                <span class="s4-ev up" style="--x:.88">New page</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -682,6 +811,92 @@
     progress();
     // anywhere in the section opens the form, except its own links
     dark.addEventListener('click', (e) => { if (desk.matches && !e.target.closest('a, button, dialog, .foot') && e.clientY <= close.getBoundingClientRect().bottom + 24) brief.open(); });
+  })();
+
+  // Values and standards, live on a desktop: the section is tall and its stage stays on screen; the
+  // scroll through it is split four ways, and each standard's animation runs with its quarter, so
+  // scrolling back runs it backwards. Elsewhere the section stays as it is drawn (the static state).
+  (() => {
+    const sec = document.getElementById('values'), stage = sec.querySelector('.v-stage');
+    const steps = [...sec.querySelectorAll('.v-step')], scenes = [...sec.querySelectorAll('.v-scene')];
+    const q01 = (v) => Math.min(1, Math.max(0, v));
+    const ease = (v) => { v = q01(v); return v * v * (3 - 2 * v); };
+    const span = (q, a, b) => ease((q - a) / (b - a));
+    const fits = () => matchMedia('(min-width: 1024px) and (min-height: 640px)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const set = (el, k, v) => el.style.setProperty(k, typeof v === 'number' ? v.toFixed(3) : v);
+
+    // 1: the load line fills; each block resolves once it has passed; the picture sharpens last
+    const s1 = scenes[0], s1Blocks = [...s1.querySelectorAll('.s1-b, .s1-pic, .s1-t')];
+    const order = [0, 1, 3, 4, 5, 2];                            // headline, text, then the picture
+    const signal = (q) => {
+      const load = span(q, 0.04, 0.7);
+      set(s1, '--load', load);
+      order.forEach((b, k) => set(s1Blocks[b], '--r', q01((load - (0.12 + k * 0.13)) / 0.14)));
+      set(s1, '--ok', span(q, 0.74, 0.84));
+    };
+    // 2: one layout in a frame that widens from a phone to a desktop; every block moves between the two
+    const s2 = scenes[1], dev = s2.querySelector('.s2-dev'), label = s2.querySelector('.s2-w');
+    const blocks = Object.fromEntries([...dev.children].map((b) => [b.dataset.b, b]));
+    const PHONE = { nav: [.06, .04, .88, .05], h1: [.06, .13, .72, .04], h2: [.06, .19, .5, .04], btn: [.06, .26, .36, .045],
+                    img: [.06, .33, .88, .24], c1: [.06, .6, .88, .1], c2: [.06, .72, .88, .1], c3: [.06, .84, .88, .1] };
+    const DESK = { nav: [.04, .05, .92, .07], h1: [.04, .2, .4, .07], h2: [.04, .3, .28, .07], btn: [.04, .42, .14, .07],
+                   img: [.52, .18, .44, .36], c1: [.04, .62, .28, .3], c2: [.36, .62, .28, .3], c3: [.68, .62, .28, .3] };
+    const phone = (q) => {
+      const e = span(q, 0.08, 0.78), m = (a, b) => a + (b - a) * e;
+      dev.style.width = `${m(30, 90)}%`; dev.style.height = `${m(80, 60)}%`; dev.style.borderRadius = `${m(26, 10)}px`;
+      for (const k in blocks) {
+        const a = PHONE[k], b = DESK[k], st = blocks[k].style;
+        st.left = `${m(a[0], b[0]) * 100}%`; st.top = `${m(a[1], b[1]) * 100}%`; st.width = `${m(a[2], b[2]) * 100}%`; st.height = `${m(a[3], b[3]) * 100}%`;
+      }
+      label.textContent = `${Math.round(m(390, 1440) / 10) * 10} px`;
+    };
+    // 3: the message, the reply, the same person typing the change, then it is live
+    const s3 = scenes[2], [msgIn, msgOut] = s3.querySelectorAll('.s3-msg'), code = s3.querySelector('.s3-code'), liveRow = s3.querySelector('.s3-live');
+    const typed = s3.querySelector('.s3-typed'), caret = s3.querySelector('.s3-caret');
+    const LINE = '<input type="time" name="arrival">';
+    const talk = (q) => {
+      set(msgIn, '--a', 1); set(msgOut, '--a', span(q, 0.2, 0.3)); set(code, '--a', span(q, 0.34, 0.42));
+      const n = Math.round(LINE.length * q01((q - 0.42) / 0.3));
+      if (typed.textContent.length !== n) typed.textContent = LINE.slice(0, n);
+      set(caret, '--caret', q < 0.8 ? 1 : 0);
+      set(liveRow, '--a', span(q, 0.8, 0.88));
+    };
+    // 4: the line runs on from launch through the winter; each piece of work shows as it is passed
+    const s4 = scenes[3], evs = [...s4.querySelectorAll('.s4-ev')].map((el) => ({ el, x: +el.style.getPropertyValue('--x') }));
+    const care = (q) => {
+      const line = span(q, 0.04, 0.82);
+      set(s4, '--line', line);
+      set(s4.querySelector('.s4-winter'), '--w', q01((line - 0.36) / 0.08));
+      for (const ev of evs) set(ev.el, '--a', q01((line - ev.x + 0.02) / 0.05));
+    };
+    const plays = [signal, phone, talk, care];
+
+    let live = false, raf = 0, cur = -1;
+    const draw = () => {
+      raf = 0;
+      if (!live) return;
+      const r = sec.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight) return;
+      const p = q01(-r.top / Math.max(1, r.height - innerHeight)), x = p * steps.length;
+      const i = Math.min(steps.length - 1, Math.floor(x)), q = p >= 1 ? 1 : x - i;
+      if (i !== cur) {
+        cur = i;
+        steps.forEach((s, n) => s.classList.toggle('is-on', n === i));
+        scenes.forEach((s, n) => s.classList.toggle('is-on', n === i));
+      }
+      steps.forEach((s, n) => set(s, '--q', n < i ? 1 : n > i ? 0 : q));
+      plays.forEach((play, n) => play(n < i ? 1 : n > i ? 0 : q));   // a scene fading out holds its end
+    };
+    const queue = () => { if (!raf) raf = requestAnimationFrame(draw); };
+    const sync = () => {
+      const want = fits();
+      if (want !== live) { live = want; sec.classList.toggle('is-live', live); stage.hidden = !live; cur = -1; }
+      queue();
+    };
+    addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', sync);
+    matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', sync);
+    sync();
   })();
 </script>
 
