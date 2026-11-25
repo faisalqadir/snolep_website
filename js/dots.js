@@ -32,15 +32,17 @@ export function createDots(opts) {
   // what each dot is when it's snow
   const rnd = (() => { let s = 20241; return () => ((s = (s * 16807) % 2147483647) / 2147483647); })();
   const U = new Float32Array(N), V = new Float32Array(N), PH = new Float32Array(N), FALL = new Float32Array(N);
-  const WIND = new Float32Array(N), PAR = new Float32Array(N), SR = new Float32Array(N);
+  const WIND = new Float32Array(N), PAR = new Float32Array(N), SR = new Float32Array(N), RANK = new Float32Array(N);
   // Every dot is snow when no shape holds it: it falls, drifts with the wind and sways. A few in a
   // hundred show at rest, in three depths: far flakes small and slow, near ones bigger and faster
-  // and moving more with the page. The rest fall unseen until a shape gathers them.
+  // and moving more with the page. The rest fall unseen until a shape gathers them. How many show
+  // is set by the page (opts.density, 0 to 1): a light fall by default, heavier where it asks.
   for (let j = 0; j < N; j++) {
     U[j] = rnd(); V[j] = rnd(); PH[j] = rnd() * 6.283;
-    const seen = j >= FORM && rnd() < 0.2, depth = rnd();
+    RANK[j] = j >= FORM ? rnd() : 2;               // the order flakes join as the fall gets heavier
+    const depth = rnd();
     const layer = depth < 0.55 ? 0 : depth < 0.88 ? 1 : 2;
-    SR[j] = seen ? [0.7, 1.15, 1.8][layer] + rnd() * [0.35, 0.5, 0.9][layer] : 0;
+    SR[j] = j >= FORM ? [0.7, 1.15, 1.8][layer] + rnd() * [0.35, 0.5, 0.9][layer] : 0;
     FALL[j] = [9, 16, 28][layer] + rnd() * [6, 9, 14][layer];
     WIND[j] = [3, 6, 10][layer] + rnd() * 5;
     PAR[j] = [0.06, 0.16, 0.34][layer];
@@ -165,6 +167,12 @@ export function createDots(opts) {
   // scatter: what the pointer has knocked each dot off its place by, and how fast it's still going
   const OX = new Float32Array(N), OY = new Float32Array(N), VX = new Float32Array(N), VY = new Float32Array(N);
   addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') { mx = e.clientX; my = e.clientY; } }, { passive: true });
+  // on a touch screen a finger stirs the snow too (the page still scrolls as usual)
+  const touch = (e) => { const p = e.touches[0]; if (p) { mx = p.clientX; my = p.clientY; } };
+  addEventListener('touchstart', touch, { passive: true });
+  addEventListener('touchmove', touch, { passive: true });
+  addEventListener('touchend', () => { mx = my = -999; }, { passive: true });
+  addEventListener('touchcancel', () => { mx = my = -999; }, { passive: true });
   document.documentElement.addEventListener('pointerleave', () => { mx = my = -999; });
 
   const paths = [null, null, null, null, null, null, null, null];
@@ -177,6 +185,9 @@ export function createDots(opts) {
     const calm = still.matches;
     const t = (now - t0) / 1000, tt = calm ? 0 : t, sy = scrollY;
     const dt = Math.min(0.1, Math.max(0, t - (state.t ?? t))); state.t = t;
+    const wantDense = opts.density ? opts.density({ vh, vw }) : 0;
+    state.density = (state.density ?? wantDense) + (wantDense - (state.density ?? wantDense)) * (1 - Math.exp(-dt * 3));
+    const shown = 0.2 + 0.36 * state.density;      // the share of the free flakes that show
     const lx = px, ly = py;
     px = mx; py = my;
     const sweep = lx < -900 || px < -900 ? 0 : Math.min(60, Math.hypot(px - lx, py - ly));
@@ -211,7 +222,7 @@ export function createDots(opts) {
       let x, y, r = 0, top = 0, teal = 0, coat = -1;
       x = ((U[j] * spanX + tt * WIND[j] + Math.sin(tt * 0.5 + PH[j]) * 14) % spanX) - 20;
       y = ((((V[j] * spanY + tt * FALL[j] - sy * PAR[j]) % spanY) + spanY) % spanY) - 20;
-      r = calm ? 0 : SR[j];
+      r = calm || RANK[j] >= shown ? 0 : SR[j] * Math.min(1, (shown - RANK[j]) / 0.03);
       for (let a = 0; a < act.length; a++) {
         const f = act[a], rect = f._rect;
         if (f.hide[j]) continue;                      // not part of this shape: stays snow
@@ -242,14 +253,14 @@ export function createDots(opts) {
           if (Math.abs(OX[j]) + Math.abs(OY[j]) + Math.abs(VX[j]) + Math.abs(VY[j]) < 0.05) OX[j] = OY[j] = VX[j] = VY[j] = 0;
           x += OX[j] * top; y += OY[j] * top;
         }
-      } else if (SR[j] && !calm) {
+      } else if (r > 0) {
         // falling snow: flakes part around the pointer and get swept along in its wake, then drift
         // back into their fall
         const dx = x + OX[j] - px, dy = y + OY[j] - py, d2 = dx * dx + dy * dy;
-        if (px > -900 && d2 < 8100) {
-          const d = Math.sqrt(d2) || 1, near = 1 - d / 90, push = near * near * (0.3 + sweep * 0.05);
-          VX[j] += dx / d * push + mvx * near * 0.06;
-          VY[j] += dy / d * push + mvy * near * 0.06;
+        if (px > -900 && d2 < 14400) {
+          const d = Math.sqrt(d2) || 1, near = 1 - d / 120, push = near * near * (0.45 + sweep * 0.07);
+          VX[j] += dx / d * push + mvx * near * 0.09;
+          VY[j] += dy / d * push + mvy * near * 0.09;
         }
         if (OX[j] || OY[j] || VX[j] || VY[j]) {
           VX[j] = (VX[j] - OX[j] * 0.0025) * 0.94; VY[j] = (VY[j] - OY[j] * 0.0025) * 0.94;

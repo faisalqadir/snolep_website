@@ -709,6 +709,8 @@
     window.dots = createDots({
       canvas: document.querySelector('.dots'),
       dark: ['.finale'],
+      // the snow gets heavier over the mountain and stays heavy to the end of the page
+      density: ({ vh }) => clamp((vh * 0.85 - document.getElementById('inspiration').getBoundingClientRect().top) / (vh * 0.7)),
       forms: [
         { // the logo's leopard: dots gather on load, the drawing takes over, and scrolling blows it away
           el: leopard, image: leopard,
