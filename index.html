@@ -195,18 +195,15 @@
   .std h3 { font-size: clamp(19px, 1.6vw, 22px); line-height: 1.25; }
   .std p { color: var(--muted); }
 
-  /* inspiration: the snow leopard's four habits, and the mountain it runs; each habit lights up as
-     the leopard passes its mark on the ridge */
+  /* inspiration: the snow leopard's four habits, over the mountain */
   .traits { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(16px, 2vw, 28px); margin-top: clamp(28px, 5vh, 48px); }
-  .traits li { position: relative; padding-top: 18px; border-top: 1px solid var(--aqua); }
-  .traits li::before { content: ''; position: absolute; left: 0; top: -1px; height: 2px; width: 100%; background: var(--navy); transform: scaleX(var(--p, 0)); transform-origin: left; }
+  .traits li { padding-top: 18px; border-top: 1px solid var(--navy); }
   .traits .n { display: inline-grid; place-items: center; width: 26px; height: 26px; margin-bottom: 12px; border: 1px solid var(--navy); border-radius: 50%;
-               font: 500 13px/1 var(--body); transition: background .4s ease, color .4s ease, border-color .4s ease; }
+               font: 500 13px/1 var(--body); background: var(--navy); color: var(--mint); }
   .traits h3 { font-size: 20px; line-height: 1.25; }
   .traits p { margin-top: 8px; font-size: 15px; color: var(--muted); }
-  .traits li.is-on .n { background: var(--navy); color: var(--mint); }
 
-  /* the range the snow leopard runs down */
+  /* the range */
   .roots { padding-bottom: 0; }
   .roots .text { max-width: 640px; }
   .roots .text p { margin-top: 14px; color: var(--muted); }
@@ -409,10 +406,10 @@
         <p>In the mountains, surviving takes grit and a thick skin. Thriving takes agility, flexibility and resilience. Four habits of the snow leopard shape how we work.</p>
       </div>
       <ol class="traits">
-        <li data-at="0"><span class="n" aria-hidden="true">1</span><h3>Waits for the right moment</h3><p>It crosses sparse ground patiently, ready to pounce. We study a problem first, then move fast.</p></li>
-        <li data-at="0.28"><span class="n" aria-hidden="true">2</span><h3>Moves fast on hard ground</h3><p>Its chase runs over rock and ice at speed. We ship difficult work in small, quick steps.</p></li>
-        <li data-at="0.6"><span class="n" aria-hidden="true">3</span><h3>Changes direction mid-chase</h3><p>When the prey turns, it turns. When a plan stops working, we change the approach, not the goal.</p></li>
-        <li data-at="0.96"><span class="n" aria-hidden="true">4</span><h3>Misses and goes again</h3><p>Most chases fail, and it shows up for the next one. We test, fix and release again.</p></li>
+        <li><span class="n" aria-hidden="true">1</span><h3>Waits for the right moment</h3><p>It crosses sparse ground patiently, ready to pounce. We study a problem first, then move fast.</p></li>
+        <li><span class="n" aria-hidden="true">2</span><h3>Moves fast on hard ground</h3><p>Its chase runs over rock and ice at speed. We ship difficult work in small, quick steps.</p></li>
+        <li><span class="n" aria-hidden="true">3</span><h3>Changes direction mid-chase</h3><p>When the prey turns, it turns. When a plan stops working, we change the approach, not the goal.</p></li>
+        <li><span class="n" aria-hidden="true">4</span><h3>Misses and goes again</h3><p>Most chases fail, and it shows up for the next one. We test, fix and release again.</p></li>
       </ol>
     </div>
     <div class="range">
@@ -690,43 +687,14 @@
 
 <script type="module">
   // The dots are snow. On load it settles into the logo's leopard and falls away from it as the page
-  // starts to move; on the mountain it settles into the leopard that runs the ridge and leaps off
-  // the end into snow again; at the bottom it settles into the company's name.
+  // starts to move; at the bottom it settles into the company's name.
   import { createDots } from './js/dots.js';
-  import { createLeopard, STAND, LEAP, CYCLE } from './js/leopard.js';
 
-  const leopard = document.getElementById('leopard');
+  const leopard = document.getElementById('leopard'), wordmark = document.getElementById('wordmark');
   const clamp = (v) => Math.min(1, Math.max(0, v));
   const smooth = (v) => { v = clamp(v); return v * v * (3 - 2 * v); };
   const show = (v) => { leopard.style.opacity = v.toFixed(3); };
 
-  // The path the leopard runs, traced from the line drawn on the mountain: fractions of the
-  // picture, from the high summit down to the jump. Paws on the line.
-  const range = document.querySelector('.range-in'), wordmark = document.getElementById('wordmark');
-  const small = matchMedia('(max-width: 900px)').matches;
-  const RIDGE = [[0.8056,0.1138],[0.7997,0.1261],[0.7937,0.1381],[0.7872,0.1491],[0.7802,0.1589],[0.7727,0.1676],[0.7654,0.1766],[0.7587,0.1865],[0.7525,0.1974],[0.7469,0.2095],[0.7416,0.2227],[0.7362,0.2356],[0.7304,0.248],[0.724,0.2593],[0.7172,0.2698],[0.7101,0.2796],[0.7025,0.2882],[0.6944,0.2955],[0.6862,0.3018],[0.6777,0.3069],[0.6689,0.3108],[0.6603,0.3151],[0.6518,0.3201],[0.6435,0.326],[0.6359,0.334],[0.6291,0.3441],[0.6229,0.3554],[0.6172,0.3676],[0.6117,0.3803],[0.606,0.3926],[0.5998,0.4043],[0.5931,0.415],[0.586,0.4251],[0.5789,0.4352],[0.5719,0.4455],[0.5652,0.4563],[0.5592,0.4681],[0.5537,0.4807],[0.5482,0.4934],[0.5425,0.5055],[0.5363,0.5167],[0.5292,0.5264],[0.5216,0.5349],[0.5136,0.5428],[0.5058,0.551],[0.4981,0.5596],[0.4908,0.5689],[0.4836,0.5787],[0.4763,0.5878],[0.4685,0.5949],[0.4604,0.5995],[0.4518,0.6017],[0.4428,0.6018],[0.4338,0.6018],[0.425,0.6032],[0.4165,0.6067],[0.4081,0.612],[0.3998,0.6183],[0.3917,0.6253],[0.3836,0.6325],[0.3755,0.6396],[0.3674,0.6467],[0.3593,0.6541],[0.3514,0.662],[0.3437,0.6703],[0.336,0.6786],[0.3282,0.6867],[0.3204,0.6948],[0.3123,0.702],[0.304,0.7083],[0.2956,0.7144],[0.2872,0.7207],[0.2788,0.7271],[0.2705,0.7335],[0.2623,0.7404],[0.2542,0.7476],[0.2461,0.7547],[0.2379,0.7616],[0.23,0.7694],[0.2213,0.7746]];
-  const ridge = (() => {
-    const ds = [0];
-    for (let i = 1; i < RIDGE.length; i++) ds.push(ds[i - 1] + Math.hypot(RIDGE[i][0] - RIDGE[i - 1][0], (RIDGE[i][1] - RIDGE[i - 1][1]) * 941 / 1672));
-    const total = ds[ds.length - 1];
-    // the point a fraction u of the way along, with the slope there
-    const at = (u) => {
-      const d = clamp(u) * total;
-      let i = 1;
-      while (i < ds.length - 1 && ds[i] < d) i++;
-      const f = (d - ds[i - 1]) / (ds[i] - ds[i - 1] || 1);
-      const a = RIDGE[Math.max(0, i - 4)], b = RIDGE[Math.min(RIDGE.length - 1, i + 3)];
-      return { x: RIDGE[i - 1][0] + (RIDGE[i][0] - RIDGE[i - 1][0]) * f, y: RIDGE[i - 1][1] + (RIDGE[i][1] - RIDGE[i - 1][1]) * f, tx: b[0] - a[0], ty: (b[1] - a[1]) * 941 / 1672, d };
-    };
-    return { at, total };
-  })();
-  // The one moment: as the mountain scrolls by, RUN goes 0 to 1 while the summit and then the end
-  // of the drawn line pass the middle of the screen; OUT is the leap after it, in which the
-  // leopard falls apart into snow. Both follow the scrollbar, so scrolling back runs it backwards.
-  const runAt = (rect, vh) => {
-    const h = rect.height, a = vh * 0.5 - ridge.at(0).y * h, b = vh * 0.45 - ridge.at(1).y * h;
-    return { run: clamp((a - rect.top) / (a - b)), out: clamp((b - rect.top) / (vh * 0.28)) };
-  };
   // The name at the bottom settles out of the snow, on the clock, once it is on screen
   const nameState = {};
   const nameClock = (t) => {
@@ -734,36 +702,10 @@
     if (nameState.since === undefined) nameState.since = t;
     return smooth((t - nameState.since) / 1.8);
   };
-  const span = (q, [a, b]) => clamp((q - a) / (b - a));
-  // eases a value towards where the scroll puts it, so wheel steps don't jerk the animal
-  const follow = (st, key, want, dt, rate = 9) => (st[key] = st[key] === undefined || Math.abs(want - st[key]) > 0.5 ? want : st[key] + (want - st[key]) * (1 - Math.exp(-dt * rate)));
-  // gallop: the pose advances with the ground covered; when the page stops, it stands
-  const stride = (st, dist, t, dt, moving) => {
-    if (Math.abs(dist - (st.dist ?? dist)) > 0.01) st.moved = t;
-    st.dist = dist;
-    const want = moving && t - (st.moved ?? -1) < 0.2 ? 1 : 0;
-    st.run = (st.run ?? 0) + (want - (st.run ?? 0)) * (1 - Math.exp(-dt * (want ? 12 : 4)));
-    const c = (dist / (440 * 1.15)) * 6, i = Math.floor(c), f = c - i;
-    const a = CYCLE[((i % 6) + 6) % 6], b = CYCLE[(((i + 1) % 6) + 6) % 6];
-    // standing: blend the gallop pose back to the standing one
-    return st.run > 0.98 ? { a, b, t: f } : { a: STAND, b: f < 0.5 ? a : b, t: st.run };
-  };
-  const ridgeState = {};
-  // the four habits: each fills a thin line across its top while the leopard runs its stretch
-  const traits = [...document.querySelectorAll('.traits li')].map((li) => ({ li, at: +li.dataset.at }));
-  traits.forEach((tr, i) => { tr.to = i + 1 < traits.length ? traits[i + 1].at : 1.05; });
-  const light = (run, here) => {
-    for (const tr of traits) {
-      const p = here ? clamp((run - tr.at) / (tr.to - tr.at)) : 0;
-      if (tr.p !== p) { tr.p = p; tr.li.style.setProperty('--p', p.toFixed(3)); tr.li.classList.toggle('is-on', here && run >= tr.at); }
-    }
-  };
-  let leopardRig;
 
   const start = async () => {
     try { await leopard.decode(); await document.fonts.load('800 100px Archivo'); } catch { /* draw with what there is */ }
     if (!leopard.naturalWidth) { show(1); return; }
-    leopardRig = createLeopard(innerWidth < 700 ? 4500 : 5600);
     window.dots = createDots({
       canvas: document.querySelector('.dots'),
       dark: ['.finale'],
@@ -775,37 +717,6 @@
             const drawn = Math.min(smooth((t - 1.5) / 0.7), 1 - smooth(scrollY / (vh * 0.07)));
             show(drawn);
             return [Math.min(smooth(t / 1.5), 1 - clamp((scrollY - vh * 0.07) / (vh * 0.6))), 1 - drawn];
-          },
-        },
-        { // on the mountain: settles out of the snow on the summit, gallops down the drawn line as the
-          // page scrolls, stands when it stops, and leaps off the end of the line into snow
-          el: range, rig: leopardRig,
-          presence: ({ rect, vh, calm }) => {
-            const here = clamp((vh * 0.95 - (rect.top + ridge.at(0).y * rect.height)) / (vh * 0.3));
-            const p = calm ? here : Math.min(here, 1 - smooth(span(runAt(rect, vh).out, [0.15, 0.85])));
-            if (p <= 0) light(0, false);
-            return [p];
-          },
-          place: ({ rect, vh, t, calm }, X, Y) => {
-            const st = ridgeState, dt = Math.min(0.1, Math.max(0, t - (st.time ?? t))); st.time = t;
-            const want = calm ? { run: 0, out: 0 } : runAt(rect, vh);
-            const run = follow(st, 'run', want.run, dt), out = follow(st, 'out', want.out, dt);
-            light(run, true);
-            const scale = Math.min(0.42, rect.width * (small ? 0.24 : 0.145) / 440), body = 440 * scale;
-            const at = ridge.at(run);
-            let x = rect.left + at.x * rect.width, y = rect.top + at.y * rect.height;
-            let angle = Math.atan2(at.ty, at.tx) + Math.PI;     // the drawing faces left; turn it to the slope
-            angle = Math.max(-0.6, Math.min(0.6, Math.atan2(Math.sin(angle), Math.cos(angle))));
-            const g = stride(st, at.d * rect.width / scale, t, dt, run > 0 && run < 1);
-            angle *= 0.35 + 0.65 * (st.run ?? 0);
-            if (out > 0) {                                   // the leap: up and out over the dark slope
-              const e = Math.min(1, out * 1.25);
-              x -= body * 1.1 * e;
-              y += -Math.sin(Math.PI * e) * body * 0.32 + e * e * body * 0.35;
-              angle = angle * (1 - e) + (-0.25 + 0.55 * e) * e;
-              return leopardRig.pose({ x, y, angle, scale, a: LEAP }, X, Y);
-            }
-            return leopardRig.pose({ x, y, angle, scale, a: g.a, b: g.b, t: g.t }, X, Y);
           },
         },
         { // the name
