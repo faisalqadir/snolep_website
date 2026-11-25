@@ -4,7 +4,7 @@
  * Each form is a picture or a line of text, turned into dots and pinned to an element on the page.
  * The page says how present each form is (0 to 1) from the scroll or the clock. Every dot is snow
  * when no form holds it: it falls, drifts and sways; a share of the dots never joins a form, so it
- * always snows. A form gathers the way snow settles: each dot drifts down into its place as it
+ * always snows. Falling snow parts around the mouse pointer and is swept along in its wake. A form gathers the way snow settles: each dot drifts down into its place as it
  * grows, and when the form lets go its dots drift on down with the wind as they shrink away. Every dot's place is worked out from the scroll and the clock alone, so nothing
  * lags or overshoots however fast the page moves. No libraries.
  *
@@ -180,6 +180,7 @@ export function createDots(opts) {
     const lx = px, ly = py;
     px = mx; py = my;
     const sweep = lx < -900 || px < -900 ? 0 : Math.min(60, Math.hypot(px - lx, py - ly));
+    const mvx = sweep ? (px - lx) * Math.min(1, 60 / sweep) : 0, mvy = sweep ? (py - ly) * Math.min(1, 60 / sweep) : 0;
 
     // every form that is present, in page order: each pulls the dots on from wherever the one
     // before left them, so a form can hand over to the next without passing through snow
@@ -205,6 +206,7 @@ export function createDots(opts) {
     for (let b = 0; b < 8; b++) paths[b] = new Path2D();
     const S = 1.1, spanY = vh + 40, spanX = vw + 40;
 
+    let stirred = 0;                                // falling flakes the pointer has pushed off their path
     for (let j = 0; j < N; j++) {
       let x, y, r = 0, top = 0, teal = 0, coat = -1;
       x = ((U[j] * spanX + tt * WIND[j] + Math.sin(tt * 0.5 + PH[j]) * 14) % spanX) - 20;
@@ -240,6 +242,21 @@ export function createDots(opts) {
           if (Math.abs(OX[j]) + Math.abs(OY[j]) + Math.abs(VX[j]) + Math.abs(VY[j]) < 0.05) OX[j] = OY[j] = VX[j] = VY[j] = 0;
           x += OX[j] * top; y += OY[j] * top;
         }
+      } else if (SR[j] && !calm) {
+        // falling snow: flakes part around the pointer and get swept along in its wake, then drift
+        // back into their fall
+        const dx = x + OX[j] - px, dy = y + OY[j] - py, d2 = dx * dx + dy * dy;
+        if (px > -900 && d2 < 8100) {
+          const d = Math.sqrt(d2) || 1, near = 1 - d / 90, push = near * near * (0.3 + sweep * 0.05);
+          VX[j] += dx / d * push + mvx * near * 0.06;
+          VY[j] += dy / d * push + mvy * near * 0.06;
+        }
+        if (OX[j] || OY[j] || VX[j] || VY[j]) {
+          VX[j] = (VX[j] - OX[j] * 0.0025) * 0.94; VY[j] = (VY[j] - OY[j] * 0.0025) * 0.94;
+          OX[j] += VX[j]; OY[j] += VY[j];
+          if (Math.abs(OX[j]) + Math.abs(OY[j]) + Math.abs(VX[j]) + Math.abs(VY[j]) < 0.05) OX[j] = OY[j] = VX[j] = VY[j] = 0;
+          x += OX[j]; y += OY[j]; stirred++;
+        }
       } else if (OX[j] || OY[j]) OX[j] = OY[j] = VX[j] = VY[j] = 0;
       if (r < 0.2 || x < -6 || y < -6 || x > vw + 6 || y > vh + 6) continue;
       let bucket = teal;
@@ -249,6 +266,7 @@ export function createDots(opts) {
       if (bucket === 3) { const e = r + 0.6; paths[7].moveTo(x + e, y); paths[7].arc(x, y, e, 0, 6.2832); }   // snow on a light ground: a faint edge
       paths[bucket].moveTo(x + r, y); paths[bucket].arc(x, y, r, 0, 6.2832);
     }
+    state.stirred = stirred;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, vw, vh);
     for (const b of [7, 3, 4, 5, 0, 1, 2]) { ctx.fillStyle = fills[b]; ctx.fill(paths[b]); }
