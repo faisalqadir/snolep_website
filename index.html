@@ -387,6 +387,20 @@
     .range-in { width: 135%; margin-left: -16%; }
   }
   @media (max-width: 600px) { .traits { grid-template-columns: 1fr; } }
+
+  /* titles that open on a phone; on wider screens every one stays open and nothing toggles */
+  .fold summary { list-style: none; }
+  .fold summary::-webkit-details-marker { display: none; }
+  @media (min-width: 641px) { .fold summary { pointer-events: none; } }
+  @media (max-width: 640px) {
+    .fold summary { position: relative; display: flex; align-items: center; gap: 12px; min-height: 44px; padding-right: 36px; cursor: pointer; }
+    .fold summary::after { content: '+'; position: absolute; right: 2px; top: 50%; transform: translateY(-50%); font: 400 24px/1 var(--body); color: var(--teal-ink); transition: transform .3s var(--ease); }
+    .fold[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+    .fold p { margin-top: 8px; }
+    .std li { padding: 10px 0 12px; }
+    .traits li { padding-top: 10px; }
+    .traits .n { margin-bottom: 0; flex: none; }
+  }
 </style>
 </head>
 
@@ -432,10 +446,10 @@
         <h2>Guiding Principles</h2>
         <p class="sub">Four things we hold to on every project, and what each one means in the work.</p>
         <ul class="std">
-          <li><h3>Opens on thin signal</h3><p>Compressed pictures, no heavy libraries, nothing waiting on a slow script.</p></li>
-          <li><h3>Starts on the phone</h3><p>Every screen is planned at phone width first, where most visitors arrive.</p></li>
-          <li><h3>Secure and always up</h3><p>Encrypted connections, locked-down access and backups, watched so your site stays online.</p></li>
-          <li><h3>Looked after past launch day</h3><p>We host, update and fix what we ship, through the winter too.</p></li>
+          <li><details class="fold"><summary><h3>Opens on thin signal</h3></summary><p>Compressed pictures, no heavy libraries, nothing waiting on a slow script.</p></details></li>
+          <li><details class="fold"><summary><h3>Starts on the phone</h3></summary><p>Every screen is planned at phone width first, where most visitors arrive.</p></details></li>
+          <li><details class="fold"><summary><h3>Secure and always up</h3></summary><p>Encrypted connections, locked-down access and backups, watched so your site stays online.</p></details></li>
+          <li><details class="fold"><summary><h3>Looked after past launch day</h3></summary><p>We host, update and fix what we ship, through the winter too.</p></details></li>
         </ul>
       </div>
     </div>
@@ -534,10 +548,10 @@
         <p>In the mountains, survival is about more than strength. It takes patience, precision, adaptability and resilience. The snow leopard embodies these qualities. They also shape how we think, build and innovate.</p>
       </div>
       <ol class="traits">
-        <li><span class="n" aria-hidden="true">1</span><h3>Patience creates precision.</h3><p>The snow leopard knows when to wait and when to strike. We believe great technology starts the same way: understanding the challenge, finding the right opportunity and acting with purpose.</p></li>
-        <li><span class="n" aria-hidden="true">2</span><h3>Speed comes from simplicity.</h3><p>Across the toughest terrain, the snow leopard moves with remarkable efficiency. We take the same approach to technology: breaking complex challenges into smaller steps and turning ideas into meaningful solutions.</p></li>
-        <li><span class="n" aria-hidden="true">3</span><h3>Flexible in approach. Unwavering in purpose.</h3><p>When the terrain changes, the snow leopard changes course. We do too. We embrace new ideas, rethink what isn’t working and adapt our solutions without losing sight of what matters.</p></li>
-        <li><span class="n" aria-hidden="true">4</span><h3>Every setback is another opportunity to evolve.</h3><p>Not every hunt succeeds. But every attempt brings experience. We experiment, learn, refine and try again. Because progress isn’t about getting everything right the first time. It’s about getting better every time.</p></li>
+        <li><details class="fold"><summary><span class="n" aria-hidden="true">1</span><h3>Patience creates precision.</h3></summary><p>The snow leopard knows when to wait and when to strike. We believe great technology starts the same way: understanding the challenge, finding the right opportunity and acting with purpose.</p></details></li>
+        <li><details class="fold"><summary><span class="n" aria-hidden="true">2</span><h3>Speed comes from simplicity.</h3></summary><p>Across the toughest terrain, the snow leopard moves with remarkable efficiency. We take the same approach to technology: breaking complex challenges into smaller steps and turning ideas into meaningful solutions.</p></details></li>
+        <li><details class="fold"><summary><span class="n" aria-hidden="true">3</span><h3>Flexible in approach. Unwavering in purpose.</h3></summary><p>When the terrain changes, the snow leopard changes course. We do too. We embrace new ideas, rethink what isn’t working and adapt our solutions without losing sight of what matters.</p></details></li>
+        <li><details class="fold"><summary><span class="n" aria-hidden="true">4</span><h3>Every setback is another opportunity to evolve.</h3></summary><p>Not every hunt succeeds. But every attempt brings experience. We experiment, learn, refine and try again. Because progress isn’t about getting everything right the first time. It’s about getting better every time.</p></details></li>
       </ol>
     </div>
     <div class="range">
@@ -898,6 +912,14 @@
     addEventListener('resize', sync);
     matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', sync);
     sync();
+  })();
+
+  // On a phone the principle and habit titles fold their text away; elsewhere they all stay open
+  (() => {
+    const folds = [...document.querySelectorAll('.fold')], phone = matchMedia('(max-width: 640px)');
+    const fit = () => folds.forEach((d) => { d.open = !phone.matches; });
+    phone.addEventListener('change', fit); fit();
+    folds.forEach((d) => d.querySelector('summary').addEventListener('click', (e) => { if (!phone.matches) e.preventDefault(); }));
   })();
 </script>
 
