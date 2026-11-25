@@ -241,19 +241,20 @@
   .s2-dev b[data-b="img"] { background: #cfe6e3 url(./img/peak.webp) 50% 30% / cover; border-radius: 6px; }
   .s2-dev b[data-b^="c"] { background: var(--white); border: 1px solid var(--aqua); }
   .s2-w { position: absolute; left: 50%; bottom: 5%; transform: translateX(-50%); font: 500 13px/1 var(--body); color: var(--muted); }
-  /* 3 the people you talk to: a message, the reply, the same person writing the change, live */
-  .s3 { position: absolute; top: 8%; bottom: 8%; left: 50%; width: min(640px, 84%); transform: translateX(-50%); display: flex; flex-direction: column; justify-content: center; gap: 4%; }
-  .s3-msg { max-width: 72%; padding: 12px 16px; border-radius: 16px; font-size: clamp(14px, 3.2cqw, 17px); line-height: 1.35;
-            opacity: var(--a, 0); transform: translateY(calc((1 - var(--a, 0)) * 12px)); }
-  .s3-in { align-self: flex-start; background: var(--mint); border: 1px solid var(--aqua); border-bottom-left-radius: 4px; }
-  .s3-out { align-self: flex-end; display: flex; gap: 10px; align-items: center; background: var(--navy); color: var(--mint); border-bottom-right-radius: 4px; }
-  .s3 b { flex: none; display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--teal); color: var(--navy); font: 600 12px/1 var(--body); }
-  .s3-code { margin-top: 2%; border-radius: 12px; background: #04303f; color: var(--mint); overflow: hidden; opacity: var(--a, 0); transform: translateY(calc((1 - var(--a, 0)) * 12px)); }
-  .s3-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid rgba(173, 220, 218, .2); font: 500 13px/1 var(--mono); color: var(--aqua); }
-  .s3-code code { display: block; padding: 16px 14px 18px; font: 400 clamp(13px, 2.9cqw, 16px)/1.5 var(--mono); white-space: pre; }
-  .s3-caret { display: inline-block; width: 8px; height: 1.1em; margin-left: 1px; vertical-align: -3px; background: var(--teal); opacity: var(--caret, 1); }
-  .s3-live { display: flex; align-items: center; gap: 8px; font: 500 15px/1 var(--body); color: var(--teal-ink); opacity: var(--a, 0); }
-  .s3-live i, .s4-status i { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); }
+  /* 3 secure and always up: the lock, the checks ticked one by one, thirty days of uptime filling in */
+  .s3 { position: absolute; top: 10%; bottom: 10%; left: 50%; width: min(640px, 84%); transform: translateX(-50%); display: flex; flex-direction: column; justify-content: center; gap: clamp(20px, 6cqh, 44px); }
+  .s3-url { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border: 1px solid var(--aqua); border-radius: 99px; background: var(--mint); font: 500 15px/1 var(--mono); }
+  .s3-url svg { width: 18px; height: 18px; fill: none; stroke: var(--teal-ink); stroke-width: 1.6; opacity: var(--a, 0); transform: scale(calc(.6 + var(--a, 0) * .4)); }
+  .s3-url span { color: var(--teal-ink); opacity: var(--a, 0); }
+  .s3-url i { flex: 1; height: 10px; border-radius: 5px; background: #d3e9e6; }
+  .s3-checks { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+  .s3-checks li { display: flex; align-items: center; gap: 10px; font-size: clamp(14px, 3cqw, 17px); opacity: calc(.35 + var(--a, 0) * .65); }
+  .s3-checks li::before { content: '✓'; display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 13px;
+                          background: color-mix(in srgb, var(--teal) calc(var(--a, 0) * 100%), #e3f1ef); color: color-mix(in srgb, var(--navy) calc(var(--a, 0) * 100%), transparent); }
+  .s3-up p { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: var(--muted); }
+  .s3-up b { font-weight: 500; color: var(--teal-ink); opacity: var(--ok, 0); }
+  .s3-days { display: grid; grid-template-columns: repeat(30, 1fr); gap: 4px; height: 40px; }
+  .s3-days i { border-radius: 3px; background: color-mix(in srgb, var(--teal) calc(var(--a, 0) * 100%), #e3f1ef); }
   /* 4 looked after: a year on a line from launch, through the winter, with the work done on it */
   .s4 { position: absolute; inset: 9% 7%; }
   .s4-status { position: absolute; top: 0; right: 0; display: flex; align-items: center; gap: 8px; padding: 8px 14px; border: 1px solid var(--aqua); border-radius: 99px; font: 500 14px/1 var(--body); }
@@ -433,7 +434,7 @@
         <ul class="std">
           <li><h3>Opens on thin signal</h3><p>Compressed pictures, no heavy libraries, nothing waiting on a slow script.</p></li>
           <li><h3>Starts on the phone</h3><p>Every screen is planned at phone width first, where most visitors arrive.</p></li>
-          <li><h3>Built by the people you talk to</h3><p>The team that writes your code answers your calls. No layer in between.</p></li>
+          <li><h3>Secure and always up</h3><p>Encrypted connections, locked-down access and backups, watched so your site stays online.</p></li>
           <li><h3>Looked after past launch day</h3><p>We host, update and fix what we ship, through the winter too.</p></li>
         </ul>
       </div>
@@ -445,7 +446,7 @@
           <ol class="v-steps">
             <li class="v-step"><span class="v-n">01</span><h3>Opens on thin signal</h3><p><span>Compressed pictures, no heavy libraries, nothing waiting on a slow script.</span></p><span class="v-bar"><i></i></span></li>
             <li class="v-step"><span class="v-n">02</span><h3>Starts on the phone</h3><p><span>Every screen is planned at phone width first, where most visitors arrive.</span></p><span class="v-bar"><i></i></span></li>
-            <li class="v-step"><span class="v-n">03</span><h3>Built by the people you talk to</h3><p><span>The team that writes your code answers your calls. No layer in between.</span></p><span class="v-bar"><i></i></span></li>
+            <li class="v-step"><span class="v-n">03</span><h3>Secure and always up</h3><p><span>Encrypted connections, locked-down access and backups, watched so your site stays online.</span></p><span class="v-bar"><i></i></span></li>
             <li class="v-step"><span class="v-n">04</span><h3>Looked after past launch day</h3><p><span>We host, update and fix what we ship, through the winter too.</span></p><span class="v-bar"><i></i></span></li>
           </ol>
         <div class="v-frame" aria-hidden="true">
@@ -464,12 +465,11 @@
             <div class="s2-dev"><b data-b="nav"></b><b data-b="h1"></b><b data-b="h2"></b><b data-b="btn"></b><b data-b="img"></b><b data-b="c1"></b><b data-b="c2"></b><b data-b="c3"></b></div>
             <span class="s2-w">390 px</span>
           </div>
-          <div class="v-scene" data-scene="talk">
+          <div class="v-scene" data-scene="secure">
             <div class="s3">
-              <p class="s3-msg s3-in">Can the booking form ask for arrival time?</p>
-              <p class="s3-msg s3-out"><b>S</b>Yes. I’ll add it this afternoon.</p>
-              <div class="s3-code"><div class="s3-head"><b>S</b>booking-form.html</div><code><span class="s3-typed"></span><i class="s3-caret"></i></code></div>
-              <p class="s3-live"><i></i>Live on your site</p>
+              <p class="s3-url"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg><span>https://</span><i></i></p>
+              <ul class="s3-checks"><li>Encrypted connection</li><li>Access locked down</li><li>Backed up</li><li>Updates applied</li></ul>
+              <div class="s3-up"><p><span>Uptime, last 30 days</span><b>Online</b></p><div class="s3-days"></div></div>
             </div>
           </div>
           <div class="v-scene" data-scene="care">
@@ -850,16 +850,17 @@
       }
       label.textContent = `${Math.round(m(390, 1440) / 10) * 10} px`;
     };
-    // 3: the message, the reply, the same person typing the change, then it is live
-    const s3 = scenes[2], [msgIn, msgOut] = s3.querySelectorAll('.s3-msg'), code = s3.querySelector('.s3-code'), liveRow = s3.querySelector('.s3-live');
-    const typed = s3.querySelector('.s3-typed'), caret = s3.querySelector('.s3-caret');
-    const LINE = '<input type="time" name="arrival">';
-    const talk = (q) => {
-      set(msgIn, '--a', 1); set(msgOut, '--a', span(q, 0.2, 0.3)); set(code, '--a', span(q, 0.34, 0.42));
-      const n = Math.round(LINE.length * q01((q - 0.42) / 0.3));
-      if (typed.textContent.length !== n) typed.textContent = LINE.slice(0, n);
-      set(caret, '--caret', q < 0.8 ? 1 : 0);
-      set(liveRow, '--a', span(q, 0.8, 0.88));
+    // 3: the lock closes, the checks tick in turn, then thirty days of uptime fill in
+    const s3 = scenes[2], lock = s3.querySelector('.s3-url'), checks = [...s3.querySelectorAll('.s3-checks li')];
+    const days = s3.querySelector('.s3-days');
+    for (let d = 0; d < 30; d++) days.appendChild(document.createElement('i'));
+    const dayEls = [...days.children], upRow = s3.querySelector('.s3-up');
+    const secure = (q) => {
+      set(lock, '--a', span(q, 0.02, 0.14));
+      checks.forEach((c, k) => set(c, '--a', span(q, 0.16 + k * 0.08, 0.22 + k * 0.08)));
+      const fill = q01((q - 0.5) / 0.32) * 30;
+      dayEls.forEach((d, k) => set(d, '--a', q01(fill - k)));
+      set(upRow, '--ok', span(q, 0.82, 0.88));
     };
     // 4: the line runs on from launch through the winter; each piece of work shows as it is passed
     const s4 = scenes[3], evs = [...s4.querySelectorAll('.s4-ev')].map((el) => ({ el, x: +el.style.getPropertyValue('--x') }));
@@ -869,7 +870,7 @@
       set(s4.querySelector('.s4-winter'), '--w', q01((line - 0.36) / 0.08));
       for (const ev of evs) set(ev.el, '--a', q01((line - ev.x + 0.02) / 0.05));
     };
-    const plays = [signal, phone, talk, care];
+    const plays = [signal, phone, secure, care];
 
     let live = false, raf = 0, cur = -1;
     const draw = () => {
