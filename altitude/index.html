@@ -422,51 +422,30 @@
   .card .shot.plate img.ros, .card:hover .shot.plate img.ros { position: static; width: clamp(56px, 6vw, 84px); height: auto; top: auto; transform: none; transition: none; }
   @media (max-width: 640px) { .traits img.n { width: 36px; margin-bottom: 0; } }
 
-  /* 5 altitude: real terrain between the Khardung La road and Leh (elevation tiles, Mapzen/AWS
-     Terrain Tiles), coloured by height; the scroll walks the line down to Leh */
-  .lp5 { height: 420vh; height: 420svh; }
-  .lp5-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: #8fd0cc; }
-  .lp5-map { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
-  .lp5-map > img { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .lp5-route { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-  .lp5-route line { fill: none; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-  .r-all { stroke: #fff; stroke-width: 2; stroke-dasharray: 2 7; opacity: .9; }
-  .r-done { stroke: var(--navy); stroke-width: 3; stroke-dasharray: 1; stroke-dashoffset: 1; }
-  .r-end { fill: #fff; stroke: var(--navy); stroke-width: 3; vector-effect: non-scaling-stroke; }
-  .lp5-pin { position: absolute; transform: translate(14px, -50%); padding: 5px 9px; border-radius: 8px; background: rgba(255, 254, 255, .92); font: 500 13px/1 var(--body); white-space: nowrap; }
-  .lp5-pin.end { transform: translate(calc(-100% - 14px), -50%); }
-  .lp5-dot { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: var(--teal); border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(0, 166, 162, .25); }
-  .lp5-ui { position: relative; z-index: 2; height: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 300px; align-items: end; gap: 24px clamp(28px, 5vw, 80px); padding: 96px 0 clamp(28px, 6vh, 56px); pointer-events: none; }
-  .lp5-ui a, .lp5-ui button { pointer-events: auto; }
-  .lp5-copy { max-width: 620px; padding: clamp(22px, 2.4vw, 32px); border-radius: 18px; background: rgba(233, 247, 244, .9); backdrop-filter: blur(8px); }
-  .lp5-copy .lp-title { font-size: clamp(36px, 4.4vw, 72px); }
-  .lp5-copy .later { margin-top: 18px; }
-  .lp5-gauge { padding: 18px 20px; border-radius: 18px; background: rgba(0, 39, 53, .88); color: var(--mint); backdrop-filter: blur(8px); }
-  .lp5-alt { display: flex; align-items: baseline; gap: 6px; }
-  .lp5-alt b { font: 500 56px/1 var(--display); font-stretch: 112%; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
-  .lp5-alt span { font: 500 22px/1 var(--display); color: var(--teal); }
-  .lp5-co { margin-top: 6px; font: 400 13px/1.3 var(--mono); color: var(--aqua); }
-  .lp5-prof { display: block; width: 100%; height: 64px; margin-top: 14px; overflow: visible; }
-  .lp5-prof polygon { fill: rgba(0, 166, 162, .25); }
-  .lp5-prof polyline { fill: none; stroke: var(--teal); stroke-width: 2; vector-effect: non-scaling-stroke; }
-  .lp5-prof circle { fill: #fff; }
-  .lp5-km { display: flex; justify-content: space-between; margin-top: 8px; font-size: 13px; color: var(--aqua); }
-  @media (max-width: 900px) {
-    .lp5-ui { grid-template-columns: 1fr; }
-    .lp5-ui { align-content: space-between; padding-top: 80px; }
-    .lp5-gauge { order: -1; justify-self: start; width: 168px; padding: 10px 12px; }
-    .lp5-alt b { font-size: 32px; }
-    .lp5-alt span { font-size: 16px; }
-    .lp5-co { font-size: 11px; }
-    .lp5-prof, .lp5-km span:last-child { display: none; }
-    .lp5-km { margin-top: 4px; }
-    .lp5-copy .actions .btn { width: auto; }
-  }
+  /* the terrain between the slopes above Leh and Leh itself, a faint layer behind the whole page that
+     drifts down the slope as the page scrolls (elevation: Terrain Tiles, Mapzen / AWS Open Data) */
+  .terrain { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .terrain-in { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; opacity: .2; }
+  .terrain-in img { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .terrain-in img + img { opacity: .8; }
+  /* the last stop: the place, on a map that comes up in the corner at the foot of the page */
+  .place-map { position: fixed; left: clamp(12px, 2vw, 28px); bottom: clamp(12px, 2vw, 28px); z-index: 20; width: min(300px, calc(100vw - 24px));
+               border-radius: 16px; overflow: hidden; background: var(--white); box-shadow: 0 24px 60px -20px rgba(0, 20, 28, .55);
+               opacity: 0; transform: translateY(24px) scale(.96); transform-origin: bottom left; pointer-events: none; transition: opacity .4s ease, transform .5s var(--ease); }
+  .place-map.is-on { opacity: 1; transform: none; pointer-events: auto; }
+  .place-map iframe { display: block; width: 100%; height: 150px; border: 0; }
+  .place-map .pm-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; color: var(--navy); }
+  .place-map b { display: block; font-weight: 600; font-size: 15px; }
+  .place-map small { color: var(--muted); font-size: 13px; }
+  .place-map a { font-size: 14px; font-weight: 500; color: var(--teal-ink); text-decoration: none; white-space: nowrap; }
+  .place-map .pm-x { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border: 0; border-radius: 50%; background: rgba(255, 254, 255, .92); color: var(--navy); font: 400 20px/1 var(--body); cursor: pointer; }
+  @media (prefers-reduced-motion: reduce) { .place-map { transition: none; } }
 </style>
 </head>
 
 <body>
 <a class="skip" href="#work">Skip to what we build</a>
+<div class="terrain" aria-hidden="true"><div class="terrain-in" style="width:1100px;height:1960px"><img src="../img/terrain-leh.webp" width="1100" height="1960" alt=""><img src="../img/terrain-leh-lines.svg" width="1100" height="1960" alt=""></div></div>
 <canvas class="dots" aria-hidden="true"></canvas>
 
 <header class="site-head">
@@ -479,31 +458,16 @@
 </header>
 
 <main id="top">
-  <section class="lp lp5" id="hero">
-    <div class="lp5-stage">
-      <div class="lp5-map" style="width:1100px;height:1960px">
-        <img src="../img/terrain-leh.webp" width="1100" height="1960" alt="Shaded relief of the slopes between the Khardung La road and Leh, coloured by altitude">
-        <img src="../img/terrain-leh-lines.svg" width="1100" height="1960" alt="">
-        <svg class="lp5-route" viewBox="0 0 1100 1960" aria-hidden="true">
-          <line class="r-all" x1="734.9" y1="344.1" x2="355.1" y2="1567.3"/>
-          <line class="r-done" x1="734.9" y1="344.1" x2="355.1" y2="1567.3" pathLength="1"/>
-          <circle class="r-end" cx="734.9" cy="344.1" r="7"/><circle class="r-end" cx="355.1" cy="1567.3" r="7"/>
-        </svg>
-        <span class="lp5-pin" style="left:734.9px;top:344.1px">4,570 m</span>
-        <span class="lp5-pin end" style="left:355.1px;top:1567.3px">Leh · 3,411 m</span>
-        <span class="lp5-dot"></span>
-      </div>
-      <div class="wrap lp5-ui">
-        <div class="lp5-copy">
-          <h1 class="lp-title"><span class="ln"><span>Software, platforms</span></span> <span class="ln"><span>and websites,</span></span> <span class="ln"><span><em>built in Ladakh.</em></span></span></h1>
-          <div class="later"><p class="lede">Snolep Technologies builds the software that associations, museums, hotels and businesses in the Himalaya run on, from member platforms to accounting and HR tools.</p><div class="actions"><a class="btn primary" href="#contact">Start a project <i aria-hidden="true">→</i></a><a class="btn ghost" href="#work">See what we build</a></div></div>
-        </div>
-        <div class="lp5-gauge later" aria-hidden="true">
-          <p class="lp5-alt"><b>4,570</b><span>m</span></p>
-          <p class="lp5-co">34.2412° N, 77.6066° E</p>
-          <svg class="lp5-prof" viewBox="0 -6 300 92" preserveAspectRatio="none"><polygon points="0,86 0.0,7.7 1.9,7.0 3.8,5.8 5.6,4.5 7.5,3.3 9.4,2.7 11.2,4.2 13.1,5.6 15.0,7.2 16.9,9.1 18.8,11.1 20.6,12.7 22.5,13.9 24.4,15.4 26.2,16.8 28.1,17.2 30.0,17.4 31.9,16.6 33.8,15.6 35.6,14.8 37.5,13.2 39.4,12.3 41.2,12.6 43.1,13.9 45.0,15.8 46.9,17.4 48.8,18.9 50.6,20.4 52.5,21.8 54.4,23.1 56.2,24.3 58.1,24.9 60.0,26.2 61.9,27.7 63.8,28.8 65.6,29.9 67.5,31.5 69.4,32.9 71.2,34.1 73.1,34.9 75.0,35.5 76.9,35.9 78.8,36.9 80.6,38.5 82.5,39.6 84.4,40.0 86.2,39.7 88.1,39.7 90.0,41.1 91.9,41.6 93.8,42.3 95.6,43.3 97.5,43.8 99.4,44.1 101.2,43.7 103.1,44.3 105.0,44.9 106.9,45.5 108.8,45.5 110.6,44.6 112.5,44.6 114.4,45.1 116.2,45.5 118.1,46.3 120.0,47.3 121.9,47.5 123.8,47.2 125.6,47.9 127.5,48.9 129.4,49.6 131.2,50.3 133.1,51.1 135.0,51.7 136.9,51.9 138.8,51.9 140.6,52.3 142.5,52.5 144.4,53.0 146.2,53.6 148.1,54.4 150.0,54.7 151.9,55.1 153.8,55.5 155.6,55.7 157.5,56.2 159.4,56.5 161.2,56.9 163.1,57.2 165.0,57.5 166.9,57.6 168.8,57.9 170.6,58.5 172.5,58.9 174.4,59.4 176.2,59.7 178.1,59.9 180.0,60.4 181.9,60.8 183.8,60.8 185.6,60.7 187.5,60.8 189.4,61.1 191.2,61.2 193.1,61.7 195.0,62.1 196.9,62.4 198.8,62.8 200.6,63.2 202.5,63.4 204.4,63.7 206.2,64.1 208.1,64.6 210.0,64.7 211.9,65.3 213.8,65.4 215.6,65.8 217.5,66.1 219.4,66.5 221.2,66.7 223.1,67.0 225.0,67.5 226.9,67.5 228.8,67.9 230.6,67.9 232.5,67.9 234.4,68.2 236.2,68.5 238.1,68.5 240.0,68.9 241.9,69.6 243.8,69.7 245.6,70.0 247.5,70.2 249.4,70.4 251.2,70.7 253.1,70.8 255.0,70.9 256.9,71.2 258.8,71.3 260.6,71.6 262.5,71.9 264.4,71.9 266.2,72.2 268.1,72.4 270.0,72.9 271.9,73.0 273.8,73.5 275.6,73.4 277.5,73.7 279.4,74.0 281.2,74.2 283.1,74.4 285.0,74.5 286.9,74.9 288.8,75.3 290.6,75.4 292.5,75.5 294.4,75.7 296.2,75.9 298.1,76.0 300.0,76.4 300,86"/><polyline points="0.0,7.7 1.9,7.0 3.8,5.8 5.6,4.5 7.5,3.3 9.4,2.7 11.2,4.2 13.1,5.6 15.0,7.2 16.9,9.1 18.8,11.1 20.6,12.7 22.5,13.9 24.4,15.4 26.2,16.8 28.1,17.2 30.0,17.4 31.9,16.6 33.8,15.6 35.6,14.8 37.5,13.2 39.4,12.3 41.2,12.6 43.1,13.9 45.0,15.8 46.9,17.4 48.8,18.9 50.6,20.4 52.5,21.8 54.4,23.1 56.2,24.3 58.1,24.9 60.0,26.2 61.9,27.7 63.8,28.8 65.6,29.9 67.5,31.5 69.4,32.9 71.2,34.1 73.1,34.9 75.0,35.5 76.9,35.9 78.8,36.9 80.6,38.5 82.5,39.6 84.4,40.0 86.2,39.7 88.1,39.7 90.0,41.1 91.9,41.6 93.8,42.3 95.6,43.3 97.5,43.8 99.4,44.1 101.2,43.7 103.1,44.3 105.0,44.9 106.9,45.5 108.8,45.5 110.6,44.6 112.5,44.6 114.4,45.1 116.2,45.5 118.1,46.3 120.0,47.3 121.9,47.5 123.8,47.2 125.6,47.9 127.5,48.9 129.4,49.6 131.2,50.3 133.1,51.1 135.0,51.7 136.9,51.9 138.8,51.9 140.6,52.3 142.5,52.5 144.4,53.0 146.2,53.6 148.1,54.4 150.0,54.7 151.9,55.1 153.8,55.5 155.6,55.7 157.5,56.2 159.4,56.5 161.2,56.9 163.1,57.2 165.0,57.5 166.9,57.6 168.8,57.9 170.6,58.5 172.5,58.9 174.4,59.4 176.2,59.7 178.1,59.9 180.0,60.4 181.9,60.8 183.8,60.8 185.6,60.7 187.5,60.8 189.4,61.1 191.2,61.2 193.1,61.7 195.0,62.1 196.9,62.4 198.8,62.8 200.6,63.2 202.5,63.4 204.4,63.7 206.2,64.1 208.1,64.6 210.0,64.7 211.9,65.3 213.8,65.4 215.6,65.8 217.5,66.1 219.4,66.5 221.2,66.7 223.1,67.0 225.0,67.5 226.9,67.5 228.8,67.9 230.6,67.9 232.5,67.9 234.4,68.2 236.2,68.5 238.1,68.5 240.0,68.9 241.9,69.6 243.8,69.7 245.6,70.0 247.5,70.2 249.4,70.4 251.2,70.7 253.1,70.8 255.0,70.9 256.9,71.2 258.8,71.3 260.6,71.6 262.5,71.9 264.4,71.9 266.2,72.2 268.1,72.4 270.0,72.9 271.9,73.0 273.8,73.5 275.6,73.4 277.5,73.7 279.4,74.0 281.2,74.2 283.1,74.4 285.0,74.5 286.9,74.9 288.8,75.3 290.6,75.4 292.5,75.5 294.4,75.7 296.2,75.9 298.1,76.0 300.0,76.4"/><circle r="4" cx="0" cy="7.7"/></svg>
-          <p class="lp5-km"><span>0.0 km</span><span>10.1 km to Leh</span></p>
-        </div>
+  <section class="lp lp3" id="hero">
+    <div class="lp3-stage">
+      <img class="lp3-pic" src="../img/range.webp" width="1672" height="941" alt="Snow-covered Himalayan peaks drawn in the Snolep colours">
+      <svg class="lp3-mask" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <defs><mask id="lp3m"><rect x="-4000" y="-4000" width="9440" height="8900" fill="#fff"/><text id="lp3word" x="720" y="640" text-anchor="middle">LADAKH</text></mask></defs>
+        <rect x="-4000" y="-4000" width="9440" height="8900" fill="#e9f7f4" mask="url(#lp3m)"/>
+      </svg>
+      <div class="wrap lp3-copy">
+        <h1 class="lp3-h1"><span class="lp3-pre">Software, platforms and websites, built in</span><span class="sr">Ladakh.</span></h1>
+        <div class="lp3-after"><p class="lp3-t" aria-hidden="true">Software, platforms and websites, <em>built in Ladakh.</em></p><p class="lede">Snolep Technologies builds the software that associations, museums, hotels and businesses in the Himalaya run on, from member platforms to accounting and HR tools.</p><div class="actions"><a class="btn primary" href="#contact">Start a project <i aria-hidden="true">→</i></a><a class="btn ghost" href="#work">See what we build</a></div></div>
       </div>
     </div>
   </section>
@@ -713,6 +677,12 @@
   <h3>Project enquiry</h3>
   <button class="close" type="button" aria-label="Close">×</button>
 </dialog>
+
+<aside class="place-map" aria-label="Where we are">
+  <button class="pm-x" type="button" aria-label="Close map">×</button>
+  <iframe title="The Abduz on Google Maps" data-src="https://www.google.com/maps?q=The%20Abduz%2C%20Leh%2C%20Ladakh&amp;z=14&amp;output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  <div class="pm-row"><div><b>The Abduz</b><small>Leh, Ladakh</small></div><a href="https://www.google.com/maps/search/the%20abduz?hl=en" target="_blank" rel="noopener">Open in Maps ↗</a></div>
+</aside>
 
 <div class="cursor" aria-hidden="true">
   <svg viewBox="0 0 44 44"><circle class="track" cx="22" cy="22" r="20"/><circle class="progress" cx="22" cy="22" r="20" pathLength="1"/></svg>
@@ -1041,37 +1011,60 @@
   start();
 </script>
 <script>
-  // 5: the scroll walks the straight line from the slopes above (34.2412 N, 77.6066 E) down to Leh
-  // (34.1543 N, 77.5740 E); the map pans under a fixed sight, the altitude is the ground's real height
+  // 3: the zoom through the D, scrubbed by the scroll over the landing's first screen and a half
   (() => {
-    const PROF = [4570.3, 4582.5, 4602.4, 4624.6, 4645.1, 4654.7, 4628.3, 4604.8, 4578.2, 4545.8, 4512.6, 4485.5, 4465.0, 4440.5, 4417.2, 4409.4, 4405.8, 4420.4, 4436.3, 4449.5, 4476.7, 4491.6, 4486.9, 4465.6, 4433.5, 4405.7, 4381.4, 4356.3, 4332.5, 4309.6, 4290.3, 4279.1, 4257.9, 4233.4, 4214.8, 4194.7, 4168.7, 4144.8, 4124.5, 4110.7, 4100.4, 4093.4, 4077.3, 4050.5, 4031.3, 4025.6, 4030.5, 4029.4, 4006.6, 3998.7, 3986.2, 3970.0, 3961.7, 3955.7, 3962.3, 3952.6, 3942.0, 3932.8, 3932.2, 3946.6, 3947.9, 3938.4, 3931.5, 3918.1, 3902.5, 3898.7, 3902.8, 3892.5, 3875.1, 3862.2, 3851.0, 3838.0, 3827.5, 3823.4, 3823.6, 3816.6, 3813.4, 3805.6, 3795.8, 3782.5, 3777.1, 3770.7, 3763.1, 3760.3, 3752.0, 3746.0, 3740.6, 3734.7, 3729.8, 3727.6, 3722.6, 3712.6, 3706.5, 3698.4, 3692.3, 3689.6, 3680.8, 3673.8, 3673.7, 3676.3, 3673.2, 3669.3, 3667.0, 3659.6, 3651.4, 3647.0, 3640.7, 3633.8, 3629.4, 3625.2, 3618.5, 3610.6, 3608.9, 3597.5, 3597.1, 3589.0, 3584.0, 3577.4, 3573.6, 3568.7, 3560.5, 3561.1, 3554.5, 3555.0, 3554.9, 3548.5, 3544.3, 3544.5, 3536.6, 3526.2, 3523.3, 3518.3, 3515.0, 3512.4, 3506.1, 3505.5, 3504.4, 3498.1, 3497.6, 3491.9, 3486.1, 3486.0, 3481.5, 3478.7, 3469.5, 3468.1, 3460.5, 3460.9, 3455.7, 3451.0, 3447.1, 3444.7, 3442.9, 3435.5, 3430.0, 3427.2, 3426.6, 3423.2, 3419.3, 3417.1, 3411.3], A = [734.9, 344.1], B = [355.1, 1567.3], W = 1100, H = 1960, KM = 10.12;
-    const LAT = [34.241177, 34.154340], LON = [77.606638, 77.574046];
-    const sec = document.querySelector('.lp5'), map = sec.querySelector('.lp5-map'), dot = sec.querySelector('.lp5-dot');
-    const done = sec.querySelector('.r-done'), alt = sec.querySelector('.lp5-alt b'), co = sec.querySelector('.lp5-co');
-    const pdot = sec.querySelector('.lp5-prof circle'), kms = sec.querySelector('.lp5-km span');
+    const sec = document.querySelector('.lp3'), word = document.getElementById('lp3word'), svg = sec.querySelector('.lp3-mask');
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const c = (v) => Math.min(1, Math.max(0, v));
-    const ease = (v) => v * v * (3 - 2 * v);
-    let raf = 0;
+    // the origin: inside the stem of the D, in the svg's own units, turned into a share of the box
+    let ox = 0.5, oy = 0.6;
+    const place = () => {
+      try {
+        const e = word.getExtentOfChar(2), r = svg.getBoundingClientRect(), m = svg.getScreenCTM();
+        const pt = svg.createSVGPoint(); pt.x = e.x + e.width * 0.16; pt.y = e.y + e.height * 0.55;
+        const s = pt.matrixTransform(m);
+        ox = (s.x - r.left) / r.width; oy = (s.y - r.top) / r.height;
+        svg.style.setProperty('--ox', `${(ox * 100).toFixed(2)}%`); svg.style.setProperty('--oy', `${(oy * 100).toFixed(2)}%`);
+      } catch { /* the centre will do */ }
+    };
+    const draw = () => {
+      const r = sec.getBoundingClientRect(), p = c(-r.top / Math.max(1, r.height - innerHeight));
+      const z = calm ? 1 : 1 + Math.pow(c(p / 0.62), 3) * 70;
+      svg.style.setProperty('--z', z.toFixed(3));
+      svg.style.setProperty('--mo', (calm ? 1 : 1 - c((p - 0.5) / 0.12)).toFixed(3));
+      sec.style.setProperty('--p', p.toFixed(3));
+      sec.style.setProperty('--po', (1 - c(p / 0.25)).toFixed(3));
+      sec.style.setProperty('--ao', (calm ? 1 : c((p - 0.55) / 0.2)).toFixed(3));
+    };
+    document.fonts.ready.then(() => { place(); draw(); });
+    addEventListener('resize', () => { place(); draw(); });
+    addEventListener('scroll', () => requestAnimationFrame(draw), { passive: true });
+    place(); draw();
+  })();
+</script>
+<script>
+  // the terrain drifts from the slopes above Leh (34.2412 N, 77.6066 E) down to Leh (34.1543 N,
+  // 77.5740 E) over the length of the page; at the foot of the page the map comes up in the corner
+  (() => {
+    const A = [734.9, 344.1], B = [355.1, 1567.3], W = 1100, H = 1960;
+    const map = document.querySelector('.terrain-in'), card = document.querySelector('.place-map'), frame = card.querySelector('iframe');
+    let closed = false, raf = 0;
     const draw = () => {
       raf = 0;
-      const r = sec.getBoundingClientRect(), vw = innerWidth, vh = innerHeight;
-      const p = ease(c((-r.top / Math.max(1, r.height - vh) - 0.04) / 0.92));
+      const vw = innerWidth, vh = innerHeight, max = Math.max(1, document.documentElement.scrollHeight - vh);
+      const p = Math.min(1, Math.max(0, scrollY / max));
       const x = A[0] + (B[0] - A[0]) * p, y = A[1] + (B[1] - A[1]) * p;
-      // the map covers the screen; the walker stays near the sight, clamped so no edge shows
-      const s = Math.max(vw / W * 1.12, vh / H * 1.12, vw < 700 ? 1.6 : 1.4);
-      const sx = vw < 700 ? 0.66 : 0.64, sy = vw < 700 ? 0.25 : 0.34;
-      let tx = vw * sx - x * s, ty = vh * sy - y * s;
+      const s = Math.max(vw / W * 1.1, vh / H * 1.1, 1.2);
+      let tx = vw * 0.55 - x * s, ty = vh * 0.45 - y * s;
       tx = Math.min(0, Math.max(vw - W * s, tx)); ty = Math.min(0, Math.max(vh - H * s, ty));
       map.style.transform = `translate3d(${tx.toFixed(1)}px, ${ty.toFixed(1)}px, 0) scale(${s.toFixed(4)})`;
-      dot.style.left = `${x.toFixed(1)}px`; dot.style.top = `${y.toFixed(1)}px`;
-      done.style.strokeDashoffset = (1 - p).toFixed(4);
-      const f = p * (PROF.length - 1), i = Math.floor(f), h = PROF[i] + ((PROF[Math.min(i + 1, PROF.length - 1)] - PROF[i]) * (f - i));
-      alt.textContent = Math.round(h).toLocaleString('en-IN');
-      co.textContent = `${(LAT[0] + (LAT[1] - LAT[0]) * p).toFixed(4)}° N, ${(LON[0] + (LON[1] - LON[0]) * p).toFixed(4)}° E`;
-      pdot.setAttribute('cx', (p * 300).toFixed(1)); pdot.setAttribute('cy', ((4700 - h) / (4700 - 3350) * 80).toFixed(1));
-      kms.textContent = `${(p * KM).toFixed(1)} km`;
+      const atFoot = max - scrollY < vh * 0.6;
+      if (atFoot && !frame.src) frame.src = frame.dataset.src;
+      card.classList.toggle('is-on', atFoot && !closed);
+      if (!atFoot) closed = false;
     };
     const queue = () => { if (!raf) raf = requestAnimationFrame(draw); };
+    card.querySelector('.pm-x').addEventListener('click', () => { closed = true; card.classList.remove('is-on'); });
     addEventListener('scroll', queue, { passive: true }); addEventListener('resize', queue); draw();
   })();
 </script>
