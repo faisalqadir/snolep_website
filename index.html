@@ -64,7 +64,6 @@
   .site-head { position: fixed; top: 0; left: 0; right: 0; z-index: 10; background: rgba(233, 247, 244, .86); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(173, 220, 218, .6); }
   .site-head .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
   .brand { display: inline-flex; align-items: center; gap: 10px; font: 800 17px/1 var(--display); font-stretch: 125%; letter-spacing: .02em; text-decoration: none; }
-  .brand img { width: auto; height: 34px; }
   .menu-btn { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 18px; border: 1px solid currentColor; border-radius: 999px;
               background: none; color: inherit; font: 500 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
   .site-head.on-dark { background: rgba(0, 39, 53, .86); border-color: rgba(173, 220, 218, .2); color: var(--mint); }
@@ -166,17 +165,18 @@
   .lp3-block { padding-bottom: 4vh; }
   .lp3-slot { height: var(--wh, 160px); margin-top: var(--wg, 24px); }
   .lp3-edge { fill: none; stroke: var(--navy); stroke-width: 1.2; opacity: calc(.45 * var(--eo, 1)); }
-  .lp3-hint { position: absolute; left: 0; bottom: clamp(20px, 4vh, 36px); font-size: 14px; color: var(--muted); opacity: var(--po, 1); }
+  .lp3-hint { position: absolute; left: 0; right: 0; text-align: center; bottom: clamp(20px, 4vh, 36px); font-size: 14px; color: var(--muted); opacity: var(--po, 1); }
   .lp3-hint span { margin: 0 6px; color: var(--teal-ink); }
   .lp3-pre { display: block; font-size: clamp(30px, min(7.6vw, 12vh), 116px); line-height: 1.02; font-weight: 500; letter-spacing: -.04em; opacity: var(--po, 1); }
   .lp3-pre .l { display: block; white-space: nowrap; }
+  .lp3-block { text-align: center; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   .lp3-after { position: absolute; left: 0; bottom: clamp(32px, 7vh, 72px); max-width: 560px; padding: 24px 28px; border-radius: 16px; background: rgba(233, 247, 244, .9); backdrop-filter: blur(6px);
                opacity: var(--ao, 0); transform: translateY(calc((1 - var(--ao, 0)) * 24px)); }
   .lp3-after .lede { color: var(--navy); margin-top: 10px; }
   .lp3-t { font: 500 clamp(26px, 2.4vw, 36px)/1.05 var(--display); letter-spacing: -.03em; }
   .lp3-t em { font-style: normal; color: var(--teal-ink); }
-  @media (max-width: 640px) { .lp3-pre { font-size: 26px; } .lp3-pre .l { display: inline; white-space: normal; } .lp3-after { right: 0; } .brand img { height: 30px; } }
+  @media (max-width: 640px) { .lp3-pre { font-size: 26px; } .lp3-pre .l { display: inline; white-space: normal; } .lp3-after { right: 0; } }
 
   section { padding: clamp(72px, 11vh, 128px) 0; }
   .head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 48px; margin-bottom: clamp(28px, 5vh, 52px); }
@@ -437,7 +437,7 @@
 
 <header class="site-head">
   <div class="wrap">
-    <a class="brand" href="#top"><img src="./img/hero-leopard.webp" width="873" height="738" alt="">SNOLEP</a>
+    <a class="brand" href="#top">SNOLEP</a>
     <nav class="site-nav" aria-label="Main"><a href="#values">Principles</a><a href="#work">What we build</a><a href="#inspiration">Inspiration</a></nav>
     <a class="btn primary head-cta" href="#contact">Start a project <i aria-hidden="true">→</i></a>
     <button class="menu-btn" type="button" aria-controls="rail" aria-expanded="false">Menu <b aria-hidden="true">+</b></button>
