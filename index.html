@@ -63,7 +63,8 @@
   /* header (narrow screens; wide screens have the rail) */
   .site-head { position: fixed; top: 0; left: 0; right: 0; z-index: 10; background: rgba(233, 247, 244, .86); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(173, 220, 218, .6); }
   .site-head .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-  .brand { font: 800 17px/1 var(--display); font-stretch: 125%; letter-spacing: .02em; text-decoration: none; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; font: 800 17px/1 var(--display); font-stretch: 125%; letter-spacing: .02em; text-decoration: none; }
+  .brand img { width: auto; height: 34px; }
   .menu-btn { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 18px; border: 1px solid currentColor; border-radius: 999px;
               background: none; color: inherit; font: 500 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
   .site-head.on-dark { background: rgba(0, 39, 53, .86); border-color: rgba(173, 220, 218, .2); color: var(--mint); }
@@ -160,16 +161,22 @@
   .lp3-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
   .lp3-pic { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(calc(1.12 - var(--p, 0) * .12)); }
   .lp3-mask { position: absolute; inset: 0; width: 100%; height: 100%; transform-origin: var(--ox, 50%) var(--oy, 60%); transform: scale(var(--z, 1)); opacity: var(--mo, 1); will-change: transform; }
-  #lp3word { font: 800 240px/1 Archivo, sans-serif; font-stretch: 112%; letter-spacing: -8px; }
-  .lp3-copy { position: relative; z-index: 2; height: 100%; padding-top: calc(72px + clamp(28px, 8vh, 96px)); display: flex; flex-direction: column; }
-  .lp3-pre { display: block; max-width: 15em; font-size: clamp(32px, 3.6vw, 56px); line-height: 1.02; font-weight: 500; letter-spacing: -.035em; opacity: var(--po, 1); }
+  #lp3word { font-family: Archivo, sans-serif; font-weight: 800; font-stretch: 100%; letter-spacing: -.035em; }
+  .lp3-copy { position: relative; z-index: 2; height: 100%; padding-top: 72px; display: flex; flex-direction: column; justify-content: center; }
+  .lp3-block { padding-bottom: 4vh; }
+  .lp3-slot { height: var(--wh, 160px); margin-top: var(--wg, 24px); }
+  .lp3-edge { fill: none; stroke: var(--navy); stroke-width: 1.2; opacity: calc(.45 * var(--eo, 1)); }
+  .lp3-hint { position: absolute; left: 0; bottom: clamp(20px, 4vh, 36px); font-size: 14px; color: var(--muted); opacity: var(--po, 1); }
+  .lp3-hint span { margin: 0 6px; color: var(--teal-ink); }
+  .lp3-pre { display: block; font-size: clamp(30px, min(7.6vw, 12vh), 116px); line-height: 1.02; font-weight: 500; letter-spacing: -.04em; opacity: var(--po, 1); }
+  .lp3-pre .l { display: block; white-space: nowrap; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-  .lp3-after { margin-top: auto; margin-bottom: clamp(32px, 7vh, 72px); max-width: 560px; padding: 24px 28px; border-radius: 16px; background: rgba(233, 247, 244, .9); backdrop-filter: blur(6px);
+  .lp3-after { position: absolute; left: 0; bottom: clamp(32px, 7vh, 72px); max-width: 560px; padding: 24px 28px; border-radius: 16px; background: rgba(233, 247, 244, .9); backdrop-filter: blur(6px);
                opacity: var(--ao, 0); transform: translateY(calc((1 - var(--ao, 0)) * 24px)); }
   .lp3-after .lede { color: var(--navy); margin-top: 10px; }
   .lp3-t { font: 500 clamp(26px, 2.4vw, 36px)/1.05 var(--display); letter-spacing: -.03em; }
   .lp3-t em { font-style: normal; color: var(--teal-ink); }
-  @media (max-width: 900px) { .lp3-pre { max-width: 11em; } }
+  @media (max-width: 640px) { .lp3-pre { font-size: 26px; } .lp3-pre .l { display: inline; white-space: normal; } .lp3-after { right: 0; } .brand img { height: 30px; } }
 
   section { padding: clamp(72px, 11vh, 128px) 0; }
   .head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 48px; margin-bottom: clamp(28px, 5vh, 52px); }
@@ -430,7 +437,7 @@
 
 <header class="site-head">
   <div class="wrap">
-    <a class="brand" href="#top">SNOLEP</a>
+    <a class="brand" href="#top"><img src="./img/hero-leopard.webp" width="873" height="738" alt="">SNOLEP</a>
     <nav class="site-nav" aria-label="Main"><a href="#values">Principles</a><a href="#work">What we build</a><a href="#inspiration">Inspiration</a></nav>
     <a class="btn primary head-cta" href="#contact">Start a project <i aria-hidden="true">→</i></a>
     <button class="menu-btn" type="button" aria-controls="rail" aria-expanded="false">Menu <b aria-hidden="true">+</b></button>
@@ -442,11 +449,13 @@
     <div class="lp3-stage">
       <img class="lp3-pic" src="./img/range.webp" width="1672" height="941" alt="Snow-covered Himalayan peaks drawn in the Snolep colours">
       <svg class="lp3-mask" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-        <defs><mask id="lp3m"><rect x="-4000" y="-4000" width="9440" height="8900" fill="#fff"/><text id="lp3word" x="720" y="640" text-anchor="middle">LADAKH</text></mask></defs>
+        <defs><mask id="lp3m"><rect x="-4000" y="-4000" width="9440" height="8900" fill="#fff"/><text id="lp3word" x="0" y="0">LADAKH</text></mask></defs>
         <rect x="-4000" y="-4000" width="9440" height="8900" fill="#e9f7f4" mask="url(#lp3m)"/>
+        <use class="lp3-edge" href="#lp3word"/>
       </svg>
       <div class="wrap lp3-copy">
-        <h1 class="lp3-h1"><span class="lp3-pre">Software, platforms and websites, built in</span><span class="sr">Ladakh.</span></h1>
+        <div class="lp3-block"><h1 class="lp3-h1"><span class="lp3-pre"><span class="l">Software, platforms</span> <span class="l">and websites, built in</span></span><span class="sr">Ladakh.</span></h1><div class="lp3-slot" aria-hidden="true"></div></div>
+        <p class="lp3-hint" aria-hidden="true">Leh, Ladakh <span>·</span> Scroll to enter ↓</p>
         <div class="lp3-after"><p class="lp3-t" aria-hidden="true">Software, platforms and websites, <em>built in Ladakh.</em></p><p class="lede">Snolep Technologies builds the software that associations, museums, hotels and businesses in the Himalaya run on, from member platforms to accounting and HR tools.</p><div class="actions"><a class="btn primary" href="#contact">Start a project <i aria-hidden="true">→</i></a><a class="btn ghost" href="#work">See what we build</a></div></div>
       </div>
     </div>
@@ -992,6 +1001,29 @@
     const c = (v) => Math.min(1, Math.max(0, v));
     // the origin: inside the stem of the D, in the svg's own units, turned into a share of the box
     let ox = 0.5, oy = 0.6;
+    const pre = sec.querySelector('.lp3-pre'), slot = sec.querySelector('.lp3-slot');
+    const fit = () => {
+      const vw = innerWidth, vh = innerHeight;
+      svg.setAttribute('viewBox', `0 0 ${vw} ${vh}`);
+      svg.setAttribute('preserveAspectRatio', 'none');
+      // the headline's own lines: the widest one sets LADAKH's width
+      // (the text itself, not its line boxes; on a phone LADAKH takes the full width instead)
+      const rects = [], tw = document.createTreeWalker(pre, NodeFilter.SHOW_TEXT);
+      for (let n = tw.nextNode(); n; n = tw.nextNode()) { const rg = document.createRange(); rg.selectNodeContents(n); rects.push(...[...rg.getClientRects()].filter((r) => r.width > 2)); }
+      if (!rects.length) return;
+      const box = pre.getBoundingClientRect(), phone = vw <= 640;
+      const left = phone ? box.left : Math.min(...rects.map((r) => r.left)), right = phone ? box.right : Math.max(...rects.map((r) => r.right));
+      word.setAttribute('font-size', 100); word.setAttribute('x', 0); word.setAttribute('y', 0);
+      let bb = word.getBBox();
+      const fs = 100 * (right - left) / bb.width;
+      word.setAttribute('font-size', fs.toFixed(2));
+      bb = word.getBBox();
+      const cap = fs * 0.725, gap = Math.max(14, fs * 0.08);
+      sec.style.setProperty('--wh', `${cap.toFixed(1)}px`); sec.style.setProperty('--wg', `${gap.toFixed(1)}px`);
+      const top = slot.getBoundingClientRect().top - sec.querySelector('.lp3-stage').getBoundingClientRect().top;
+      word.setAttribute('x', (left - bb.x).toFixed(2));
+      word.setAttribute('y', (top + cap).toFixed(2));
+    };
     const place = () => {
       try {
         const e = word.getExtentOfChar(2), r = svg.getBoundingClientRect(), m = svg.getScreenCTM();
@@ -1008,12 +1040,13 @@
       svg.style.setProperty('--mo', (calm ? 1 : 1 - c((p - 0.5) / 0.12)).toFixed(3));
       sec.style.setProperty('--p', p.toFixed(3));
       sec.style.setProperty('--po', (1 - c(p / 0.25)).toFixed(3));
+      svg.style.setProperty('--eo', (1 - c(p / 0.08)).toFixed(3));
       sec.style.setProperty('--ao', (calm ? 1 : c((p - 0.55) / 0.2)).toFixed(3));
     };
-    document.fonts.ready.then(() => { place(); draw(); });
-    addEventListener('resize', () => { place(); draw(); });
+    document.fonts.ready.then(() => { fit(); place(); draw(); });
+    addEventListener('resize', () => { fit(); place(); draw(); });
     addEventListener('scroll', () => requestAnimationFrame(draw), { passive: true });
-    place(); draw();
+    fit(); place(); draw();
   })();
 </script>
 </body>
