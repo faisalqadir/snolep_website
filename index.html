@@ -381,6 +381,8 @@
   .contact.form-away .open-brief { display: inline-flex; }
   .brief-dialog { width: min(640px, 100% - 32px); max-height: calc(100vh - 48px); margin: auto; padding: 0; border: 0; border-radius: 18px; background: #04303f; color: var(--mint); overflow: auto; }
   .brief-dialog::backdrop { background: rgba(0, 20, 28, .72); }
+  .brief-dialog.growing { overflow: hidden; }
+  @media (prefers-reduced-motion: no-preference) { .brief-dialog[open]::backdrop { animation: bdIn .4s ease; } @keyframes bdIn { from { opacity: 0; } } }
   .brief-dialog .brief { border: 0; }
   .brief-dialog .close { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border: 1px solid rgba(173, 220, 218, .4); border-radius: 50%;
                          background: none; color: var(--mint); font: 400 22px/1 var(--body); cursor: pointer; }
@@ -748,13 +750,38 @@
       else { if (dialog.open) dialog.close(); contact.appendChild(form); contact.classList.remove('form-away'); }
     };
     desk.addEventListener('change', place); place();
-    const open = () => { if (!dialog.open) { dialog.showModal(); form.querySelector('input:checked').focus(); } };
-    dialog.querySelector('.close').addEventListener('click', () => dialog.close());
-    dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });     // a click on the dimmed page
-    document.querySelector('.open-brief').addEventListener('click', open);
+    // the panel grows out of what opened it (the bubble or a button) and shrinks back into it
+    const still = matchMedia('(prefers-reduced-motion: reduce)');
+    let from = null;
+    const grow = (p, back) => {
+      const r = dialog.getBoundingClientRect();
+      const cx = p.x - (r.left + r.width / 2), cy = p.y - (r.top + r.height / 2), s0 = Math.max(0.04, Math.min(p.w / r.width, p.h / r.height));
+      const frames = [
+        { transform: `translate(${cx}px, ${cy}px) scale(${s0})`, borderRadius: '999px', opacity: 0.6 },
+        { transform: 'none', borderRadius: '18px', opacity: 1 },
+      ];
+      return dialog.animate(back ? frames.reverse() : frames, { duration: back ? 320 : 520, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'both' });
+    };
+    const open = (src) => {
+      if (dialog.open) return;
+      from = src || null;
+      dialog.showModal();
+      if (from && !still.matches) { dialog.classList.add('growing'); grow(from, false).finished.then(() => dialog.classList.remove('growing')); }
+      form.querySelector('input:checked').focus({ preventScroll: true });
+    };
+    const shut = () => {
+      if (!dialog.open) return;
+      if (from && !still.matches) { dialog.classList.add('growing'); grow(from, true).finished.then(() => { dialog.close(); dialog.getAnimations().forEach((a) => a.cancel()); dialog.classList.remove('growing'); }); }
+      else dialog.close();
+    };
+    const at = (el) => { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height }; };
+    dialog.querySelector('.close').addEventListener('click', shut);
+    dialog.addEventListener('cancel', (e) => { e.preventDefault(); shut(); });
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) shut(); });     // a click on the dimmed page
+    document.querySelector('.open-brief').addEventListener('click', (e) => open(at(e.currentTarget)));
     // the other Start a project buttons open the same panel on a desktop
-    document.querySelectorAll('a.btn[href="#contact"], a.rail-cta').forEach((l) => l.addEventListener('click', (e) => { if (desk.matches) { e.preventDefault(); open(); } }));
-    return { open, dialog };
+    document.querySelectorAll('a.btn[href="#contact"], a.rail-cta').forEach((l) => l.addEventListener('click', (e) => { if (desk.matches) { e.preventDefault(); open(at(e.currentTarget)); } }));
+    return { open, dialog, at };
   })();
 
   // The cursor: a ring eased behind the pointer, filled with the scroll progress. Over the contact
@@ -832,8 +859,9 @@
     addEventListener('scroll', () => { progress(); go(); }, { passive: true });
     addEventListener('resize', progress);
     progress();
+    const bubble = () => { const r = el.querySelector('.disc').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height }; };
     // anywhere in the section opens the form, except its own links
-    dark.addEventListener('click', (e) => { if (desk.matches && !e.target.closest('a, button, dialog, .foot') && e.clientY <= close.getBoundingClientRect().bottom + 24) brief.open(); });
+    dark.addEventListener('click', (e) => { if (desk.matches && !e.target.closest('a, button, dialog, .foot') && e.clientY <= close.getBoundingClientRect().bottom + 24) brief.open(bubble()); });
   })();
 
   // Values and standards, live on a desktop: the section is tall and its stage stays on screen; the
