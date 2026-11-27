@@ -370,6 +370,12 @@
   .contact.form-away h2 { font-size: clamp(48px, 5.4vw, 84px); line-height: .98; letter-spacing: -.04em; }
   .contact.form-away .say p { font-size: 19px; max-width: 26em; }
   .contact.form-away .steps { display: block; }
+  /* mirrored: the steps on the left, the heading and its button on the right, set to the right edge */
+  .contact.form-away { grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); }
+  .contact.form-away .steps { grid-column: 1; grid-row: 1; }
+  .contact.form-away .say { grid-column: 2; grid-row: 1; text-align: right; display: flex; flex-direction: column; align-items: flex-end; }
+  .contact.form-away .say p { margin-left: auto; }
+  @media (pointer: fine) and (min-width: 901px) { .foot { flex-direction: row-reverse; } }
   .steps .label { color: var(--aqua); opacity: .8; }
   .steps ol { list-style: none; margin-top: 12px; border-top: 1px solid rgba(173, 220, 218, .3); counter-reset: step; }
   .steps li { display: grid; grid-template-columns: 40px 1fr; gap: 2px 8px; padding: 16px 0 17px; border-bottom: 1px solid rgba(173, 220, 218, .18); counter-increment: step; }
